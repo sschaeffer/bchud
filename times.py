@@ -22,4 +22,4 @@ class MCTimes:
         return(int(daytimestring)/24000)
 
     def saveallfiles(self):
-        subprocess.call(["/home/integ/Code/scratch/save-it-all.bash"])        
+        subprocess.call(["/home/integ/Code/stage/save-it-all.bash"])        

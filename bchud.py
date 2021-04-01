@@ -1,10 +1,11 @@
 #!/usr/bin/python3
 
-from datetime import datetime
+from datetime import datetime,timedelta
 from bctimer import BCTimer
 from times import MCTimes
 import curses, time
-from curses import wrapper
+
+
 
 def main(stdscr):
 
@@ -24,15 +25,7 @@ def main(stdscr):
     cursor_x = 0
     cursor_y = 0
 
-    bct_time = BCTimer()
-    bct_daytime = BCTimer()
-    mct = MCTimes()
-
-    mcttimestr = ""
-    mctdaytimestr = ""
-    bcttimestr = ""
-    bctdaytimestr = ""
-    bctdaystr = ""
+    bct = BCTimer()
 
     # Loop where k is the last character pressed
     while (key != ord('q')):
@@ -41,21 +34,8 @@ def main(stdscr):
         stdscr.clear()
         height, width = stdscr.getmaxyx()
 
-        if key == curses.KEY_DOWN:
-            cursor_y = cursor_y + 1
-        elif key == curses.KEY_UP:
-            cursor_y = cursor_y - 1
-        elif key == curses.KEY_RIGHT:
-            cursor_x = cursor_x + 1
-        elif key == curses.KEY_LEFT:
-            cursor_x = cursor_x - 1
-        elif key == ord('r'):
-            mct.saveallfiles()
-            bcttimestr = str(mct.gettime())
-            bctdaytimestr = str(mct.getdaytime())
-            bctdaystr = str(mct.getday())
-            bct_time.restart(int(str(mct.gettime())))
-            bct_daytime.restart(int(str(mct.getdaytime())))
+        if key == ord('r'):
+            bct.rereadnbtfile()
 
         cursor_x = max(0, cursor_x)
         cursor_x = min(width-1, cursor_x)
@@ -64,11 +44,20 @@ def main(stdscr):
         cursor_y = min(height-1, cursor_y)
 
         # Declaration of strings
-        timestr = time.strftime("%H:%M:%S")
         title = "Curses example"[:width-1]
+
+        timestr = time.strftime("%H:%M:%S")
         subtitle = timestr[:width-1]
-        mctdaytimestr = bct_daytime.total()+" "+bctdaytimestr
-        mcttimestr = bct_time.total()+" "+bcttimestr
+
+        hmsgametime = str(timedelta(seconds=round(bct.estgametime()/20)))
+        hmsdaytime = str(timedelta(seconds=round(bct.estdaytime()/20)))
+
+        estgametimestr = "{:.0f} {}".format(bct.estgametime(),hmsgametime)
+        estdaytimestr = "{:.0f} {}".format(bct.estdaytime(),hmsdaytime)
+        estgametimediff = str(round(bct.gametimediff))
+        estdaytimediff = str(round(bct.daytimediff))
+
+
         keystr = "Last key pressed: {}".format(key)[:width-1]
         statusbarstr = "Press 'q' to exit | STATUS BAR | Pos: {}, {}".format(cursor_x, cursor_y)
         if key == 0:
@@ -102,9 +91,10 @@ def main(stdscr):
         stdscr.attroff(curses.A_BOLD)
 
         # Print rest of text
-        stdscr.addstr(start_y + 1, start_x_subtitle, mcttimestr)
-        stdscr.addstr(start_y + 2, start_x_subtitle, mctdaytimestr)
-        stdscr.addstr(start_y + 3, start_x_subtitle, bctdaystr)
+        stdscr.addstr(start_y + 1, start_x_subtitle, estgametimestr)
+        stdscr.addstr(start_y + 2, start_x_subtitle, estdaytimestr)
+        stdscr.addstr(start_y + 3, start_x_subtitle, estgametimediff)
+        stdscr.addstr(start_y + 4, start_x_subtitle, estdaytimediff)
         stdscr.addstr(start_y + 5, start_x_keystr, keystr)
         stdscr.move(cursor_y, cursor_x)
 
@@ -115,4 +105,4 @@ def main(stdscr):
         key = stdscr.getch()
 
 
-wrapper(main)
+curses.wrapper(main)
