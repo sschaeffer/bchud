@@ -126,6 +126,9 @@ class BCTimer(NBTFile):
         for i in range(9):
             self.timerhistory[9-i] = self.timerhistory[8-i]
         self.timerhistory[0] = "[{}] The time is {}".format(strftime("%H:%M:%S"),round(self.estgametime()))
+        call(["/home/integ/Code/stage/query-time.bash"])
+        sleep(0.5)
+
 
 
 def main():

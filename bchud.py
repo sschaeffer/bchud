@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 
-from datetime import datetime,timedelta
 from bctimer import BCTimer
+from bclogfile import BCLogFile
+from datetime import datetime,timedelta
 from math import floor
 import time
 import curses
@@ -37,10 +38,14 @@ def renderstatusbar(stdscr,bct):
     stdscr.addstr(height-1, (width//2)-(len(centerstatusbarstr)//2),centerstatusbarstr)
     stdscr.attroff(curses.color_pair(1))
 
-def renderstatwindow(statwin, bct):
+def renderstatwindow(statwin, bct, bclf):
     statwin.box()
     for i in range(8):
         statwin.addstr(i+1,1,bct.timerhistory[i])
+        bclf_update = bclf.GetLogUpdate(bclf.NumLogUpdates()-i)
+        if bclf_update != None:
+            updatestr="{} {:5.0f} {} {}".format(bclf_update._updatetime,bclf_update._gametime,bclf_update.estgametime(),bclf_update.eststarttime())
+            statwin.addstr(i,33,updatestr)
         i+=1
 
 def rendertimerwindow(timerwin,bct):
@@ -100,36 +105,37 @@ def main(stdscr):
     statpanel = curses.panel.new_panel(statwin)
 
     key = 0
-    activewindow=0
-    readleveltimer=0
-    readlevelmax=15
+    activewindow=2
+    readtimer=readtimercount=15
     bct = BCTimer()
+    bct.readlevelfile()
+    bclf = BCLogFile()
+    bclf.ReadLogFile()
 
     # Loop where k is the last character pressed
     while (key != ord('q')):
 
         if key == ord('r'):
+            bclf.ReadLogFile()
             bct.readlevelfile()
-            readleveltimer=0
+            readtimercount=readtimer
         elif key == ord('s'):
             bct.saveallfiles()
-            bct.readlevelfile()
-            readleveltimer=0
         elif key == ord('t'):
             bct.recordtime()
+            bclf.ReadLogFile()
         elif key == ord('0'):
             activewindow = 0
         elif key == ord('1'):
             activewindow = 1
         elif key == ord('2'):
             activewindow = 2 
-        if readleveltimer >= readlevelmax:
+        if readtimercount <= 0:
+            bclf.ReadLogFile()
             bct.readlevelfile()
-            readleveltimer=0
-        readleveltimer+=1
+            readtimercount=readtimer
+        readtimercount-=1
 
-        # Initialization
-        height, width = stdscr.getmaxyx()
         rendermenubar(stdscr,bct) 
         renderstatusbar(stdscr,bct) 
         stdscr.noutrefresh()
@@ -140,7 +146,7 @@ def main(stdscr):
             timerpanel.show()
             statpanel.hide()
         elif (activewindow==2):
-            renderstatwindow(statwin,bct) 
+            renderstatwindow(statwin,bct,bclf) 
             statwin.noutrefresh()
             statpanel.show()
             timerpanel.hide()
@@ -150,10 +156,6 @@ def main(stdscr):
 
         curses.panel.update_panels()
         curses.doupdate()
-
-        #stdscr.attron(curses.A_BOLD)
-        #stdscr.attroff(curses.A_BOLD)
-
 
         # Wait for next input
         key = stdscr.getch()
