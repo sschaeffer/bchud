@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 
 from bclevelfile import BCLevelFile
-from bclogfile import BCLogFile, BCLogFileUpdate
+from bclogfile import BCLogFile
+from bcstatwindow import BCStatWindow
 from datetime import datetime, timedelta
 from math import floor
 from time import time, sleep, strftime, strptime
@@ -10,29 +11,7 @@ import curses.panel
 from subprocess import call
 
 
-class BCStatWindow():
 
-    def __init__(self, window):
-        self.window = window
-        self.statcount = 8
-        self.stats = ["{}".format(i) for i in range(self.statcount)]
-
-    def RenderStatWindow(self, bclf):
-        self.window.box()
-        for i in range(self.statcount):
-            self.window.addstr(i+1,1,self.stats[i])
-            bclf_update = bclf.GetLogUpdate(bclf.NumLogUpdates()-(i+1))
-            if bclf_update != None:
-                updatestr="{} {:5.0f} ".format(bclf_update._updatetime.strftime("(%m/%d)%H:%M:%S"),bclf_update._gametime)
-                updatestr=updatestr+"{} {}".format(bclf_update.estgametime(),datetime.fromtimestamp(bclf_update.eststarttime()).strftime("(%m/%d)%H:%M:%S"))
-                self.window.addstr(i+1,33,updatestr)
-
-    def RecordTime(self,bct):
-        for i in range(self.statcount-1):
-            self.stats[(self.statcount-1)-i] = self.stats[(self.statcount-1)-(i+1)]
-        self.stats[0] = "[{}] The time is {}".format(strftime("%H:%M:%S"),round(bct.EstimatedGameTime()))
-        call(["/home/integ/Code/stage/query-time.bash"])
-        sleep(0.5)
 
 def saveallfiles():
     call(["/home/integ/Code/stage/save-it-all.bash"])
@@ -128,12 +107,12 @@ def main(stdscr):
     key = 0
     activewindow=2
     
-    bct = BCLevelFile()
+    bct = BCLevelFile(logresults=True)
     bct.ReadLevelFile()
     bclf = BCLogFile()
     bclf.ReadLogFile()
 
-    # Loop where k is the last character pressed
+    # Loop where k is the last character presse
     while (key != ord('q')):
 
         if key == ord('r'):

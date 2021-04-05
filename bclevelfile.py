@@ -88,6 +88,7 @@ class BCLevelFile(NBTFile):
                     self.logfh.write("{},".format(self.wanderingtraderspawndelay))
                     self.logfh.write("{},".format(self.wanderingtraderspawnchance))
                     self.logfh.write("{}\n".format(self.wanderingtraderid))
+                    self.logfh.flush()
 
     def EstimatedGameTime(self):
         result = 0
