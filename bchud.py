@@ -1,13 +1,42 @@
 #!/usr/bin/python3
 
-from bctimer import BCTimer
-from bclogfile import BCLogFile
-from datetime import datetime,timedelta
+from bclevelfile import BCLevelFile
+from bclogfile import BCLogFile, BCLogFileUpdate
+from datetime import datetime, timedelta
 from math import floor
-import time
+from time import time, sleep, strftime, strptime
 import curses
 import curses.panel
+from subprocess import call
 
+
+class BCStatWindow():
+
+    def __init__(self, window):
+        self.window = window
+        self.statcount = 8
+        self.stats = ["{}".format(i) for i in range(self.statcount)]
+
+    def RenderStatWindow(self, bclf):
+        self.window.box()
+        for i in range(self.statcount):
+            self.window.addstr(i+1,1,self.stats[i])
+            bclf_update = bclf.GetLogUpdate(bclf.NumLogUpdates()-(i+1))
+            if bclf_update != None:
+                updatestr="{} {:5.0f} ".format(bclf_update._updatetime.strftime("(%m/%d)%H:%M:%S"),bclf_update._gametime)
+                updatestr=updatestr+"{} {}".format(bclf_update.estgametime(),datetime.fromtimestamp(bclf_update.eststarttime()).strftime("(%m/%d)%H:%M:%S"))
+                self.window.addstr(i+1,33,updatestr)
+
+    def RecordTime(self,bct):
+        for i in range(self.statcount-1):
+            self.stats[(self.statcount-1)-i] = self.stats[(self.statcount-1)-(i+1)]
+        self.stats[0] = "[{}] The time is {}".format(strftime("%H:%M:%S"),round(bct.EstimatedGameTime()))
+        call(["/home/integ/Code/stage/query-time.bash"])
+        sleep(0.5)
+
+def saveallfiles():
+    call(["/home/integ/Code/stage/save-it-all.bash"])
+    sleep(0.5)
 
 def rendermenubar(stdscr,bct):
     stdscr.addstr("BC HUD", curses.A_BOLD | curses.A_REVERSE)
@@ -17,20 +46,20 @@ def renderstatusbar(stdscr,bct):
     height, width = stdscr.getmaxyx()
     stdscr.attron(curses.color_pair(1))
     
-    currenttimestr = time.strftime("%H:%M")
-    hmsgametimestr = str(timedelta(seconds=round(bct.estgametime()/20)))
-    daytimestr = str(floor(bct.estdaytime()%24000))
-    daystr = str(floor(bct.estdaytime()/24000))
+    currenttimestr = strftime("%H:%M")
+    hmsgametimestr = str(timedelta(seconds=round(bct.EstimatedGameTime()/20)))
+    daytimestr = str(floor(bct.EstimatedDayTime()%24000))
+    daystr = str(floor(bct.EstimatedDayTime()/24000))
     rightstatusbarstr = '({}){} | {} | {} '.format(daystr, daytimestr, hmsgametimestr, currenttimestr)
 
     stdscr.addstr(height-1, 0, " " * (width -1))
     stdscr.addstr(height-1, width-(len(rightstatusbarstr)+1),rightstatusbarstr)
 
-    beforenight = (12542-(bct.estdaytime()%24000))/20
+    beforenight = (12542-(bct.EstimatedDayTime()%24000))/20
     negbeforenight = "-" if beforenight < 0 else ""
     beforenightstr = '{}{:0}:{:02} '.format(negbeforenight,floor(abs(beforenight)/60),round(abs(beforenight)%60))
 
-    beforemonster = (13188-(bct.estdaytime()%24000))/20
+    beforemonster = (13188-(bct.EstimatedDayTime()%24000))/20
     negbeforemonster = "-" if beforemonster < 0 else ""
     beforemonsterstr = '({}{:0}:{:02})'.format(negbeforemonster,floor(abs(beforemonster)/60),round(abs(beforemonster)%60))
 
@@ -38,29 +67,20 @@ def renderstatusbar(stdscr,bct):
     stdscr.addstr(height-1, (width//2)-(len(centerstatusbarstr)//2),centerstatusbarstr)
     stdscr.attroff(curses.color_pair(1))
 
-def renderstatwindow(statwin, bct, bclf):
-    statwin.box()
-    for i in range(8):
-        statwin.addstr(i+1,1,bct.timerhistory[i])
-        bclf_update = bclf.GetLogUpdate(bclf.NumLogUpdates()-i)
-        if bclf_update != None:
-            updatestr="{} {:5.0f} {} {}".format(bclf_update._updatetime,bclf_update._gametime,bclf_update.estgametime(),bclf_update.eststarttime())
-            statwin.addstr(i,33,updatestr)
-        i+=1
 
 def rendertimerwindow(timerwin,bct):
     # Declaration of strings
     timerwin.box()
 
     title = "Minecraft Timers (level.dat) "+"\U0001F923"
-    leveldattime = 'level.dat last modified {} '.format(datetime.fromtimestamp(bct.mtime).strftime("%H:%M:%S"))
-    filetimes = '(no change {})'.format(datetime.fromtimestamp(bct.checktime - bct.mtime).strftime("%Mmins %Ssecs"))
-    timedifference = 'The est new gametime is {} and our est old is {}'.format(round(bct.estgametime()), round(bct.estoldgametime()))
-    erroroffset = 'The error offset during the last update was {:.04f} seconds'.format(round(bct.estgametime() - bct.estoldgametime()))
-    clearweather = 'Clear weather time: {} ({})'.format(round(bct.estclearweathertime()),bct.clearweathertime)
-    rain = 'Rain ({}) time: {} ({})'.format(bct.raining, round(bct.estraintime()), bct.raintime)
-    thunder = 'Thunder ({}) time: {} ({})'.format(bct.thundering, round(bct.estthundertime()),bct.thundertime)
-    wandertrader = 'Wandering Trader: {} {} ({}/{})'.format(bct.wanderingTrader,round(bct.estwandertradertime()),bct.wanderingTraderTime,bct.wanderingTraderChance)
+    leveldattime = 'level.dat last modified {} '.format(datetime.fromtimestamp(bct.lastupdatetime).strftime("%H:%M:%S"))
+    filetimes = '(no change {})'.format(datetime.fromtimestamp(bct.lastcheckedtime - bct.lastupdatetime).strftime("%Mmins %Ssecs"))
+    timedifference = 'The est new gametime is {} and our est old is {}'.format(round(bct.EstimatedGameTime()), 0)
+    erroroffset="Null"
+    clearweather = 'Clear weather time: {} ({})'.format(round(bct.EstimatedClearWeatherTime()),bct.clearweathertime)
+    rain = 'Rain ({}) time: {} ({})'.format(bct.raining, round(bct.EstimatedRainTime()), bct.raintime)
+    thunder = 'Thunder ({}) time: {} ({})'.format(bct.thundering, round(bct.EstimatedThunderTime()),bct.thundertime)
+    wandertrader = 'Wandering Trader: {} {} ({}/{})'.format(bct.wanderingtraderid,round(bct.EstimatedWanderingTraderSpawnDelay()),bct.wanderingtraderspawndelay,bct.wanderingtraderchance)
 
     i=1
     timerwin.addstr(i,1,title)
@@ -100,15 +120,16 @@ def main(stdscr):
     height, width = stdscr.getmaxyx()
     timerwin = curses.newwin(height-2,width-2,1,1)
     statwin = curses.newwin(height-2,width-2,1,1)
+    bcstatwindow = BCStatWindow(statwin)
 
     timerpanel = curses.panel.new_panel(timerwin)
     statpanel = curses.panel.new_panel(statwin)
 
     key = 0
     activewindow=2
-    readtimer=readtimercount=15
-    bct = BCTimer()
-    bct.readlevelfile()
+    
+    bct = BCLevelFile()
+    bct.ReadLevelFile()
     bclf = BCLogFile()
     bclf.ReadLogFile()
 
@@ -116,28 +137,23 @@ def main(stdscr):
     while (key != ord('q')):
 
         if key == ord('r'):
+            bct.ReadLevelFile()
             bclf.ReadLogFile()
-            bct.readlevelfile()
-            readtimercount=readtimer
         elif key == ord('s'):
-            bct.saveallfiles()
+            saveallfiles()
         elif key == ord('t'):
-            bct.recordtime()
-            bclf.ReadLogFile()
+            bcstatwindow.RecordTime(bct)
         elif key == ord('0'):
             activewindow = 0
         elif key == ord('1'):
             activewindow = 1
         elif key == ord('2'):
             activewindow = 2 
-        if readtimercount <= 0:
-            bclf.ReadLogFile()
-            bct.readlevelfile()
-            readtimercount=readtimer
-        readtimercount-=1
+        bct.ReadLevelFile()
+        bclf.ReadLogFile()
 
         rendermenubar(stdscr,bct) 
-        renderstatusbar(stdscr,bct) 
+        renderstatusbar(stdscr,bct)
         stdscr.noutrefresh()
 
         if (activewindow==1):
@@ -146,7 +162,7 @@ def main(stdscr):
             timerpanel.show()
             statpanel.hide()
         elif (activewindow==2):
-            renderstatwindow(statwin,bct,bclf) 
+            bcstatwindow.RenderStatWindow(bclf) 
             statwin.noutrefresh()
             statpanel.show()
             timerpanel.hide()

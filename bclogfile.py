@@ -11,11 +11,11 @@ class BCLogFileUpdate():
         self._gametime = gametime
 
     @property
-    def updatetime():
+    def updatetime(self):
         self._updatetime
 
     @property
-    def gametime():
+    def gametime(self):
         self._gametime
 
     def estgametime(self):
@@ -35,22 +35,25 @@ class BCLogFile():
         self.logfilename=logfilename
         self.updates = [] 
         self.updatetimes = [] 
+        self.lastupdatetime=0
 
     def ReadLogFile(self):
         logfilepath = Path(self.serverdir+"/"+self.logfilename)
         if logfilepath.exists():
-            with open(logfilepath) as logfh:
-                line = logfh.readline()
-                while line:
-                    if "The time is" in line:
-                        updatetime = datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()
-                        updatedatetime = datetime.combine(date.today(),updatetime)
-                        if updatedatetime not in self.updatetimes:
-                            gametime = int(line.split(" ")[6])
-                            self.updatetimes.append(updatedatetime)
-                            self.updates.append(BCLogFileUpdate(updatedatetime,gametime))
+            if self.lastupdatetime != logfilepath.stat().st_mtime:
+                self.lastupdatetime = logfilepath.stat().st_mtime
+                with open(logfilepath) as logfh:
                     line = logfh.readline()
-            logfh.close()
+                    while line:
+                        if "The time is" in line:
+                            updatetime = datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()
+                            updatedatetime = datetime.combine(date.today(),updatetime)
+                            if updatedatetime not in self.updatetimes:
+                                gametime = int(line.split(" ")[6])
+                                self.updatetimes.append(updatedatetime)
+                                self.updates.append(BCLogFileUpdate(updatedatetime,gametime))
+                        line = logfh.readline()
+                    logfh.close()
 
     def PrintLogFileUpdates(self):
         for updates in self.updates:
@@ -66,13 +69,19 @@ class BCLogFile():
                 result = self.updates[i]
         return result
 
+    def GetLastLogUpdate(self):
+        return self.GetLogUpdate(self.NumLogUpdates()-1)
+
 def main():
-    print("BCLogFile test")
+    print("BCLogFile: Unit Testing")
     bclf = BCLogFile()
     bclf.ReadLogFile()
     bclf.PrintLogFileUpdates()
-    bclfu_test = bclf.GetLogUpdate(bclf.NumLogUpdates()-1)
-    print("{}".format(bclfu_test._updatetime))
+    bclfu_test = bclf.GetLastLogUpdate()
+    print("\nGet Last Update: {}".format(bclfu_test._updatetime))
+    print("\nUpdate: {}".format(bclf.lastupdatetime))
+    bclf.ReadLogFile()
+    print("\nUpdate: {}".format(bclf.lastupdatetime))
 
     
 if __name__ == '__main__':
