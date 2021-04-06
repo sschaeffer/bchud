@@ -11,7 +11,7 @@ class BCStatWindow():
         self.statcount = 8
         self.stats = ["{}".format(i) for i in range(self.statcount)]
 
-    def RenderStatWindow(self, bclf):
+    def Render(self, bclf):
         self.window.box()
         for i in range(self.statcount):
             self.window.addstr(i+1,1,self.stats[i])

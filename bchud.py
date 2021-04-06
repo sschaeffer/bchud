@@ -3,6 +3,7 @@
 from bclevelfile import BCLevelFile
 from bclogfile import BCLogFile
 from bcstatwindow import BCStatWindow
+from bcstatusbar import BCStatusBar
 from datetime import datetime, timedelta
 from math import floor
 from time import time, sleep, strftime, strptime
@@ -11,40 +12,16 @@ import curses.panel
 from subprocess import call
 
 
-
-
 def saveallfiles():
     call(["/home/integ/Code/stage/save-it-all.bash"])
     sleep(0.5)
 
+
 def rendermenubar(stdscr,bct):
-    stdscr.addstr("BC HUD", curses.A_BOLD | curses.A_REVERSE)
+    stdscr.addstr(0,0,"BC HUD", curses.A_BOLD | curses.A_REVERSE)
     stdscr.chgat(-1, curses.A_REVERSE)
 
-def renderstatusbar(stdscr,bct):
-    height, width = stdscr.getmaxyx()
-    stdscr.attron(curses.color_pair(1))
-    
-    currenttimestr = strftime("%H:%M")
-    hmsgametimestr = str(timedelta(seconds=round(bct.EstimatedGameTime()/20)))
-    daytimestr = str(floor(bct.EstimatedDayTime()%24000))
-    daystr = str(floor(bct.EstimatedDayTime()/24000))
-    rightstatusbarstr = '({}){} | {} | {} '.format(daystr, daytimestr, hmsgametimestr, currenttimestr)
 
-    stdscr.addstr(height-1, 0, " " * (width -1))
-    stdscr.addstr(height-1, width-(len(rightstatusbarstr)+1),rightstatusbarstr)
-
-    beforenight = (12542-(bct.EstimatedDayTime()%24000))/20
-    negbeforenight = "-" if beforenight < 0 else ""
-    beforenightstr = '{}{:0}:{:02} '.format(negbeforenight,floor(abs(beforenight)/60),round(abs(beforenight)%60))
-
-    beforemonster = (13188-(bct.EstimatedDayTime()%24000))/20
-    negbeforemonster = "-" if beforemonster < 0 else ""
-    beforemonsterstr = '({}{:0}:{:02})'.format(negbeforemonster,floor(abs(beforemonster)/60),round(abs(beforemonster)%60))
-
-    centerstatusbarstr = beforenightstr + beforemonsterstr
-    stdscr.addstr(height-1, (width//2)-(len(centerstatusbarstr)//2),centerstatusbarstr)
-    stdscr.attroff(curses.color_pair(1))
 
 
 def rendertimerwindow(timerwin,bct):
@@ -90,9 +67,14 @@ def main(stdscr):
     if curses.has_colors():
         curses.start_color()
 
-    curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
-    curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_GREEN)
-    curses.init_pair(3, curses.COLOR_RED, curses.COLOR_BLACK)
+    curses.init_pair(BCStatusBar.STATSBAR_COLOR, curses.COLOR_WHITE, 240)
+    curses.init_pair(BCStatusBar.STATSBAR_REALTIMECOLOR, curses.COLOR_BLACK, 34)
+
+    curses.init_pair(BCStatusBar.STATSBAR_DAYTIMECOLOR, curses.COLOR_WHITE, 17)
+    curses.init_pair(BCStatusBar.STATSBAR_AFTERDINNERCOLOR, curses.COLOR_BLACK, 192)
+    curses.init_pair(BCStatusBar.STATSBAR_TWILIGHTCOLOR, curses.COLOR_WHITE, 141)
+    curses.init_pair(BCStatusBar.STATSBAR_NIGHTCOLOR, curses.COLOR_WHITE, 21)
+    curses.init_pair(STATSBAR_DAWNCOLOR, curses.COLOR_WHITE, 21)
 
     stdscr.clear()
     stdscr.noutrefresh()
@@ -100,6 +82,7 @@ def main(stdscr):
     timerwin = curses.newwin(height-2,width-2,1,1)
     statwin = curses.newwin(height-2,width-2,1,1)
     bcstatwindow = BCStatWindow(statwin)
+    bcstatusbar = BCStatusBar(stdscr)
 
     timerpanel = curses.panel.new_panel(timerwin)
     statpanel = curses.panel.new_panel(statwin)
@@ -132,7 +115,7 @@ def main(stdscr):
         bclf.ReadLogFile()
 
         rendermenubar(stdscr,bct) 
-        renderstatusbar(stdscr,bct)
+        bcstatusbar.Render(bct)
         stdscr.noutrefresh()
 
         if (activewindow==1):
@@ -141,7 +124,7 @@ def main(stdscr):
             timerpanel.show()
             statpanel.hide()
         elif (activewindow==2):
-            bcstatwindow.RenderStatWindow(bclf) 
+            bcstatwindow.Render(bclf) 
             statwin.noutrefresh()
             statpanel.show()
             timerpanel.hide()
