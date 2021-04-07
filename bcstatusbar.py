@@ -10,33 +10,9 @@ class BCStatusBar():
     STATSBAR_COLOR=21            #DARKGREY
     STATSBAR_REALTIMECOLOR=22    #GREEN
 
-    STATSBAR_DAWN=0           # BRIGHT YELLOW (1min 40secs)
-    STATSBAR_WORKDAY=1        # YELLOW (5mins 50secs)
-    STATSBAR_HAPPYHOUR=2      # LIGHT BLUE (2mins 30secs)
-    STATSBAR_TWILIGHT=3       # PURPLE (27secs)
-    STATSBAR_RAINMONSTERS=7   # DARK BLUE (21secs)
-    STATSBAR_MONSTERS=7       #
-    STATSBAR_NOMONSTERS=7     #
-    STATSBAR_NORAINMONSTERS=7 #
-    STATSBAR_NOSLEEP=7        # 30secs
-
-    DAY_DAWNSTARTS=0         #    0-2000 Wakeup and Wander (0:00)
-    DAY_WORKDAYSTARTS=2000   # 2000-9000 Workday (1:40)
-    DAY_WORKDAYENDS=9000     # 9000-12000 Happy-hour (7:30)
-    DAY_SLEEP=12000          # 12000 Twilight/villagers sleep (10:00) - 12010 sleep on rainy days
-    DAY_ENDS=12542           # 12542 Sleep on normal days/mobs don't burn (10:27)
-    DAY_RAINMONSTERS=12969   # 12969 Rainy day monsters (10:48/18secs)
-    DAY_MONSTERS=13188       # 13188 monsters (11:00/30secs)
-    DAY_NOMONSTERS=22812     # 22812 No more monsters (19:00/8:30)
-    DAY_NORAINMONSTERS=23031 # 12969 No more rainy day monsters(19:12/8:42)
-    DAY_NOSLEEP=23460        # 23460 No sleeping on normal days (19:33/9:03)
-    DAY_FULLDAY=24000        # 23992 No sleeping rainy days (19:59/9:30)
-
-
-
-
-    def __init__(self,stdscr):
+    def __init__(self,stdscr,statusbarwin):
         self.stdscr = stdscr
+        self.statusbarwin = statusbarwin
 
     def Render(self,bct):
 
@@ -51,22 +27,38 @@ class BCStatusBar():
         self.stdscr.chgat(-1,curses.color_pair(self.STATSBAR_COLOR))
         self.stdscr.addstr(height-1, 0, " Day {} ".format(daystr),curses.color_pair(self.STATSBAR_REALTIMECOLOR))
 
-        estdaytime = bct.EstimatedDayTime()%24000
-
-        beforenight = (12542-(bct.EstimatedDayTime()%24000))/20
-        if beforenight < 0:
-            beforenight = (24000-(bct.EstimatedDayTime()%24000))/20
-            beforenightstr = '  {:0}:{:02}  '.format(floor(abs(beforenight)/60),round(abs(beforenight)%60))
-            if beforenight >= 60:
-                self.stdscr.addstr(height-1, (width//2)-(len(beforenightstr)),beforenightstr,curses.color_pair(3))
-            else:
-                self.stdscr.addstr(height-1, (width//2)-(len(beforenightstr)),beforenightstr,curses.color_pair(6))
+        esttimeofday = bct.EstimatedTimeOfDay()
+        if esttimeofday >= bct.RAINMONSTERS:
+            displaytime = (bct.DAY_FULLDAY-(bct.EstimatedDayTime()%bct.DAY_FULLDAY))/20
         else:
-            beforenightstr = '  {:0}:{:02}  '.format(floor(abs(beforenight)/60),round(abs(beforenight)%60))
-            if beforenight >= 60:
-                self.stdscr.addstr(height-1, (width//2)-(len(beforenightstr)),beforenightstr,curses.color_pair(4))
-            else:
-                self.stdscr.addstr(height-1, (width//2)-(len(beforenightstr)),beforenightstr,curses.color_pair(5))
+            displaytime = (bct.DAY_SLEEP-(bct.EstimatedDayTime()%bct.DAY_FULLDAY))/20
+        displaytimestr = '  {:0}:{:02} {} {}'.format(floor(abs(displaytime)/60),floor(abs(displaytime)%60),esttimeofday,bct.EstimatedDayTime()%bct.DAY_FULLDAY)
+        self.stdscr.addstr(height-1, (width//2)-(len(displaytimestr)),displaytimestr,curses.color_pair(esttimeofday))
+
+    def RenderWindow(self,bct):
+        (height,width) = self.statusbarwin.getmaxyx()
+        self.statusbarwin.addstr(0, width-40, "    0 -  2000 Dawn        8:47", curses.color_pair(bct.DAWN))
+        self.statusbarwin.addstr(1, width-40, " 2000 -  9000 Workday     2:57", curses.color_pair(bct.WORKDAY))
+        self.statusbarwin.addstr(2, width-40, " 9000 - 12000 Happyhour    :27", curses.color_pair(bct.HAPPYHOUR))
+        self.statusbarwin.addstr(3, width-40, "12000 - 12542 Twilight     :00", curses.color_pair(bct.TWILIGHT))
+        self.statusbarwin.addstr(4, width-40, "12542 - 12969 Sleeptime   9:33", curses.color_pair(bct.SLEEP))
+        self.statusbarwin.addstr(5, width-40, "12969 - 13188 Rainy Mnst  9:12", curses.color_pair(bct.RAINMONSTERS))
+        self.statusbarwin.addstr(6, width-40, "13188 - 22812 Monsters    9:01", curses.color_pair(bct.MONSTERS))
+        self.statusbarwin.addstr(7, width-40, "22812 - 23031 No Monsters  :49", curses.color_pair(bct.NOMONSTERS))
+        self.statusbarwin.addstr(8, width-40, "23031 - 23460 No Rainy Mo  :27", curses.color_pair(bct.NORAINMONSTERS))
+        self.statusbarwin.addstr(9, width-40, "23460 - 24000 No Sleep     :00", curses.color_pair(bct.NOSLEEP))
+       
+
+
+
+
+
+
+
+
+
+
+
 
 
 #        negbeforenight = "-" if beforenight < 0 else ""

@@ -9,16 +9,16 @@ from subprocess import call
 
 class BCLevelFile(NBTFile):
 
-    DAWN=0           # BRIGHT YELLOW (1min 40secs)
-    WORKDAY=1        # YELLOW (5mins 50secs)
-    HAPPYHOUR=2      # LIGHT BLUE/PURPLE (2mins 30secs)
-    TWILIGHT=3       # PURPLE (27secs)
-    SLEEP=4          # DARK BLUE PURPLE (21secs)
-    RAINMONSTERS=5   # DARK BLUE (11secs)
-    MONSTERS=6       # DARKEST BLUE/BLACK (8mins 1secs)
-    NOMONSTERS=7     # LIGHT BLUE (11 secs)
-    NORAINMONSTERS=8 # LIGHTER BLUE/PINK (22secs)
-    NOSLEEP=9        # PINK (27secs)
+    DAWN=1           # BRIGHT YELLOW (1min 40secs)
+    WORKDAY=2        # YELLOW (5mins 50secs)
+    HAPPYHOUR=3      # LIGHT BLUE/PURPLE (2mins 30secs)
+    TWILIGHT=4       # PURPLE (27secs)
+    SLEEP=5          # DARK BLUE PURPLE (21secs)
+    RAINMONSTERS=6   # DARK BLUE (11secs)
+    MONSTERS=7       # DARKEST BLUE/BLACK (8mins 1secs)
+    NOMONSTERS=8     # LIGHT BLUE (11 secs)
+    NORAINMONSTERS=9 # LIGHTER BLUE/PINK (22secs)
+    NOSLEEP=10       # PINK (27secs)
 
     DAY_DAWN=0               #     0 DAWN Wakeup and Wander (0:00)
     DAY_WORKDAY=2000         #  2000 WORKDAY (1:40)
@@ -31,6 +31,7 @@ class BCLevelFile(NBTFile):
     DAY_NORAINMONSTERS=23031 # 12969 No more rainy day monsters(19:11.55/8:44)
     DAY_NOSLEEP=23460        # 23460 No sleeping on normal days (19:33/9:06)
     DAY_FULLDAY=24000        # 23992 No sleeping rainy days (19:59/9:33)
+
     def __init__(self, levelfilename="snapshot/level.dat", serverdir="", logresults=False):
         if(serverdir!=""):
             self.serverdir = serverdir
@@ -148,6 +149,29 @@ class BCLevelFile(NBTFile):
             result = 0
         return result
 
+    def EstimatedTimeOfDay(self):
+        estdaytime = self.EstimatedDayTime()%self.DAY_FULLDAY
+        if estdaytime > self.DAY_NOSLEEP:
+            result = self.NOSLEEP
+        elif estdaytime > self.DAY_NORAINMONSTERS:
+            result = self.NORAINMONSTERS # LIGHTER BLUE/PINK (22secs)
+        elif estdaytime > self.DAY_NOMONSTERS:
+            result = self.NOMONSTERS     # LIGHT BLUE (11 secs)
+        elif estdaytime > self.DAY_MONSTERS:
+            result = self.MONSTERS       # DARKEST BLUE/BLACK (8mins 1secs)
+        elif estdaytime > self.DAY_RAINMONSTERS:
+            result = self.RAINMONSTERS   # DARK BLUE (11secs)
+        elif estdaytime > self.DAY_SLEEP:
+            result = self.SLEEP          # DARK BLUE PURPLE (21secs)
+        elif estdaytime > self.DAY_TWILIGHT:
+            result = self.TWILIGHT       # PURPLE (27secs)
+        elif estdaytime > self.DAY_HAPPYHOUR:
+            result = self.HAPPYHOUR      # LIGHT BLUE/PURPLE (2mins 30secs)
+        elif estdaytime > self.DAY_WORKDAY:
+            result = self.WORKDAY        # YELLOW (5mins 50secs)
+        else:
+            result = self.DAWN           # BRIGHT YELLOW (1min 40secs)
+        return(result)
 
 def main():
     print("BCLevelFile: Unit Testing")
@@ -173,6 +197,7 @@ def main():
     print("Estimated Wandering: {}".format(bclevelfile.EstimatedWanderingTraderSpawnDelay()))
     print("Wandering Trader Sp: {}".format(bclevelfile.wanderingtraderspawnchance))
     print("Wandering Trader Id: {}".format(bclevelfile.wanderingtraderid))
+    print("Estimated Time of D: {}".format(bclevelfile.EstimatedTimeOfDay()))
 
 if __name__ == '__main__':
     main()
