@@ -9,16 +9,14 @@ from subprocess import call
 
 class BCLevelFile(NBTFile):
 
-    DAWN=1           # BRIGHT YELLOW (1min 40secs)
-    WORKDAY=2        # YELLOW (5mins 50secs)
-    HAPPYHOUR=3      # LIGHT BLUE/PURPLE (2mins 30secs)
-    TWILIGHT=4       # PURPLE (27secs)
-    SLEEP=5          # DARK BLUE PURPLE (21secs)
-    RAINMONSTERS=6   # DARK BLUE (11secs)
-    MONSTERS=7       # DARKEST BLUE/BLACK (8mins 1secs)
-    NOMONSTERS=8     # LIGHT BLUE (11 secs)
-    NORAINMONSTERS=9 # LIGHTER BLUE/PINK (22secs)
-    NOSLEEP=10       # PINK (27secs)
+    DAWN=1           # LIGHT ORANGE (1min 40secs)
+    WORKDAY=2        # LIGHT YELLOW (5mins 50secs)
+    HAPPYHOUR=3      # LIGHT MAROON (2mins 30secs)
+    TWILIGHT=4       # LIGHT PURPLE (27secs)
+    SLEEP=5          # DARK BLUE (21secs)
+    MONSTERS=6       # DARKEST BLUE/BLACK (8mins 1secs)
+    NOMONSTERS=7     # BLUE (11 secs)
+    NOSLEEP=8        # MAUVE (27secs)
 
     DAY_DAWN=0               #     0 DAWN Wakeup and Wander (0:00)
     DAY_WORKDAY=2000         #  2000 WORKDAY (1:40)
@@ -31,6 +29,9 @@ class BCLevelFile(NBTFile):
     DAY_NORAINMONSTERS=23031 # 12969 No more rainy day monsters(19:11.55/8:44)
     DAY_NOSLEEP=23460        # 23460 No sleeping on normal days (19:33/9:06)
     DAY_FULLDAY=24000        # 23992 No sleeping rainy days (19:59/9:33)
+
+#    RAINMONSTERS=6   # DARK BLUE (11secs)
+#    NORAINMONSTERS=9 # LIGHTER BLUE/PINK (22secs)
 
     def __init__(self, levelfilename="snapshot/level.dat", serverdir="", logresults=False):
         if(serverdir!=""):
@@ -122,45 +123,40 @@ class BCLevelFile(NBTFile):
     def EstimatedDayTime(self):
         result = 0
         if self.daytime > 0:
+            # if self.daytime is less than zero or zero it means the game is still starting
             result = round(self.daytime+((time()-self.lastupdatetime)*20))
         return result
 
     def EstimatedClearWeatherTime(self):
-        result = round(self.clearweathertime-((time()-self.lastupdatetime)*20))
-        if result < 0:
-            result = 0
-        return result
+        return round(self.clearweathertime-((time()-self.lastupdatetime)*20))
 
     def EstimatedRainTime(self):
-        result = round(self.raintime-((time()-self.lastupdatetime)*20))
-        if result < 0:
-            result = 0
-        return result
+        return round(self.raintime-((time()-self.lastupdatetime)*20))
 
     def EstimatedThunderTime(self):
-        result = round(self.thundertime-((time()-self.lastupdatetime)*20))
-        if result < 0:
-            result = 0
-        return result
+        return round(self.thundertime-((time()-self.lastupdatetime)*20))
 
     def EstimatedWanderingTraderSpawnDelay(self):
-        result = round(self.wanderingtraderspawndelay-((time()-self.lastupdatetime)*20))
-        if result < 0:
-            result = 0
-        return result
+        return round(self.wanderingtraderspawndelay-((time()-self.lastupdatetime)*20))
+
+    def EstimateIsRaining(self):
+        result = 0
+        if self.raining and self.EstimatedRainTime() > 0:
+            result = 1
+        elif self.raining and self.EstimatedRainTime() <= 0:
+            result = 2
+        elif not self.raining and self.EstimatedRainTime() <= 0:
+            result = 3
+        return(result)
 
     def EstimatedTimeOfDay(self):
         estdaytime = self.EstimatedDayTime()%self.DAY_FULLDAY
         if estdaytime > self.DAY_NOSLEEP:
             result = self.NOSLEEP
-        elif estdaytime > self.DAY_NORAINMONSTERS:
-            result = self.NORAINMONSTERS # LIGHTER BLUE/PINK (22secs)
         elif estdaytime > self.DAY_NOMONSTERS:
             result = self.NOMONSTERS     # LIGHT BLUE (11 secs)
         elif estdaytime > self.DAY_MONSTERS:
             result = self.MONSTERS       # DARKEST BLUE/BLACK (8mins 1secs)
-        elif estdaytime > self.DAY_RAINMONSTERS:
-            result = self.RAINMONSTERS   # DARK BLUE (11secs)
         elif estdaytime > self.DAY_SLEEP:
             result = self.SLEEP          # DARK BLUE PURPLE (21secs)
         elif estdaytime > self.DAY_TWILIGHT:
@@ -172,6 +168,11 @@ class BCLevelFile(NBTFile):
         else:
             result = self.DAWN           # BRIGHT YELLOW (1min 40secs)
         return(result)
+
+#        elif estdaytime > self.DAY_NORAINMONSTERS:
+#            result = self.NORAINMONSTERS # LIGHTER BLUE/PINK (22secs)
+#        elif estdaytime > self.DAY_RAINMONSTERS:
+#            result = self.RAINMONSTERS   # DARK BLUE (11secs)
 
 def main():
     print("BCLevelFile: Unit Testing")
