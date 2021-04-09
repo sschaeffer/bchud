@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 from nbt import NBTFile
+from bclogfile import BCLogFile
 
 from time import time, sleep , strftime, strptime
 from pathlib import Path
@@ -33,12 +34,14 @@ class BCLevelFile(NBTFile):
 #    RAINMONSTERS=6   # DARK BLUE (11secs)
 #    NORAINMONSTERS=9 # LIGHTER BLUE/PINK (22secs)
 
-    def __init__(self, levelfilename="snapshot/level.dat", serverdir="", logresults=False):
+    def __init__(self, bclf=None, levelfilename="snapshot/level.dat", serverdir="", logresults=False):
         if(serverdir!=""):
             self.serverdir = serverdir
         else:
             self.serverdir = "/media/deflection/Minecraft/server/snapshot"
         self.levelfilename=levelfilename
+
+        self.bclf=bclf
 
         self.lastupdatetime=0
         self.lastcheckedtime=0
@@ -52,7 +55,7 @@ class BCLevelFile(NBTFile):
         self.thundertime=0
         self.wanderingtraderid="<empty>"
         self.wanderingtraderchance=0
-        self.wanderingtradertime=0
+        self.wanderingtraderspawndelay=0
 
         self.logresults = logresults
         if logresults:
@@ -118,6 +121,8 @@ class BCLevelFile(NBTFile):
         result = 0
         if self.gametime > 0:
             result = round(self.gametime+((time()-self.lastupdatetime)*20))
+        elif self.bclf.GetStarttime() > 0:
+            result = round(time()-self.bclf.GetStarttime())
         return result
 
     def EstimatedDayTime(self):
@@ -125,6 +130,8 @@ class BCLevelFile(NBTFile):
         if self.daytime > 0:
             # if self.daytime is less than zero or zero it means the game is still starting
             result = round(self.daytime+((time()-self.lastupdatetime)*20))
+        elif self.bclf.GetStarttime() > 0:
+            result = round(time()-self.bclf.GetStarttime())
         return result
 
     def EstimatedClearWeatherTime(self):

@@ -65,10 +65,10 @@ def main(stdscr):
     key = 0
     activewindow=1
     
-    bct = BCLevelFile(logresults=True)
-    bct.ReadLevelFile()
     bclf = BCLogFile()
     bclf.ReadLogFile()
+    bct = BCLevelFile(bclf=bclf, logresults=True)
+    bct.ReadLevelFile()
 
     # Loop where k is the last character presse
     while (key != ord('q')):
