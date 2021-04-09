@@ -42,7 +42,45 @@ class BCStatusBar():
     def RenderWindow(self,bct):
         (height,width) = self.statusbarwin.getmaxyx()
 
-        leveltime = f"level.dat {datetime.fromtimestamp(bct.lastupdatetime).strftime('%H:%M:%S')}"
+        leveltimestr = f"{datetime.fromtimestamp(bct.lastupdatetime).strftime('%H:%M')} level.dat ("
+        nextupdatestr = f"next update in {timedelta(seconds=round(bct.lastupdatetime+300-time()))})"
+        self.statusbarwin.addstr(0, 0, leveltimestr+nextupdatestr)
+
+        gametimestr = f"Gametime {round(bct.EstimatedGameTime())} ({bct.gametime})"
+        daytimestr = f"Daytime {bct.EstimatedDayTime()} % 24000 = {bct.EstimatedDayTime()%24000} ({bct.daytime})"
+        self.statusbarwin.addstr(1, 0, gametimestr)
+        self.statusbarwin.addstr(2, 0, daytimestr)
+
+
+        rainweather = bct.EstimatedRainTime()
+#        if rainweather < 0:
+#            rainweather = 0
+        rainweatherstr = f"Rain time({bct.raining}): {timedelta(seconds=round(rainweather/20))} ({bct.raintime})"
+        self.statusbarwin.addstr(4, 0, rainweatherstr)
+
+        thunderweather = bct.EstimatedThunderTime()
+        if thunderweather < 0:
+            thunderweather = 0
+        thunderweatherstr = f"Thunder time({bct.thundering}): {timedelta(seconds=round(thunderweather/20))} ({bct.thundertime})"
+        self.statusbarwin.addstr(5, 0, thunderweatherstr)
+    
+        clearweather = bct.EstimatedClearWeatherTime()
+        if clearweather < 0:
+            clearweather = 0
+        clearweatherstr = f"Clear weather time: {timedelta(seconds=round(clearweather))} ({bct.clearweathertime})"
+        self.statusbarwin.addstr(6, 0, clearweatherstr)
+
+
+
+        wanderingtraderidstr = f"Wander Trader ID: {bct.wanderingtraderid}"
+        self.statusbarwin.addstr(8, 0, wanderingtraderidstr)
+
+        wanderingtraderdelay = bct.EstimatedWanderingTraderSpawnDelay()
+        if wanderingtraderdelay < 0:
+            wanderingtraderdelay = 0
+        wanderingtraderstr = f"WanderTrader Spawn Delay: {timedelta(seconds=round(wanderingtraderdelay/20))} ({bct.wanderingtraderspawndelay}:{bct.wanderingtraderspawnchance})"
+        self.statusbarwin.addstr(9, 0, wanderingtraderstr)
+
 
 
 

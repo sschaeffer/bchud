@@ -36,6 +36,7 @@ class BCLogFile():
         self.updates = [] 
         self.updatetimes = [] 
         self.lastupdatetime=0
+        self.starttime=0
 
     def ReadLogFile(self):
         logfilepath = Path(self.serverdir+"/"+self.logfilename)
@@ -52,10 +53,13 @@ class BCLogFile():
                                 gametime = int(line.split(" ")[6])
                                 self.updatetimes.append(updatedatetime)
                                 self.updates.append(BCLogFileUpdate(updatedatetime,gametime))
+                        elif "For help, type" in line:
+                            self.starttime = datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()
                         line = logfh.readline()
                     logfh.close()
 
     def PrintLogFileUpdates(self):
+        print(f"Start Time is: {self.GetStarttime()}")
         for updates in self.updates:
             print("{} - {} - {} - {}".format(updates._updatetime,updates._gametime,updates.estgametime(),updates.eststarttime()))
 
@@ -71,6 +75,9 @@ class BCLogFile():
 
     def GetLastLogUpdate(self):
         return self.GetLogUpdate(self.NumLogUpdates()-1)
+
+    def GetStarttime(self):
+        return self.starttime
 
 def main():
     print("BCLogFile: Unit Testing")

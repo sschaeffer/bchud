@@ -21,37 +21,6 @@ def rendermenubar(stdscr,bct):
     stdscr.addstr(0,0,"BC HUD", curses.A_BOLD | curses.A_REVERSE)
     stdscr.chgat(-1, curses.A_REVERSE)
 
-
-
-
-def rendertimerwindow(timerwin,bct):
-    # Declaration of strings
-    timerwin.box()
-
-    title = "Minecraft Timers (level.dat) "+"\U0001F923"
-    leveldattime = 'level.dat last modified {} '.format(datetime.fromtimestamp(bct.lastupdatetime).strftime("%H:%M:%S"))
-    filetimes = '(no change {})'.format(datetime.fromtimestamp(bct.lastcheckedtime - bct.lastupdatetime).strftime("%Mmins %Ssecs"))
-    timedifference = 'The est new gametime is {} and daytime is {}'.format(round(bct.EstimatedGameTime()),bct.EstimatedDayTime()%24000)
-    clearweather = 'Clear weather time: {} ({})'.format(round(bct.EstimatedClearWeatherTime()),bct.clearweathertime)
-    rain = 'Rain ({}) time: {} ({})'.format(bct.raining, round(bct.EstimatedRainTime()), bct.raintime)
-    thunder = 'Thunder ({}) time: {} ({})'.format(bct.thundering, round(bct.EstimatedThunderTime()),bct.thundertime)
-    wandertrader = 'Wandering Trader: {} {} ({}/{})'.format(bct.wanderingtraderid,round(bct.EstimatedWanderingTraderSpawnDelay()),bct.wanderingtraderspawndelay,bct.wanderingtraderchance)
-
-    i=1
-    timerwin.addstr(i,1,title)
-    i+=1
-    timerwin.addstr(i,1,leveldattime+filetimes)
-    i+=1
-    timerwin.addstr(i,1,timedifference)
-    i+=1
-    timerwin.addstr(i,1,clearweather)
-    i+=1
-    timerwin.addstr(i,1,rain)
-    i+=1
-    timerwin.addstr(i,1,thunder)
-    i+=1
-    timerwin.addstr(i,1,wandertrader)
-
 def main(stdscr):
 
     curses.noecho()
@@ -83,19 +52,18 @@ def main(stdscr):
     stdscr.clear()
     stdscr.noutrefresh()
     height, width = stdscr.getmaxyx()
-    timerwin = curses.newwin(height-2,width,1,0)
+
     statwin = curses.newwin(height-2,width,1,0)
     statusbarwin = curses.newwin(height-2,width,1,0)
 
     bcstatwindow = BCStatWindow(statwin)
     bcstatusbar = BCStatusBar(stdscr,statusbarwin)
 
-    timerpanel = curses.panel.new_panel(timerwin)
     statpanel = curses.panel.new_panel(statwin)
     statusbarpanel = curses.panel.new_panel(statusbarwin)
 
     key = 0
-    activewindow=3
+    activewindow=1
     
     bct = BCLevelFile(logresults=True)
     bct.ReadLevelFile()
@@ -118,8 +86,6 @@ def main(stdscr):
             activewindow = 1
         elif key == ord('2'):
             activewindow = 2 
-        elif key == ord('3'):
-            activewindow = 3 
         bct.ReadLevelFile()
         bclf.ReadLogFile()
 
@@ -128,25 +94,16 @@ def main(stdscr):
         stdscr.noutrefresh()
 
         if (activewindow==1):
-            rendertimerwindow(timerwin,bct) 
-            timerwin.noutrefresh()
-            timerpanel.show()
+            bcstatusbar.RenderWindow(bct) 
+            statusbarwin.noutrefresh()
             statpanel.hide()
-            statusbarpanel.hide()
+            statusbarpanel.show()
         elif (activewindow==2):
             bcstatwindow.Render(bclf) 
             statwin.noutrefresh()
             statpanel.show()
-            timerpanel.hide()
             statusbarpanel.hide()
-        elif (activewindow==3):
-            bcstatusbar.RenderWindow(bct) 
-            statusbarwin.noutrefresh()
-            statpanel.hide()
-            timerpanel.hide()
-            statusbarpanel.show()
         else:
-            timerpanel.hide()
             statpanel.hide()
             statusbarpanel.hide()
 
