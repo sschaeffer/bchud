@@ -28,7 +28,7 @@ class BCStatusBar():
         self.stdscr.addstr(height-1, width-(len(currenttimestr)+len(hmsgametimestr)+1), hmsgametimestr, curses.color_pair(self.STATSBAR_REALTIMECOLOR))
         self.stdscr.addstr(height-1, width-(len(currenttimestr)+1), currenttimestr, curses.color_pair(self.STATSBAR_COLOR))
         self.stdscr.chgat(-1,curses.color_pair(self.STATSBAR_COLOR))
-        self.stdscr.addstr(height-1, 0, f" Day {daystr} ",curses.color_pair(self.STATSBAR_REALTIMECOLOR))
+        self.stdscr.addstr(height-1, 0, f" {daystr} ",curses.color_pair(self.STATSBAR_REALTIMECOLOR))
 
         statusbar_esttimeofday = bct.EstimatedTimeOfDay()
         if statusbar_esttimeofday >= bct.SLEEP:
@@ -36,14 +36,23 @@ class BCStatusBar():
         else:
             displaytime = (bct.DAY_SLEEP-(bct.EstimatedDayTime()%bct.DAY_FULLDAY))/20
         #displaytimestr = '  {:0}:{:02} \U0001F4A4 '.format(floor(abs(displaytime)/60),floor(abs(displaytime)%60),esttimeofday,bct.EstimatedDayTime()%bct.DAY_FULLDAY)
-        displaytimestr = '  {: 2}:{:02}  '.format(floor(abs(displaytime)/60),floor(abs(displaytime)%60))
+        #displaytimestr = '\U0001F4A4\U0001F479{: 2}:{:02} \U0001F329 \U0001F327 '.format(floor(abs(displaytime)/60),floor(abs(displaytime)%60))
+        displaytimestr = '{: 2}:{:02} '.format(floor(abs(displaytime)/60),floor(abs(displaytime)%60))
         self.stdscr.addstr(height-1, (width//2)-(len(displaytimestr)),displaytimestr,curses.color_pair(statusbar_esttimeofday))
 
     def RenderWindow(self,bct):
         (height,width) = self.statusbarwin.getmaxyx()
 
-        leveltimestr = f"{datetime.fromtimestamp(bct.lastupdatetime).strftime('%H:%M')} level.dat ("
-        nextupdatestr = f"next update in {timedelta(seconds=round(bct.lastupdatetime+300-time()))})"
+        if bct.lastupdatetime != 0:
+            leveltimestr = f"{datetime.fromtimestamp(bct.lastupdatetime).strftime('%H:%M')} level.dat "
+            testlastupdatetime = round(bct.lastupdatetime+300-time())
+            if testlastupdatetime < 0: 
+                nextupdatestr = f"(next update is LATE)"
+            else:
+                           nextupdatestr = f"(next update in {timedelta(seconds=round(bct.lastupdatetime+300-time()))})"
+        else:
+            leveltimestr = "NO level.dat"
+            nextupdatestr = ""
         self.statusbarwin.addstr(0, 0, leveltimestr+nextupdatestr)
 
         gametimestr = f"Gametime {round(bct.EstimatedGameTime())} ({bct.gametime})"
@@ -53,8 +62,6 @@ class BCStatusBar():
 
 
         rainweather = bct.EstimatedRainTime()
-#        if rainweather < 0:
-#            rainweather = 0
         rainweatherstr = f"Rain time({bct.raining}): {timedelta(seconds=round(rainweather/20))} ({bct.raintime})"
         self.statusbarwin.addstr(4, 0, rainweatherstr)
 
@@ -84,15 +91,15 @@ class BCStatusBar():
 
 
 
-        keysize=34
-        self.statusbarwin.addstr(bct.DAWN-1, width-keysize, "10:27- 8:27 Dawn/Waking/Wandering ", curses.color_pair(bct.DAWN))
-        self.statusbarwin.addstr(bct.WORKDAY-1, width-keysize, " 8:27- 2:57 Workday               ", curses.color_pair(bct.WORKDAY))
-        self.statusbarwin.addstr(bct.HAPPYHOUR-1, width-keysize, " 2:57- 0:27 Happy-hour/Socializing", curses.color_pair(bct.HAPPYHOUR))
-        self.statusbarwin.addstr(bct.TWILIGHT-1, width-keysize, " 0:27- 0:00 Twilight/Sleeping Vill", curses.color_pair(bct.TWILIGHT))
-        self.statusbarwin.addstr(bct.SLEEP-1, width-keysize, " 9:33- 9:01 Beds are Usable       ", curses.color_pair(bct.SLEEP))
-        self.statusbarwin.addstr(bct.MONSTERS-1, width-keysize, " 9:01- 0:59 Night-time            ", curses.color_pair(bct.MONSTERS))
-        self.statusbarwin.addstr(bct.NOMONSTERS-1, width-keysize, " 0:59- 0:27 No New Monsters       ", curses.color_pair(bct.NOMONSTERS))
-        self.statusbarwin.addstr(bct.NOSLEEP-1, width-keysize, " 0:27- 0:00 Pre-dawn/Beds Unusable", curses.color_pair(bct.NOSLEEP))
+        keysize=28
+        self.statusbarwin.addstr(bct.DAWN-1, width-keysize, " 8:27 Dawn/Waking/Wandering ", curses.color_pair(bct.DAWN))
+        self.statusbarwin.addstr(bct.WORKDAY-1, width-keysize, " 2:57 Workday               ", curses.color_pair(bct.WORKDAY))
+        self.statusbarwin.addstr(bct.HAPPYHOUR-1, width-keysize, " 0:27 Happy-hour/Socializing", curses.color_pair(bct.HAPPYHOUR))
+        self.statusbarwin.addstr(bct.TWILIGHT-1, width-keysize, " 0:00 Twilight/Sleeping Vill", curses.color_pair(bct.TWILIGHT))
+        self.statusbarwin.addstr(bct.SLEEP-1, width-keysize, " 9:01 Beds are Usable       ", curses.color_pair(bct.SLEEP))
+        self.statusbarwin.addstr(bct.MONSTERS-1, width-keysize, " 0:59 Night-time            ", curses.color_pair(bct.MONSTERS))
+        self.statusbarwin.addstr(bct.NOMONSTERS-1, width-keysize, " 0:27 No New Monsters       ", curses.color_pair(bct.NOMONSTERS))
+        self.statusbarwin.addstr(bct.NOSLEEP-1, width-keysize, " 0:00 Pre-dawn/Beds Unusable", curses.color_pair(bct.NOSLEEP))
 
 #        self.statusbarwin.addstr(5, width-43, " 9:12- 9:01 Monsters Spawning (Rainy day)", curses.color_pair(bct.RAINMONSTERS))
 #        self.statusbarwin.addstr(8, width-43, " 0:48- 0:27 No New Monsters (Rainy day)  ", curses.color_pair(bct.NORAINMONSTERS))

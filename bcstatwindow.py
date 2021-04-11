@@ -17,8 +17,11 @@ class BCStatWindow():
             self.window.addstr(i+1,1,self.stats[i])
             bclf_update = bclf.GetLogUpdate(bclf.NumLogUpdates()-(i+1))
             if bclf_update != None:
-                updatestr="{} {:5.0f} ".format(bclf_update._updatetime.strftime("(%m/%d)%H:%M:%S"),bclf_update._gametime)
-                updatestr=updatestr+"{} {}".format(bclf_update.estgametime(),datetime.fromtimestamp(bclf_update.eststarttime()).strftime("(%m/%d)%H:%M:%S"))
+                updatestr="{} {:5.0f} ".format(bclf_update._updatetime.strftime("Estimated [%H:%M:%S]"),bclf_update._gametime)
+                actualgametime = 0
+                if(len(self.stats[i])>1):
+                    actualgametime = int(self.stats[i].split()[4])
+                    updatestr=updatestr+f" {actualgametime-bclf_update._gametime}     "
                 self.window.addstr(i+1,33,updatestr)
 
     def RecordTime(self,bct):

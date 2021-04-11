@@ -16,7 +16,6 @@ def saveallfiles():
     call(["/home/integ/Code/stage/save-it-all.bash"])
     sleep(0.5)
 
-
 def rendermenubar(stdscr,bct):
     stdscr.addstr(0,0,"BC HUD", curses.A_BOLD | curses.A_REVERSE)
     stdscr.chgat(-1, curses.A_REVERSE)
@@ -74,20 +73,34 @@ def main(stdscr):
     while (key != ord('q')):
 
         if key == ord('r'):
-            bct.ReadLevelFile()
             bclf.ReadLogFile()
+            bct.ReadLevelFile()
         elif key == ord('s'):
             saveallfiles()
         elif key == ord('t'):
             bcstatwindow.RecordTime(bct)
         elif key == ord('0'):
+            stdscr.clear()
+            statusbarwin.clear()
+            statwin.clear()
             activewindow = 0
         elif key == ord('1'):
+            stdscr.clear()
+            statusbarwin.clear()
+            statwin.clear()
             activewindow = 1
         elif key == ord('2'):
+            stdscr.clear()
+            statusbarwin.clear()
+            statwin.clear()
             activewindow = 2 
-        bct.ReadLevelFile()
+        elif key == curses.KEY_RESIZE or key == ord('w'):
+            stdscr.clear()
+            statusbarwin.clear()
+            statwin.clear()
+
         bclf.ReadLogFile()
+        bct.ReadLevelFile()
 
         rendermenubar(stdscr,bct) 
         bcstatusbar.Render(bct)

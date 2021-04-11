@@ -54,7 +54,7 @@ class BCLogFile():
                                 self.updatetimes.append(updatedatetime)
                                 self.updates.append(BCLogFileUpdate(updatedatetime,gametime))
                         elif "For help, type" in line:
-                            self.starttime = datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()
+                            self.starttime = datetime.combine(date.today(),datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()).timestamp()
                         line = logfh.readline()
                     logfh.close()
 
@@ -85,10 +85,6 @@ def main():
     bclf.ReadLogFile()
     bclf.PrintLogFileUpdates()
     bclfu_test = bclf.GetLastLogUpdate()
-    print("\nGet Last Update: {}".format(bclfu_test._updatetime))
-    print("\nUpdate: {}".format(bclf.lastupdatetime))
-    bclf.ReadLogFile()
-    print("\nUpdate: {}".format(bclf.lastupdatetime))
 
     
 if __name__ == '__main__':
