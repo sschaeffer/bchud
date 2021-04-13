@@ -9,8 +9,10 @@ import curses
 class BCStatusBar():
 
 
-    STATSBAR_COLOR=21            #DARKGREY
-    STATSBAR_REALTIMECOLOR=22    #GREEN
+    STATSBAR_COLOR=21 
+    STATSBAR_REALTIMECOLOR=22    
+    STATSBAR_UNTILRAINCOLOR=23   
+    STATSBAR_UNTILTHUNDERCOLOR=24   
 
     def __init__(self,stdscr,statusbarwin):
         self.stdscr = stdscr
@@ -29,6 +31,10 @@ class BCStatusBar():
         self.stdscr.addstr(height-1, width-(len(currenttimestr)+1), currenttimestr, curses.color_pair(self.STATSBAR_COLOR))
         self.stdscr.chgat(-1,curses.color_pair(self.STATSBAR_COLOR))
         self.stdscr.addstr(height-1, 0, f" {daystr} ",curses.color_pair(self.STATSBAR_REALTIMECOLOR))
+        untilrainstr = f"{bct.EstimatedRainTime()/1200:.0f}"
+        self.stdscr.addstr(height-1, len(daystr)+5, f" {untilrainstr} ",curses.color_pair(self.STATSBAR_UNTILRAINCOLOR))
+        untilthunderstr = f"{bct.EstimatedThunderTime()/1200:.0f}"
+        self.stdscr.addstr(height-1, len(daystr)+len(untilrainstr)+10, f" {untilthunderstr} ",curses.color_pair(self.STATSBAR_UNTILTHUNDERCOLOR))
 
         statusbar_esttimeofday = bct.EstimatedTimeOfDay()
         if statusbar_esttimeofday >= bct.SLEEP:
@@ -38,7 +44,26 @@ class BCStatusBar():
         #displaytimestr = '  {:0}:{:02} \U0001F4A4 '.format(floor(abs(displaytime)/60),floor(abs(displaytime)%60),esttimeofday,bct.EstimatedDayTime()%bct.DAY_FULLDAY)
         #displaytimestr = '\U0001F4A4\U0001F479{: 2}:{:02} \U0001F329 \U0001F327 '.format(floor(abs(displaytime)/60),floor(abs(displaytime)%60))
         displaytimestr = '{: 2}:{:02} '.format(floor(abs(displaytime)/60),floor(abs(displaytime)%60))
-        self.stdscr.addstr(height-1, (width//2)-(len(displaytimestr)),displaytimestr,curses.color_pair(statusbar_esttimeofday))
+        
+        rainthunderstr = "     "
+#        rainthunderstr = "   \U0001F327  "
+#        rainthunderstr = "\U0001F329  \U0001F327 "
+        if bct.EstimatedIsThundering():
+            rainthunderstr = "\U0001F329  \U0001F327 "
+        elif bct.EstimatedIsRaining():
+            rainthunderstr = "   \U0001F327  "
+
+        monsterstr = "     "
+#        monsterstr = "\U0001F319"
+#        monsterstr = "\U0001F319 \U0001F479"
+        if bct.EstimatedIsMonsters():
+            monsterstr = "\U0001F319 \U0001F479"
+        elif bct.EstimatedIsBedUsable():
+           monsterstr = "\U0001F319    "
+
+        self.stdscr.addstr(height-1, (width//2)-(len(displaytimestr)//2),displaytimestr,curses.color_pair(statusbar_esttimeofday))
+        self.stdscr.addstr(height-1, ((width//2)-(len(displaytimestr)//2))-6,rainthunderstr, curses.color_pair(self.STATSBAR_COLOR))
+        self.stdscr.addstr(height-1, ((width//2)+(len(displaytimestr)//2))+1,monsterstr, curses.color_pair(self.STATSBAR_COLOR))
 
     def RenderWindow(self,bct):
         (height,width) = self.statusbarwin.getmaxyx()
@@ -62,13 +87,20 @@ class BCStatusBar():
 
 
         rainweather = bct.EstimatedRainTime()
-        rainweatherstr = f"Rain time({bct.raining}): {timedelta(seconds=round(rainweather/20))} ({bct.raintime})"
+        if rainweather <= 0:
+            rainweatherstr = f"Rain time({bct.EstimatedIsRaining()}:{bct.raining}): 0:00:00 ({bct.raintime})"
+            untilrainstr = "  0"
+        else:
+            rainweatherstr = f"Rain time({bct.EstimatedIsRaining()}:{bct.raining}): {timedelta(seconds=round(rainweather/20))} ({bct.raintime})"
+            untilrainstr = f"{rainweather/1200}"
         self.statusbarwin.addstr(4, 0, rainweatherstr)
 
         thunderweather = bct.EstimatedThunderTime()
-        if thunderweather < 0:
-            thunderweather = 0
-        thunderweatherstr = f"Thunder time({bct.thundering}): {timedelta(seconds=round(thunderweather/20))} ({bct.thundertime})"
+        if thunderweather <= 0:
+            thunderweatherstr = f"Thunder time({bct.EstimatedIsThundering()}:{bct.thundering}): 0:00:00 ({bct.thundertime})"
+        else:
+            thunderweatherstr = f"Thunder time({bct.EstimatedIsThundering()}:{bct.thundering}): {timedelta(seconds=round(thunderweather/20))} ({bct.thundertime})"
+
         self.statusbarwin.addstr(5, 0, thunderweatherstr)
     
         clearweather = bct.EstimatedClearWeatherTime()

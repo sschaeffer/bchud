@@ -34,12 +34,14 @@ def main(stdscr):
 
     curses.init_pair(BCStatusBar.STATSBAR_COLOR, curses.COLOR_WHITE, 240)
     curses.init_pair(BCStatusBar.STATSBAR_REALTIMECOLOR, curses.COLOR_BLACK, 34)
+    curses.init_pair(BCStatusBar.STATSBAR_UNTILRAINCOLOR, curses.COLOR_BLACK, 26)
+    curses.init_pair(BCStatusBar.STATSBAR_UNTILTHUNDERCOLOR, curses.COLOR_BLACK, 237)
 
     curses.init_pair(BCLevelFile.DAWN, curses.COLOR_BLACK, 216)           # 1 BRIGHT YELLOW (1min 40secs)
     curses.init_pair(BCLevelFile.WORKDAY, curses.COLOR_BLACK, 192)           # 2 YELLOW (5mins 50secs)
     curses.init_pair(BCLevelFile.HAPPYHOUR, curses.COLOR_BLACK, 181)       # 3 LIGHT BLUE/PURPLE (2mins 30secs)
     curses.init_pair(BCLevelFile.TWILIGHT, curses.COLOR_BLACK, 147)       # 4 PURPLE (27secs)
-    curses.init_pair(BCLevelFile.SLEEP, curses.COLOR_BLACK, 63)          # 5 DARK BLUE PURPLE (21secs)
+    curses.init_pair(BCLevelFile.SLEEP, curses.COLOR_WHITE, 63)          # 5 DARK BLUE PURPLE (21secs)
     curses.init_pair(BCLevelFile.MONSTERS, curses.COLOR_WHITE, 17)      # 7 DARKEST BLUE/BLACK (8mins 1secs)
     curses.init_pair(BCLevelFile.NOMONSTERS, curses.COLOR_WHITE, 20)    # 8 LIGHT BLUE (11 secs)
     curses.init_pair(BCLevelFile.NOSLEEP, curses.COLOR_WHITE, 96)        # PINK (27secs)

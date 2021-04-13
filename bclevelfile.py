@@ -22,14 +22,16 @@ class BCLevelFile(NBTFile):
     DAY_DAWN=0               #     0 DAWN Wakeup and Wander (0:00)
     DAY_WORKDAY=2000         #  2000 WORKDAY (1:40)
     DAY_HAPPYHOUR=9000       #  9000 HAPPY-HOUR (7:30)
-    DAY_TWILIGHT=12000       # 12000 TWILIGHT/villagers sleep (10:00) - 12010 sleep on rainy days
+    DAY_TWILIGHT=12000       # 12000 TWILIGHT/villagers sleep (10:00)
+    RAIN_SLEEP=12010         # 12010 SLEEP on rainy days (10:00)
     DAY_SLEEP=12542          # 12542 SLEEP on normal days/mobs don't burn (10:27.1/0)
-    DAY_RAINMONSTERS=12969   # 12969 Rainy day monsters (10:48.45/21)
+    RAIN_MONSTERS=12969      # 12969 Rainy day monsters (10:48.45/21)
     DAY_MONSTERS=13188       # 13188 Monsters (10:59.4/32)
     DAY_NOMONSTERS=22812     # 22812 No more monsters (19:00.6/8:33)
-    DAY_NORAINMONSTERS=23031 # 12969 No more rainy day monsters(19:11.55/8:44)
+    RAIN_NOMONSTERS=23031    # 23031 No more rainy day monsters(19:11.55/8:44)
     DAY_NOSLEEP=23460        # 23460 No sleeping on normal days (19:33/9:06)
-    DAY_FULLDAY=24000        # 23992 No sleeping rainy days (19:59/9:33)
+    RAIN_NOSLEEP=23992        # 23992 No sleeping rainy days (19:59/9:33)
+    DAY_FULLDAY=24000        # 24000 Full-day 
 
 #    RAINMONSTERS=6   # DARK BLUE (11secs)
 #    NORAINMONSTERS=9 # LIGHTER BLUE/PINK (22secs)
@@ -144,20 +146,43 @@ class BCLevelFile(NBTFile):
         return result
 
     def EstimatedThunderTime(self):
-        return round(self.thundertime-((time()-self.lastupdatetime)*20))
+        result = 0
+        if self.raintime != 0:
+            result = round(self.thundertime-((time()-self.lastupdatetime)*20))
+        return result
 
     def EstimatedWanderingTraderSpawnDelay(self):
         return round(self.wanderingtraderspawndelay-((time()-self.lastupdatetime)*20))
 
-    def EstimateIsRaining(self):
-        result = 0
+    def EstimatedIsRaining(self):
+        result = False 
         if self.raining and self.EstimatedRainTime() > 0:
-            result = 1
-        elif self.raining and self.EstimatedRainTime() <= 0:
-            result = 2
-        elif not self.raining and self.EstimatedRainTime() <= 0:
-            result = 3
+            result = True
+        elif not self.raining and self.EstimatedRainTime() < 0:
+            result = True
         return(result)
+
+    def EstimatedIsThundering(self):
+        result = False 
+        if self.EstimatedIsRaining() and self.thundering and self.EstimatedThunderTime() > 0:
+            result = True
+        elif self.EstimatedIsRaining() and not self.thundering and self.EstimatedThunderTime() < 0:
+            result = True
+        return(result)
+
+    def EstimatedIsMonsters(self):
+        estdaytime = self.EstimatedDayTime()%self.DAY_FULLDAY
+        result = False
+        if estdaytime >= self.DAY_MONSTERS and estdaytime <= self.DAY_NOMONSTERS:
+            result = True 
+        return result 
+
+    def EstimatedIsBedUsable(self):
+        estdaytime = self.EstimatedDayTime()%self.DAY_FULLDAY
+        result = False
+        if estdaytime >= self.DAY_SLEEP and estdaytime <= self.DAY_NOSLEEP:
+            result = True 
+        return result
 
     def EstimatedTimeOfDay(self):
         estdaytime = self.EstimatedDayTime()%self.DAY_FULLDAY
