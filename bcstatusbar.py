@@ -32,9 +32,9 @@ class BCStatusBar():
         self.stdscr.chgat(-1,curses.color_pair(self.STATSBAR_COLOR))
         self.stdscr.addstr(height-1, 0, f" {daystr} ",curses.color_pair(self.STATSBAR_REALTIMECOLOR))
         untilrainstr = f"{bct.EstimatedRainTime()/1200:.0f}"
-        self.stdscr.addstr(height-1, len(daystr)+5, f" {untilrainstr} ",curses.color_pair(self.STATSBAR_UNTILRAINCOLOR))
+        self.stdscr.addstr(height-1, len(daystr)+2, f" {untilrainstr} ",curses.color_pair(self.STATSBAR_UNTILRAINCOLOR))
         untilthunderstr = f"{bct.EstimatedThunderTime()/1200:.0f}"
-        self.stdscr.addstr(height-1, len(daystr)+len(untilrainstr)+10, f" {untilthunderstr} ",curses.color_pair(self.STATSBAR_UNTILTHUNDERCOLOR))
+        self.stdscr.addstr(height-1, len(daystr)+len(untilrainstr)+4, f" {untilthunderstr} ",curses.color_pair(self.STATSBAR_UNTILTHUNDERCOLOR))
 
         statusbar_esttimeofday = bct.EstimatedTimeOfDay()
         if statusbar_esttimeofday >= bct.SLEEP:
