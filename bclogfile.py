@@ -27,7 +27,7 @@ class BCLogFileUpdate():
 
 class BCLogFile():
 
-    def __init__(self, logfilename="logs/latest.log", serverdir=""):
+    def __init__(self, logfilename="logs/latest.log", serverdir="",outfh=None):
         if(serverdir!=""):
             self.serverdir = serverdir
         else:
@@ -37,6 +37,8 @@ class BCLogFile():
         self.updatetimes = [] 
         self.lastupdatetime=0
         self.starttime=0
+        self.nethertime=0
+        self.outfh = outfh
 
     def ReadLogFile(self):
         logfilepath = Path(self.serverdir+"/"+self.logfilename)
@@ -54,7 +56,19 @@ class BCLogFile():
                                 self.updatetimes.append(updatedatetime)
                                 self.updates.append(BCLogFileUpdate(updatedatetime,gametime))
                         elif "For help, type" in line:
-                            self.starttime = datetime.combine(date.today(),datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()).timestamp()
+                            starttime = datetime.combine(date.today(),datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()).timestamp()
+                            if starttime != self.starttime:
+                               self.starttime = starttime
+                               if self.outfh != None:
+                                    self.outfh.write(f"Server boot time: {datetime.fromtimestamp(starttime)}\n")
+                                    self.outfh.flush()
+                        elif "We Need to Go Deeper" in line:
+                            nethertime = datetime.combine(date.today(),datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()).timestamp()
+                            if nethertime != self.nethertime:
+                               self.nethertime = nethertime
+                               if self.outfh != None:
+                                    self.outfh.write(f"Nether time: {datetime.fromtimestamp(nethertime)}\n")
+                                    self.outfh.flush()
                         line = logfh.readline()
                     logfh.close()
 

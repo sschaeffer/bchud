@@ -36,7 +36,7 @@ class BCLevelFile(NBTFile):
 #    RAINMONSTERS=6   # DARK BLUE (11secs)
 #    NORAINMONSTERS=9 # LIGHTER BLUE/PINK (22secs)
 
-    def __init__(self, bclf=None, levelfilename="snapshot/level.dat", serverdir="", logresults=False):
+    def __init__(self, bclf=None, levelfilename="snapshot/level.dat", serverdir="", outfh=None):
         if(serverdir!=""):
             self.serverdir = serverdir
         else:
@@ -59,9 +59,7 @@ class BCLevelFile(NBTFile):
         self.wanderingtraderspawnchance=0
         self.wanderingtraderspawndelay=0
 
-        self.logresults = logresults
-        if logresults:
-            self.logfh = open("{}.{}".format("/tmp/bchud",strftime("%H%M%S")),"w+")
+        self.outfh = outfh
 
     def ReadLevelFile(self):
         levelfilepath = Path(self.serverdir+"/"+self.levelfilename)
@@ -105,19 +103,19 @@ class BCLevelFile(NBTFile):
                 if "thundering" in self["Data"]:
                     self.thundering=bool(int(str(self["Data"]["thundering"])))
 
-                if self.logresults:
-                    self.logfh.write("{},".format(datetime.fromtimestamp(self.lastupdatetime).strftime("%H:%M:%S")))
-                    self.logfh.write("{},".format(self.gametime))
-                    self.logfh.write("{},".format(self.daytime))
-                    self.logfh.write("{},".format(self.clearweathertime))
-                    self.logfh.write("{},".format(self.raining))
-                    self.logfh.write("{},".format(self.raintime))
-                    self.logfh.write("{},".format(self.thundering))
-                    self.logfh.write("{},".format(self.thundertime))
-                    self.logfh.write("{},".format(self.wanderingtraderspawndelay))
-                    self.logfh.write("{},".format(self.wanderingtraderspawnchance))
-                    self.logfh.write("{}\n".format(self.wanderingtraderid))
-                    self.logfh.flush()
+                if self.outfh != None:
+                    self.outfh.write("{},".format(datetime.fromtimestamp(self.lastupdatetime).strftime("%H:%M:%S")))
+                    self.outfh.write("{},".format(self.gametime))
+                    self.outfh.write("{},".format(self.daytime))
+                    self.outfh.write("{},".format(self.clearweathertime))
+                    self.outfh.write("{},".format(self.raining))
+                    self.outfh.write("{},".format(self.raintime))
+                    self.outfh.write("{},".format(self.thundering))
+                    self.outfh.write("{},".format(self.thundertime))
+                    self.outfh.write("{},".format(self.wanderingtraderspawndelay))
+                    self.outfh.write("{},".format(self.wanderingtraderspawnchance))
+                    self.outfh.write("{}\n".format(self.wanderingtraderid))
+                    self.outfh.flush()
 
     def EstimatedGameTime(self):
         result = 0

@@ -65,10 +65,15 @@ def main(stdscr):
 
     key = 0
     activewindow=1
-    
-    bclf = BCLogFile()
+
+    logresults = True
+    outfh = None
+    if logresults:
+        outfh = open("{}.{}".format("/tmp/bchud",strftime("%H%M%S")),"w+")
+
+    bclf = BCLogFile(outfh=outfh)
     bclf.ReadLogFile()
-    bct = BCLevelFile(bclf=bclf, logresults=True)
+    bct = BCLevelFile(bclf=bclf, outfh=outfh)
     bct.ReadLevelFile()
 
     # Loop where k is the last character presse
