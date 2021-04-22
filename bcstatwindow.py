@@ -28,5 +28,5 @@ class BCStatWindow():
         for i in range(self.statcount-1):
             self.stats[(self.statcount-1)-i] = self.stats[(self.statcount-1)-(i+1)]
         self.stats[0] = "[{}] The time is {}".format(strftime("%H:%M:%S"),round(bct.EstimatedGameTime()))
-        call(["/home/integ/Code/stage/query-time.bash"])
+        call(["./query-time.bash"])
         sleep(0.5)

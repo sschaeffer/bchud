@@ -40,7 +40,7 @@ class BCLevelFile(NBTFile):
         if(serverdir!=""):
             self.serverdir = serverdir
         else:
-            self.serverdir = "/media/deflection/Minecraft/server/snapshot"
+            self.serverdir = "/media/local/Minecraft/server/snapshot"
         self.levelfilename=levelfilename
 
         self.bclf=bclf

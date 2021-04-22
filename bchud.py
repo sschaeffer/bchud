@@ -13,14 +13,14 @@ from subprocess import call
 
 
 def saveallfiles():
-    call(["/home/integ/Code/stage/save-it-all.bash"])
+    call(["./save-it-all.bash"])
     sleep(0.5)
 
 def rendermenubar(stdscr,bct):
     stdscr.addstr(0,0,"BC HUD", curses.A_BOLD | curses.A_REVERSE)
     stdscr.chgat(-1, curses.A_REVERSE)
 
-def main(stdscr):
+def cursessetup():
 
     curses.noecho()
     curses.cbreak()
@@ -46,9 +46,12 @@ def main(stdscr):
     curses.init_pair(BCLevelFile.NOMONSTERS, curses.COLOR_WHITE, 20)    # 8 LIGHT BLUE (11 secs)
     curses.init_pair(BCLevelFile.NOSLEEP, curses.COLOR_WHITE, 96)        # PINK (27secs)
 
-#    curses.init_pair(BCLevelFile.RAINMONSTERS, curses.COLOR_WHITE, 19)   # 6 DARK BLUE (11secs)
-    #curses.init_pair(BCLevelFile.NORAINMONSTERS, curses.COLOR_WHITE, 93) # LIGHTER BLUE/PINK (22secs)
 
+
+
+def main(stdscr):
+
+    cursessetup()
 
     stdscr.clear()
     stdscr.noutrefresh()
