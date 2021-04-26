@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from pathlib import Path
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from time import time
 
 class BCLogFileUpdate():
@@ -31,7 +31,7 @@ class BCLogFile():
         if(serverdir!=""):
             self.serverdir = serverdir
         else:
-            self.serverdir = "/media/deflection/Minecraft/server/snapshot"
+            self.serverdir = "/media/local/Minecraft/server/snapshot"
         self.logfilename=logfilename
         self.updates = [] 
         self.updatetimes = [] 
@@ -67,7 +67,7 @@ class BCLogFile():
                             if nethertime != self.nethertime:
                                self.nethertime = nethertime
                                if self.outfh != None:
-                                    self.outfh.write(f"Nether time: {datetime.fromtimestamp(nethertime)}\n")
+                                    self.outfh.write(f"Nether time: {timedelta(seconds=round(nethertime-self.starttime))} {datetime.fromtimestamp(nethertime)}\n")
                                     self.outfh.flush()
                         line = logfh.readline()
                     logfh.close()
