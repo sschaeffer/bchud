@@ -2,23 +2,17 @@
 
 from bclevelfile import BCLevelFile
 from bclogfile import BCLogFile
+from bclog import BCLog
 from bcstatwindow import BCStatWindow
 from bcstatusbar import BCStatusBar
 from datetime import datetime, timedelta
-from math import floor
-from time import time, sleep, strftime, strptime
+#from math import floor
+#from time import time, sleep, strftime, strptime
 import curses
 import curses.panel
-from subprocess import call
 
+from sys import argv
 
-def saveallfiles():
-    call(["./save-it-all.bash"])
-    sleep(0.5)
-
-def rendermenubar(stdscr,bct):
-    stdscr.addstr(0,0,"BC HUD", curses.A_BOLD | curses.A_REVERSE)
-    stdscr.chgat(-1, curses.A_REVERSE)
 
 def cursessetup():
 
@@ -46,16 +40,19 @@ def cursessetup():
     curses.init_pair(BCLevelFile.NOMONSTERS, curses.COLOR_WHITE, 20)    # 8 LIGHT BLUE (11 secs)
     curses.init_pair(BCLevelFile.NOSLEEP, curses.COLOR_WHITE, 96)        # PINK (27secs)
 
+def rendermenubar(stdscr,bct):
+    stdscr.addstr(0,0,"BC HUD", curses.A_BOLD | curses.A_REVERSE)
+    stdscr.chgat(-1, curses.A_REVERSE)
 
 
-
-def main(stdscr):
+def main(stdscr, argv):
 
     cursessetup()
 
     stdscr.clear()
     stdscr.noutrefresh()
     height, width = stdscr.getmaxyx()
+
 
     statwin = curses.newwin(height-2,width,1,0)
     statusbarwin = curses.newwin(height-2,width,1,0)
@@ -69,14 +66,11 @@ def main(stdscr):
     key = 0
     activewindow=1
 
-    logresults = True
-    outfh = None
-    if logresults:
-        outfh = open("{}.{}".format("/tmp/bchud",strftime("%H%M%S")),"w+")
+    bclog = BCLog(argv)
 
-    bclf = BCLogFile(outfh=outfh)
+    bclf = BCLogFile(bclog=bclog)
     bclf.ReadLogFile()
-    bct = BCLevelFile(bclf=bclf, outfh=outfh)
+    bct = BCLevelFile(bclf=bclf, bclog=bclog)
     bct.ReadLevelFile()
 
     # Loop where k is the last character presse
@@ -86,7 +80,7 @@ def main(stdscr):
             bclf.ReadLogFile()
             bct.ReadLevelFile()
         elif key == ord('s'):
-            saveallfiles()
+            bclog.SaveAllFiles()
         elif key == ord('t'):
             bcstatwindow.RecordTime(bct)
         elif key == ord('0'):
@@ -136,5 +130,5 @@ def main(stdscr):
         # Wait for next input
         key = stdscr.getch()
 
-
-curses.wrapper(main)
+if __name__ == "__main__":
+    curses.wrapper(main, argv[1:])

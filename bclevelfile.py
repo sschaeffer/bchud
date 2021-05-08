@@ -2,6 +2,7 @@
 
 from nbt import NBTFile
 from bclogfile import BCLogFile
+from bclog import BCLog
 
 from time import time, sleep , strftime, strptime
 from pathlib import Path
@@ -36,14 +37,14 @@ class BCLevelFile(NBTFile):
 #    RAINMONSTERS=6   # DARK BLUE (11secs)
 #    NORAINMONSTERS=9 # LIGHTER BLUE/PINK (22secs)
 
-    def __init__(self, bclf=None, levelfilename="snapshot/level.dat", serverdir="", outfh=None):
-        if(serverdir!=""):
-            self.serverdir = serverdir
-        else:
-            self.serverdir = "/media/local/Minecraft/server/snapshot"
+    def __init__(self, bclf=None, bclog=None, levelfilename="level.dat"):
+
         self.levelfilename=levelfilename
 
         self.bclf=bclf
+        self.bclog=bclog
+        if(self.bclog == None):
+            self.bclog = BCLog()
 
         self.lastupdatetime=0
         self.lastcheckedtime=0
@@ -59,10 +60,8 @@ class BCLevelFile(NBTFile):
         self.wanderingtraderspawnchance=0
         self.wanderingtraderspawndelay=0
 
-        self.outfh = outfh
-
     def ReadLevelFile(self):
-        levelfilepath = Path(self.serverdir+"/"+self.levelfilename)
+        levelfilepath = Path(self.bclog.ServerWorldDir()+"/"+self.levelfilename)
         self.lastcheckedtime = time()
         if levelfilepath.exists():
             if self.lastupdatetime != levelfilepath.stat().st_mtime:
@@ -103,19 +102,17 @@ class BCLevelFile(NBTFile):
                 if "thundering" in self["Data"]:
                     self.thundering=bool(int(str(self["Data"]["thundering"])))
 
-                if self.outfh != None:
-                    self.outfh.write("{},".format(datetime.fromtimestamp(self.lastupdatetime).strftime("%H:%M:%S")))
-                    self.outfh.write("{},".format(self.gametime))
-                    self.outfh.write("{},".format(self.daytime))
-                    self.outfh.write("{},".format(self.clearweathertime))
-                    self.outfh.write("{},".format(self.raining))
-                    self.outfh.write("{},".format(self.raintime))
-                    self.outfh.write("{},".format(self.thundering))
-                    self.outfh.write("{},".format(self.thundertime))
-                    self.outfh.write("{},".format(self.wanderingtraderspawndelay))
-                    self.outfh.write("{},".format(self.wanderingtraderspawnchance))
-                    self.outfh.write("{}\n".format(self.wanderingtraderid))
-                    self.outfh.flush()
+                self.bclog.Write("{},".format(datetime.fromtimestamp(self.lastupdatetime).strftime("%H:%M:%S")))
+                self.bclog.Write("{},".format(self.gametime))
+                self.bclog.Write("{},".format(self.daytime))
+                self.bclog.Write("{},".format(self.clearweathertime))
+                self.bclog.Write("{},".format(self.raining))
+                self.bclog.Write("{},".format(self.raintime))
+                self.bclog.Write("{},".format(self.thundering))
+                self.bclog.Write("{},".format(self.thundertime))
+                self.bclog.Write("{},".format(self.wanderingtraderspawndelay))
+                self.bclog.Write("{},".format(self.wanderingtraderspawnchance))
+                self.bclog.Write("{}\n".format(self.wanderingtraderid))
 
     def EstimatedGameTime(self):
         result = 0
@@ -208,7 +205,7 @@ class BCLevelFile(NBTFile):
 #            result = self.RAINMONSTERS   # DARK BLUE (11secs)
 def main():
     print("BCLevelFile: Unit Testing")
-    bclevelfile = BCLevelFile(logresults=True)
+    bclevelfile = BCLevelFile()
     bclevelfile.ReadLevelFile()
 
     if bclevelfile.lastupdatetime != 0:

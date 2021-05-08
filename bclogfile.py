@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from bclog import BCLog
 from pathlib import Path
 from datetime import date, datetime, timedelta
 from time import time
@@ -27,21 +28,20 @@ class BCLogFileUpdate():
 
 class BCLogFile():
 
-    def __init__(self, logfilename="logs/latest.log", serverdir="",outfh=None):
-        if(serverdir!=""):
-            self.serverdir = serverdir
-        else:
-            self.serverdir = "/media/local/Minecraft/server/snapshot"
+    def __init__(self, logfilename="logs/latest.log", bclog=None):
+
         self.logfilename=logfilename
         self.updates = [] 
         self.updatetimes = [] 
         self.lastupdatetime=0
         self.starttime=0
         self.nethertime=0
-        self.outfh = outfh
+        self.bclog = BCLog()
+        if(self.bclog == None):
+            self.bclog = BCLog()
 
     def ReadLogFile(self):
-        logfilepath = Path(self.serverdir+"/"+self.logfilename)
+        logfilepath = Path(self.bclog.ServerDir()+"/"+self.logfilename)
         if logfilepath.exists():
             if self.lastupdatetime != logfilepath.stat().st_mtime:
                 self.lastupdatetime = logfilepath.stat().st_mtime
@@ -59,16 +59,12 @@ class BCLogFile():
                             starttime = datetime.combine(date.today(),datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()).timestamp()
                             if starttime != self.starttime:
                                self.starttime = starttime
-                               if self.outfh != None:
-                                    self.outfh.write(f"Server boot time: {datetime.fromtimestamp(starttime)}\n")
-                                    self.outfh.flush()
+                               self.bclog.Write(f"Server boot time: {datetime.fromtimestamp(starttime)}\n")
                         elif "We Need to Go Deeper" in line:
                             nethertime = datetime.combine(date.today(),datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()).timestamp()
                             if nethertime != self.nethertime:
                                self.nethertime = nethertime
-                               if self.outfh != None:
-                                    self.outfh.write(f"Nether time: {timedelta(seconds=round(nethertime-self.starttime))} {datetime.fromtimestamp(nethertime)}\n")
-                                    self.outfh.flush()
+                               self.bclog.Write(f"Nether time: {timedelta(seconds=round(nethertime-self.starttime))} {datetime.fromtimestamp(nethertime)}\n")
                         line = logfh.readline()
                     logfh.close()
 
