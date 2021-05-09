@@ -10,8 +10,9 @@
             "request": "launch",
             "program": "${file}",
             "args": [
-                "Test1"
-            ]
+//                "--servername","snapshot.1327"
+//                "--worldname","world"
+            ],
             "console": "integratedTerminal"
         }
     ]

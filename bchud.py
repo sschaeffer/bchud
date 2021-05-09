@@ -12,6 +12,19 @@ import curses
 import curses.panel
 
 from sys import argv
+import argparse
+
+
+def initserver(argv=None):
+
+    parser = argparse.ArgumentParser(prog='bchud')
+    parser.add_argument('--servername', default="snapshot", help="servername is the name of the server")
+    parser.add_argument('--worldname', help="worldname is the name of the world (if different then server)")
+    args = parser.parse_args(argv)
+    if(args.worldname == None):
+        args.worldname = args.servername
+    return(args.servername,args.worldname)
+
 
 
 def cursessetup():
@@ -40,19 +53,20 @@ def cursessetup():
     curses.init_pair(BCLevelFile.NOMONSTERS, curses.COLOR_WHITE, 20)    # 8 LIGHT BLUE (11 secs)
     curses.init_pair(BCLevelFile.NOSLEEP, curses.COLOR_WHITE, 96)        # PINK (27secs)
 
-def rendermenubar(stdscr,bct):
-    stdscr.addstr(0,0,"BC HUD", curses.A_BOLD | curses.A_REVERSE)
+
+def rendermenubar(stdscr, servername, worldname):
+
+    stdscr.addstr(0,0,f"BC HUD {servername}:{worldname}", curses.A_BOLD | curses.A_REVERSE)
     stdscr.chgat(-1, curses.A_REVERSE)
 
 
-def main(stdscr, argv):
+def main(stdscr, servername, worldname):
 
     cursessetup()
 
     stdscr.clear()
     stdscr.noutrefresh()
     height, width = stdscr.getmaxyx()
-
 
     statwin = curses.newwin(height-2,width,1,0)
     statusbarwin = curses.newwin(height-2,width,1,0)
@@ -66,11 +80,11 @@ def main(stdscr, argv):
     key = 0
     activewindow=1
 
-    bclog = BCLog(argv)
-
+    bclog = BCLog(servername,worldname)
     bclf = BCLogFile(bclog=bclog)
-    bclf.ReadLogFile()
     bct = BCLevelFile(bclf=bclf, bclog=bclog)
+
+    bclf.ReadLogFile()
     bct.ReadLevelFile()
 
     # Loop where k is the last character presse
@@ -106,7 +120,7 @@ def main(stdscr, argv):
         bclf.ReadLogFile()
         bct.ReadLevelFile()
 
-        rendermenubar(stdscr,bct) 
+        rendermenubar(stdscr,servername,worldname) 
         bcstatusbar.Render(bct)
         stdscr.noutrefresh()
 
@@ -131,4 +145,5 @@ def main(stdscr, argv):
         key = stdscr.getch()
 
 if __name__ == "__main__":
-    curses.wrapper(main, argv[1:])
+    (servername,worldname) = initserver()
+    curses.wrapper(main, servername, worldname)

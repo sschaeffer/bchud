@@ -1,8 +1,7 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
+from re import I
 from nbt import NBTFile
-from bclogfile import BCLogFile
-from bclog import BCLog
 
 from time import time, sleep , strftime, strptime
 from pathlib import Path
@@ -37,18 +36,15 @@ class BCLevelFile(NBTFile):
 #    RAINMONSTERS=6   # DARK BLUE (11secs)
 #    NORAINMONSTERS=9 # LIGHTER BLUE/PINK (22secs)
 
-    def __init__(self, bclf=None, bclog=None, levelfilename="level.dat"):
+    def __init__(self, logresults=True, minecraftdir="/media/local/Minecraft/server", servername="snapshot", worldname="snapshot"):
 
-        self.levelfilename=levelfilename
-
-        self.bclf=bclf
-        self.bclog=bclog
-        if(self.bclog == None):
-            self.bclog = BCLog()
+        self.minecraftdir=minecraftdir
+        self.servername=servername
+        self.worldname=worldname
+        self.levelfilename="level.dat"
 
         self.lastupdatetime=0
-        self.lastcheckedtime=0
-
+        self.seed=None
         self.gametime=0
         self.daytime=0
         self.clearweathertime=0
@@ -59,67 +55,122 @@ class BCLevelFile(NBTFile):
         self.wanderingtraderid="<empty>"
         self.wanderingtraderspawnchance=0
         self.wanderingtraderspawndelay=0
+        self.bclogfile = None
 
-    def ReadLevelFile(self):
-        levelfilepath = Path(self.bclog.ServerWorldDir()+"/"+self.levelfilename)
-        self.lastcheckedtime = time()
-        if levelfilepath.exists():
-            if self.lastupdatetime != levelfilepath.stat().st_mtime:
-            # file has changed so lets save the previous results
+    def LevelFilename(self):
+        return("/media/local/Minecraft/server/snapshot/")
 
-                self.lastupdatetime = levelfilepath.stat().st_mtime
-                super(BCLevelFile, self).__init__(levelfilepath)
+    def UpdateGameInfo(self):
+        levelfilepath = Path("/media/local/Minecraft/server/snapshot")
+        if not levelfilepath.exists():
+            # game was reset or hasn't started yet. level_dat doesn't exist
+            # also re-read the logs from scratch
+            self.__init__()
+#        else:
+#            ReadLevelFile(levelfilepath)
 
-                if "Time" in self["Data"]:
-                    self.gametime=int(str(self["Data"]["Time"]))
+    def LevelFilename(self):
+        return()
 
-                if "DayTime" in self["Data"]:
-                    self.daytime=int(str(self["Data"]["DayTime"]))
+    def LevelFileLastUpdate(self):
+        return(self.lastupdatetime)
 
-                if "ClearWeatherTime" in self["Data"]:
-                    self.clearweathertime=int(str(self["Data"]["ClearWeatherTime"]))
+    def GameTime(self):
+        return(self.gametime)
 
-                if "rainTime" in self["Data"]:
-                    self.raintime=int(str(self["Data"]["rainTime"]))
+    def DayTime(self):
+        return(self.daytime)
 
-                if "thunderTime" in self["Data"]:
-                    self.thundertime=int(str(self["Data"]["thunderTime"]))
+    def ClearWeatherTime(self):
+        return(self.clearweathertime)
 
-                if "WanderingTraderSpawnDelay" in self["Data"]:
-                    self.wanderingtraderspawndelay=int(str(self["Data"]["WanderingTraderSpawnDelay"]))
+    def Raining(self):
+        return(self.raining)
 
-                if "WanderingTraderSpawnChance" in self["Data"]:
-                    self.wanderingtraderspawnchance=int(str(self["Data"]["WanderingTraderSpawnChance"]))
+    def RainTime(self):
+        return(self.raintime)
 
-                if "WanderingTraderId" in self["Data"]:
-                    self.wanderingtraderid=str(self["Data"]["WanderingTraderId"])
-                else:
-                    self.wanderingtraderid="<empty>"
+    def Thundering(self):
+        return(self.thundering)
 
-                if "raining" in self["Data"]:
-                    self.raining=bool(int(str(self["Data"]["raining"])))
+    def ThunderTime(self):
+        return(self.thundertime)
 
-                if "thundering" in self["Data"]:
-                    self.thundering=bool(int(str(self["Data"]["thundering"])))
+    def WanderingTraderSpawnDelay(self):
+        return(self.wanderingtraderspawndelay)
 
-                self.bclog.Write("{},".format(datetime.fromtimestamp(self.lastupdatetime).strftime("%H:%M:%S")))
-                self.bclog.Write("{},".format(self.gametime))
-                self.bclog.Write("{},".format(self.daytime))
-                self.bclog.Write("{},".format(self.clearweathertime))
-                self.bclog.Write("{},".format(self.raining))
-                self.bclog.Write("{},".format(self.raintime))
-                self.bclog.Write("{},".format(self.thundering))
-                self.bclog.Write("{},".format(self.thundertime))
-                self.bclog.Write("{},".format(self.wanderingtraderspawndelay))
-                self.bclog.Write("{},".format(self.wanderingtraderspawnchance))
-                self.bclog.Write("{}\n".format(self.wanderingtraderid))
+    def WanderingTraderSpawnChance(self):
+        return(self.wanderingtraderspawnchance)
+
+    def WanderingTraderID(self):
+        return(self.wanderingtraderid)
+
+    def EstimatedTimeOfDay(self):
+        return(self.EstimatedTimeOfDay())
+
+    def ReadLevelFile(self, levelfilepath):
+
+        if self.lastupdatetime != levelfilepath.stat().st_mtime:
+        # file has changed so lets save the previous results
+
+            self.lastupdatetime = levelfilepath.stat().st_mtime
+            super(BCLevelFile, self).__init__(levelfilepath)
+
+            if "seed" in self["Data"]["WorldGenSettings"]:
+                self.seed=str(self["Data"]["WorldGenSettings"]["seed"])
+
+            if "Time" in self["Data"]:
+                self.gametime=int(str(self["Data"]["Time"]))
+
+            if "DayTime" in self["Data"]:
+                self.daytime=int(str(self["Data"]["DayTime"]))
+
+            if "ClearWeatherTime" in self["Data"]:
+                self.clearweathertime=int(str(self["Data"]["ClearWeatherTime"]))
+
+            if "rainTime" in self["Data"]:
+                self.raintime=int(str(self["Data"]["rainTime"]))
+
+            if "thunderTime" in self["Data"]:
+                self.thundertime=int(str(self["Data"]["thunderTime"]))
+
+            if "WanderingTraderSpawnDelay" in self["Data"]:
+                self.wanderingtraderspawndelay=int(str(self["Data"]["WanderingTraderSpawnDelay"]))
+
+            if "WanderingTraderSpawnChance" in self["Data"]:
+                self.wanderingtraderspawnchance=int(str(self["Data"]["WanderingTraderSpawnChance"]))
+
+            if "WanderingTraderId" in self["Data"]:
+                self.wanderingtraderid=str(self["Data"]["WanderingTraderId"])
+            else:
+                self.wanderingtraderid="<empty>"
+
+            if "raining" in self["Data"]:
+                self.raining=bool(int(str(self["Data"]["raining"])))
+
+            if "thundering" in self["Data"]:
+                self.thundering=bool(int(str(self["Data"]["thundering"])))
+
+#                self.bclog.Log("{},".format(datetime.fromtimestamp(self.lastupdatetime).strftime("%H:%M:%S")))
+#                self.bclog.Log("{},".format(self.gametime))
+#                self.bclog.Log("{},".format(self.daytime))
+#                self.bclog.Log("{},".format(self.clearweathertime))
+#                self.bclog.Log("{},".format(self.raining))
+#                self.bclog.Log("{},".format(self.raintime))
+#                self.bclog.Log("{},".format(self.thundering))
+#                self.bclog.Log("{},".format(self.thundertime))
+#                self.bclog.Log("{},".format(self.wanderingtraderspawndelay))
+#                self.bclog.Log("{},".format(self.wanderingtraderspawnchance))
+#                self.bclog.Log("{}\n".format(self.wanderingtraderid))
+
 
     def EstimatedGameTime(self):
         result = 0
         if self.gametime > 0:
+            # if self.gametime is less than zero or zero it means the game is still starting
             result = round(self.gametime+((time()-self.lastupdatetime)*20))
-        elif self.bclf.GetStarttime() > 0:
-            result = round(time()-self.bclf.GetStarttime())*20
+#        elif self.bclf.GetStarttime() > 0:
+#            result = round(time()-self.bclf.GetStarttime())*20
         return result
 
     def EstimatedDayTime(self):
@@ -127,12 +178,15 @@ class BCLevelFile(NBTFile):
         if self.daytime > 0:
             # if self.daytime is less than zero or zero it means the game is still starting
             result = round(self.daytime+((time()-self.lastupdatetime)*20))
-        elif self.bclf.GetStarttime() > 0:
-            result = round(time()-self.bclf.GetStarttime())*20
+#        elif self.bclf.GetStarttime() > 0:
+#            result = round(time()-self.bclf.GetStarttime())*20
         return result
 
     def EstimatedClearWeatherTime(self):
-        return round(self.clearweathertime-((time()-self.lastupdatetime)*20))
+        result=0
+        if self.clearweathertime > 0:
+            result = round(self.clearweathertime-((time()-self.lastupdatetime)*20))
+        return result
 
     def EstimatedRainTime(self):
         result = 0
@@ -142,12 +196,15 @@ class BCLevelFile(NBTFile):
 
     def EstimatedThunderTime(self):
         result = 0
-        if self.raintime != 0:
+        if self.thundertime != 0:
             result = round(self.thundertime-((time()-self.lastupdatetime)*20))
         return result
 
     def EstimatedWanderingTraderSpawnDelay(self):
-        return round(self.wanderingtraderspawndelay-((time()-self.lastupdatetime)*20))
+        result = 0
+        if self.wanderingtraderspawndelay != 0:
+            result = round(self.wanderingtraderspawndelay-((time()-self.lastupdatetime)*20))
+        return result
 
     def EstimatedIsRaining(self):
         result = False 
@@ -203,35 +260,38 @@ class BCLevelFile(NBTFile):
 #            result = self.NORAINMONSTERS # LIGHTER BLUE/PINK (22secs)
 #        elif estdaytime > self.DAY_RAINMONSTERS:
 #            result = self.RAINMONSTERS   # DARK BLUE (11secs)
+
 def main():
+
     print("BCLevelFile: Unit Testing")
     bclevelfile = BCLevelFile()
-    bclevelfile.ReadLevelFile()
 
-    if bclevelfile.lastupdatetime != 0:
-        print(bclevelfile.pretty_tree())
-        print("Last Checked Time:   {}".format(datetime.fromtimestamp(bclevelfile.lastcheckedtime)))
-        print("Last Update Time:    {}".format(datetime.fromtimestamp(bclevelfile.lastupdatetime)))
-        print("Game Time:           {}".format(bclevelfile.gametime))
-        print("Estimated Game Time: {}".format(bclevelfile.EstimatedGameTime()))
-        print("Day Time:            {}".format(bclevelfile.daytime))
-        print("Estimated Day Time:  {}".format(bclevelfile.EstimatedDayTime()))
-        print("Clear Weather Time:  {}".format(bclevelfile.clearweathertime))
-        print("Estimated Clear Wea: {}".format(bclevelfile.EstimatedClearWeatherTime()))
-        print("Raining:             {}".format(bclevelfile.raining))
-        print("Rain Time:           {}".format(bclevelfile.raintime))
-        print("Estimated Rain Time: {}".format(bclevelfile.EstimatedRainTime()))
-        print("Thundering:          {}".format(bclevelfile.thundering))
-        print("Thunder Time:        {}".format(bclevelfile.thundertime))
-        print("Estimated Thunder T: {}".format(bclevelfile.EstimatedThunderTime()))
-        print("Wandering Trader Sp: {}".format(bclevelfile.wanderingtraderspawndelay))
-        print("Estimated Wandering: {}".format(bclevelfile.EstimatedWanderingTraderSpawnDelay()))
-        print("Wandering Trader Sp: {}".format(bclevelfile.wanderingtraderspawnchance))
-        print("Wandering Trader Id: {}".format(bclevelfile.wanderingtraderid))
-        print("Estimated Time of D: {}".format(bclevelfile.EstimatedTimeOfDay()))
-    else:
+    bclevelfile.UpdateGameInfo()
+
+    if bclevelfile.lastupdatetime == 0:
         print("No level.dat file")
+    else:
+        print("Seed:                {}".format(bclevelfile.seed))
+#        print(bclevelfile.pretty_tree())
 
+    print("Last Update Time:    {}".format(datetime.fromtimestamp(bclevelfile.lastupdatetime)))
+    print("Game Time:           {}".format(bclevelfile.gametime))
+    print("Estimated Game Time: {}".format(bclevelfile.EstimatedGameTime()))
+    print("Day Time:            {}".format(bclevelfile.daytime))
+    print("Estimated Day Time:  {}".format(bclevelfile.EstimatedDayTime()))
+    print("Clear Weather Time:  {}".format(bclevelfile.clearweathertime))
+    print("Estimated Clear Wea: {}".format(bclevelfile.EstimatedClearWeatherTime()))
+    print("Raining:             {}".format(bclevelfile.raining))
+    print("Rain Time:           {}".format(bclevelfile.raintime))
+    print("Estimated Rain Time: {}".format(bclevelfile.EstimatedRainTime()))
+    print("Thundering:          {}".format(bclevelfile.thundering))
+    print("Thunder Time:        {}".format(bclevelfile.thundertime))
+    print("Estimated Thunder T: {}".format(bclevelfile.EstimatedThunderTime()))
+    print("Wandering Trader Sp: {}".format(bclevelfile.wanderingtraderspawndelay))
+    print("Estimated Wandering: {}".format(bclevelfile.EstimatedWanderingTraderSpawnDelay()))
+    print("Wandering Trader Sp: {}".format(bclevelfile.wanderingtraderspawnchance))
+    print("Wandering Trader Id: {}".format(bclevelfile.wanderingtraderid))
+    print("Estimated Time of D: {}".format(bclevelfile.EstimatedTimeOfDay()))
 
 if __name__ == '__main__':
     main()

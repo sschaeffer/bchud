@@ -1,29 +1,44 @@
-from os import umask
+#!/usr/bin/env python3
+
 from subprocess import call
-from getopt import getopt
-from time import sleep, strftime
+from time import sleep
 
 class BCLog():
 
-    def __init__(self, argv=None):
-        self.logresults = True
-        self.outfh = None
-        if self.logresults:
-            self.outfh = open("{}.{}".format("/tmp/bchud",strftime("%H%M%S")),"w+")
-        self.serverdir = "/media/local/Minecraft/server/snapshot"
-        self.serverworlddir = "/media/local/Minecraft/server/snapshot/snapshot"
+    def __init__(self, logresults=True, minecraftdir="/media/local/Minecraft/server", servername="snapshot"):
 
-    def ServerDir(self):
-        return (self.serverdir)
+        self._logresults = logresults
+        self._minecraftdir = minecraftdir
+        self._servername = servername
+        self._seed = "null"
 
-    def ServerWorldDir(self):
-        return (self.serverworlddir)
+        self._outfile = None
 
-    def Write(self, output):
-        if(self.outfh):
-            self.outfh.write(output)
-            self.outfh.flush()
+    def BCLogFilename(self):
+        return (self._minecraftdir+"/bcogs/"+self._servername+"_"+self._seed)
+
+    def SetSeed(seed):
+        self._seed = seed
+
+    def Log(self, output):
+        if(self._outfile):
+            self._outfile.write(output)
+            self._outfile.flush()
+
+    def LogFlush(self, output):
+        if(self._outfile):
+            self._outfile.write(output)
+            self._outfile.flush()
 
     def SaveAllFiles():
         call(["./save-it-all.bash"])
         sleep(0.5)
+
+def main():
+    print("BCLog: Unit Testing")
+    bclog = BCLog()
+
+    print(bclog.BCLogFilename())
+
+if __name__ == '__main__':
+    main()
