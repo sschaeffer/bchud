@@ -2,7 +2,7 @@
 
 from pathlib import Path
 from datetime import date, datetime, timedelta
-from time import time, strptime
+from time import time, strptime, sleep
 from os import listdir
 import re
 import gzip
@@ -50,21 +50,30 @@ REGEX_DEATH_MESSAGES = set()
 for message in DEATH_MESSAGES:
     REGEX_DEATH_MESSAGES.add(re.compile("\Server thread\/INFO\]: ([^ ]+) (" + message + ")"))
 
-class UserStats:
+class BCUserStats:
     def __init__(self, username=""):
         self._username = username
         self._logins = 0
-        self._time = timedelta()
-        
-        self.death_count = 0
-        self._death_types = {}
+        self._timeplayed = 0.0
+        self._deathcount = 0
+        self._deathtypes = {}
+        self._prevlogin = None
 
-    def logout(self, date):
-        if self._prev_login is None:
+    def Login(self, date):
+        self._logins += 1
+        self._prevlogin = date
+
+    def Logout(self, date):
+        if self._prevlogin is None:
             return
-        session = date - self._prev_login
-        self._time += session
-        self._prev_login = None
+        session = date - self._prevlogin
+        self._timeplayed += session
+        self._prevlogin = None
+
+    def NetherEntry(self, date):
+        if self._prevlogin is not None and self._netherentry is None:
+            currentsession = date - self._prevlogin
+            self._netherentry = self._timeplayed + currentsession
 
     @property
     def username(self):
@@ -73,6 +82,23 @@ class UserStats:
     @property
     def logins(self):
         return self._logins
+
+
+class BCGameSession():
+    def __init__(self, starttime, endtime=0):
+        self._starttime = starttime
+        self._endtime = endtime
+
+    def SetEndTime(self,endtime):
+        self._endtime = endtime
+
+    @property
+    def starttime(self):
+        self._starttime
+
+    @property
+    def starttime(self):
+        self._endtime
 
 class BCLogFilesTimeUpdate():
 
@@ -88,10 +114,10 @@ class BCLogFilesTimeUpdate():
     def gametime(self):
         self._gametime
 
-    def estgametime(self):
+    def EstimatedGameTime(self):
         return(self._gametime+round((time()-self._updatetime.timestamp())*20))
 
-    def eststarttime(self):
+    def EstimatedStartTime(self):
         return(self._updatetime.timestamp()-(self._gametime/20))
 
 class BCLogFiles():
@@ -101,56 +127,71 @@ class BCLogFiles():
         self.minecraftdir=minecraftdir
         self.servername=servername
 
-        self.updates = [] 
-        self.updatetimes = [] 
-        self.lastupdatetime=0
-        self.starttime=0
+        self.gamesessions = [] 
+        self.timeupdates = [] 
+        self.lastfileupdate=0
+        self.currentserversessionstart=0
+        self.currentserversessionend=0
+
         self.users={}
 
         self.fileBytePosition = 0
 
+    def LogFilename(self):
+        return(self.minecraftdir+"/"+self.servername+"/logs/latest.log")
+
     def ParseLine(self, line, logdate):
         line = line.rstrip()
-        print(line)
+#        print(line)
+
+
+        if "For help, type" in line:
+            logdatetime = datetime.combine(logdate,datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()).timestamp()
+            self.currentserversessionstart = logdatetime
+            self.currentserversessionend = 0
+            self.gamesessions.append(BCGameSession(logdatetime))
+#           self.bclog.Write(f"Server boot time: {datetime.fromtimestamp(starttime)}\n")
+
+        if "Stopping the server" in line:
+            logdatetime = datetime.combine(logdate,datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()).timestamp()
+            self.currentserversessionend = logdatetime
+            gamesession = self.gamesessions[len(self.gamesessions)-1]
+            gamesession.SetEndTime(logdatetime)
+
+        if "The time is" in line:
+            updatetime = datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()
+            updatedatetime = datetime.combine(date.today(),updatetime)
+            gametime = int(line.split(" ")[6])
+            self.timeupdates.append(BCLogFilesTimeUpdate(updatedatetime,gametime))
+
 
         if "logged in with entity id" in line:
+            logdatetime = datetime.combine(logdate,datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()).timestamp()
             username = (REGEX_LOGIN_USERNAME.search(line)).group(1).lstrip().rstrip()
             if username not in self.users:
-                self.users[username] = UserStats(username)
+                self.users[username] = BCUserStats(username)
             user = self.users[username]
-            user._logins += 1
-            user._prev_login = logdate
+            user.Login(logdatetime)
 
         if "lost connection" in line or "[INFO] CONSOLE: Kicked player" in line:
             username = "" 
+            logdatetime = datetime.combine(logdate,datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()).timestamp()
             if "lost connection" in line:
                 username = (REGEX_LOGOUT_USERNAME.search(line)).group(1).lstrip().rstrip()
             else:
                 username = (REGEX_KICK_USERNAME.search(line)).group(1).lstrip().rstrip()
 
-            if username in users:
-                user = user[username]
-                user.handle_logout(logdate)
-
-        if "For help, type" in line:
-            starttime = datetime.combine(logdate,datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()).timestamp()
-            if starttime != self.starttime:
-                self.starttime = starttime
-#                self.bclog.Write(f"Server boot time: {datetime.fromtimestamp(starttime)}\n")
+            if username in self.users:
+                user = self.users[username]
+                user.Logout(logdatetime)
 
         if "We Need to Go Deeper" in line:
+            logdatetime = datetime.combine(logdate,datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()).timestamp()
             username = (REGEX_NETHER_USERNAME.search(line)).group(1).lstrip().rstrip()
             if username in users:
                 user = user[username]
-                user.handle_logout(logdate)
+                user.NetherEntry(logdatetime)
 
-        if "The time is" in line:
-            updatetime = datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()
-            updatedatetime = datetime.combine(date.today(),updatetime)
-            if updatedatetime not in self.updatetimes:
-                gametime = int(line.split(" ")[6])
-                self.updatetimes.append(updatedatetime)
-                self.updates.append(BCLogFilesTimeUpdate(updatedatetime,gametime))
 
     def ReadPreviousLogFiles(self):
         for logname in sorted(listdir(self.minecraftdir+"/"+self.servername+"/logs")):
@@ -163,44 +204,83 @@ class BCLogFiles():
                 self.ParseLine(line, day)
             logfile.close()
 
-    def ReadLogFile(self):
-        logfilepath = Path(self.minecraftdir+"/"+self.servername+"/logs/latest.log")
-        if logfilepath.exists():
-            if self.lastupdatetime != logfilepath.stat().st_mtime:
-                self.lastupdatetime = logfilepath.stat().st_mtime
+    def ReadLogFile(self, logfilepath):
+
+        if self.fileBytePosition > logfilepath.stat().st_size:
+            # Server might have restarted so we need to reinit
+            self.fileBytePosition = 0
+            self.UpdateLogInfo()
+        else:
+            if self.lastfileupdate != logfilepath.stat().st_mtime and self.fileBytePosition < logfilepath.stat().st_size:
+                self.lastfileupdate = logfilepath.stat().st_mtime
                 logfile = open(logfilepath,'r')
                 logfile.seek(self.fileBytePosition)
                 for line in logfile:
-                   self.ParseLine(line,date.today())
+                    self.ParseLine(line,date.today())
                 self.fileBytePosition = logfile.tell()
                 logfile.close()
 
-    def PrintLogFileUpdates(self):
-        print(f"Start Time is: {self.GetStarttime()}")
-        for updates in self.updates:
-            print("{} - {} - {} - {}".format(updates._updatetime,updates._gametime,updates.estgametime(),updates.eststarttime()))
+    def UpdateLogInfo(self):
+        logfilepath = Path(self.LogFilename())
+        if not logfilepath.exists():
+            # Log file was deleted so re-init the stats
+            self.__init__(self.minecraftdir,self.servername)
+        else:
+            if(self.fileBytePosition==0):
+                # First time reading the file so re-init and read previous logs (if any) 
+                self.__init__(self.minecraftdir,self.servername)
+                self.ReadPreviousLogFiles()
+            self.ReadLogFile(logfilepath)
 
-    def NumLogUpdates(self):
-        return len(self.updates)
+    def NumLogTimeUpdates(self):
+        return len(self.timeupdates)
 
-    def GetLogUpdate(self,i):
+    def GetLogTimeUpdate(self,i):
         result = None
         if i >= 0:
-            if i < len(self.updates):
-                result = self.updates[i]
+            if i < len(self.timeupdates):
+                result = self.timeupdates[i]
         return result
 
-    def GetLastLogUpdate(self):
-        return self.GetLogUpdate(self.NumLogUpdates()-1)
+    def GetLastLogTimeUpdate(self):
+        return self.GetLogTimeUpdate(self.NumLogTimeUpdates()-1)
 
-    def GetStarttime(self):
-        return self.starttime
+    def GetCurrentServerSessionStartTime(self):
+        return self.currentserversessionstart
+
+    def GetCurrentServerSessionEndTime(self):
+        return self.currentserversessionend
+
+    def ServerActive(self):
+        if(self.currentserversessionend==0):
+            return True
+        else:
+            return False
+
+    def PrintDebug(self):
+        print(f"Current Server Session Start Time is: {datetime.fromtimestamp(self.GetCurrentServerSessionStartTime())}")
+        if(not self.ServerActive()):
+           print(f"Current Server Session End Time is:   {datetime.fromtimestamp(self.GetCurrentServerSessionEndTime())}")
+
+        for username in self.users:
+            user = self.users[username]
+            print(f"{user._username} - {user._logins} - {user._timeplayed} - {user._deathcount}")
+            #self._death_types = {}
+        for sessions in self.gamesessions:
+            print(f"{sessions._starttime} - {sessions._endtime}")
+#        for timeupdate in self.timeupdates:
+#            print("{} - {} - {} - {}".format(timeupdate._updatetime,timeupdate._gametime,timeupdate.estgametime(),timeupdate.eststarttime()))
+
+
 
 def main():
     print("BCLogFiles: Unit Testing")
     bclf = BCLogFiles()
-    bclf.ReadPreviousLogFiles()
-    bclf.ReadLogFile()
-    
+    while(True):
+        bclf.UpdateLogInfo()
+        bclf.PrintDebug()
+        sleep(2)
+
+
 if __name__ == '__main__':
     main()

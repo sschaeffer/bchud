@@ -20,11 +20,17 @@ class BCGameInstance():
         #self.bcalladvancements = BCAllAdancements(minecraftdir, servername)
         #self.bcuseradvancements = BCUserAdancements(minecraftdir, servername)
 
+    def LogFilename(self):
+        return(self.bclogfiles.LogFilename())
+
     def LevelFilename(self):
         return(self.bclevelfile.LevelFilename())
 
     def LevelFileLastUpdate(self):
         return(self.bclevelfile.LevelFileLastUpdate())
+
+    def Seed(self):
+        return(self.bclevelfile.Seed())
 
     def GameTime(self):
         return(self.bclevelfile.GameTime())
@@ -77,9 +83,14 @@ class BCGameInstance():
     def EstimatedTimeOfDay(self):
         return(self.bclevelfile.EstimatedTimeOfDay())
 
+    def UpdateGameInfo(self):
+        self.bclevelfile.UpdateLevelInfo()
+        self.bclogfiles.UpdateLogInfo()
+
     def PrintDebug(self):
         print(f"Level File:          {self.LevelFilename()}")
         print(f"Last Update Time:    {self.LevelFileLastUpdate()}")
+        print(f"Seed:                {self.Seed()}")
         print(f"Game Time:           {self.GameTime()}")
         print(f"Estimated Game Time: {self.EstimatedGameTime()}")
         print(f"Day Time:            {self.DayTime()}")
@@ -99,7 +110,7 @@ class BCGameInstance():
         print(f"Estimated Time of D: {self.EstimatedTimeOfDay()}")
      
         print(f"\n\n")
-        print(f"Log Files:           {self.LevelFilename()}")
+        print(f"Log File:            {self.LogFilename()}")
 
 
 
@@ -107,9 +118,9 @@ def main():
 
     print("BCGameInstance: Unit Testing")
     bcgame = BCGameInstance()
-    bcgame.PrintDebug()
 
-#    bcgame.UpdateGameInfo()
+    bcgame.UpdateGameInfo()
+    bcgame.PrintDebug()
 
 #    if bclevelfile.lastupdatetime == 0:
 #        print("No level.dat file")

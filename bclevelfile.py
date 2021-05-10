@@ -36,7 +36,7 @@ class BCLevelFile(NBTFile):
 #    RAINMONSTERS=6   # DARK BLUE (11secs)
 #    NORAINMONSTERS=9 # LIGHTER BLUE/PINK (22secs)
 
-    def __init__(self, logresults=True, minecraftdir="/media/local/Minecraft/server", servername="snapshot", worldname="snapshot"):
+    def __init__(self, minecraftdir="/media/local/Minecraft/server", servername="snapshot", worldname="snapshot"):
 
         self.minecraftdir=minecraftdir
         self.servername=servername
@@ -58,28 +58,36 @@ class BCLevelFile(NBTFile):
         self.bclogfile = None
 
     def LevelFilename(self):
-        return("/media/local/Minecraft/server/snapshot/")
-
-    def UpdateGameInfo(self):
-        levelfilepath = Path("/media/local/Minecraft/server/snapshot")
-        if not levelfilepath.exists():
-            # game was reset or hasn't started yet. level_dat doesn't exist
-            # also re-read the logs from scratch
-            self.__init__()
-#        else:
-#            ReadLevelFile(levelfilepath)
-
-    def LevelFilename(self):
-        return()
+        return(self.minecraftdir+"/"+self.servername+"/"+self.worldname+"/"+self.levelfilename)
 
     def LevelFileLastUpdate(self):
         return(self.lastupdatetime)
 
+    def Seed(self):
+        return(self.seed)
+
     def GameTime(self):
         return(self.gametime)
 
+    def EstimatedGameTime(self):
+        result = 0
+        if self.gametime > 0:
+            result = round(self.gametime+((time()-self.lastupdatetime)*20))
+#        elif self.bclf.GetStarttime() > 0:
+#            result = round(time()-self.bclf.GetStarttime())*20
+        return result
+
     def DayTime(self):
         return(self.daytime)
+
+    def EstimatedDayTime(self):
+        result = 0
+        if self.daytime > 0:
+            # if self.daytime is less than zero or zero it means the game is still starting
+            result = round(self.daytime+((time()-self.lastupdatetime)*20))
+#        elif self.bclf.GetStarttime() > 0:
+#            result = round(time()-self.bclf.GetStarttime())*20
+        return result
 
     def ClearWeatherTime(self):
         return(self.clearweathertime)
@@ -107,6 +115,8 @@ class BCLevelFile(NBTFile):
 
     def EstimatedTimeOfDay(self):
         return(self.EstimatedTimeOfDay())
+
+
 
     def ReadLevelFile(self, levelfilepath):
 
@@ -163,24 +173,16 @@ class BCLevelFile(NBTFile):
 #                self.bclog.Log("{},".format(self.wanderingtraderspawnchance))
 #                self.bclog.Log("{}\n".format(self.wanderingtraderid))
 
+    def UpdateLevelInfo(self):
+        levelfilepath = Path(self.LevelFilename())
+        if not levelfilepath.exists():
+            # game was reset or hasn't started yet. level_dat doesn't exist
+            # also re-read the logs from scratch
+            self.__init__()
+        else:
+            self.ReadLevelFile(levelfilepath)
 
-    def EstimatedGameTime(self):
-        result = 0
-        if self.gametime > 0:
-            # if self.gametime is less than zero or zero it means the game is still starting
-            result = round(self.gametime+((time()-self.lastupdatetime)*20))
-#        elif self.bclf.GetStarttime() > 0:
-#            result = round(time()-self.bclf.GetStarttime())*20
-        return result
 
-    def EstimatedDayTime(self):
-        result = 0
-        if self.daytime > 0:
-            # if self.daytime is less than zero or zero it means the game is still starting
-            result = round(self.daytime+((time()-self.lastupdatetime)*20))
-#        elif self.bclf.GetStarttime() > 0:
-#            result = round(time()-self.bclf.GetStarttime())*20
-        return result
 
     def EstimatedClearWeatherTime(self):
         result=0
@@ -266,20 +268,19 @@ def main():
     print("BCLevelFile: Unit Testing")
     bclevelfile = BCLevelFile()
 
-    bclevelfile.UpdateGameInfo()
-
-    if bclevelfile.lastupdatetime == 0:
+    bclevelfile.UpdateLevelInfo()
+    if bclevelfile.LevelFileLastUpdate() == 0:
         print("No level.dat file")
-    else:
-        print("Seed:                {}".format(bclevelfile.seed))
 #        print(bclevelfile.pretty_tree())
 
-    print("Last Update Time:    {}".format(datetime.fromtimestamp(bclevelfile.lastupdatetime)))
-    print("Game Time:           {}".format(bclevelfile.gametime))
-    print("Estimated Game Time: {}".format(bclevelfile.EstimatedGameTime()))
-    print("Day Time:            {}".format(bclevelfile.daytime))
-    print("Estimated Day Time:  {}".format(bclevelfile.EstimatedDayTime()))
-    print("Clear Weather Time:  {}".format(bclevelfile.clearweathertime))
+    print(f"Level Filename:      {bclevelfile.LevelFilename()}")
+    print(f"Last Update Time:    {datetime.fromtimestamp(bclevelfile.LevelFileLastUpdate())}")
+    print(f"Seed:                {bclevelfile.Seed()}")
+    print(f"Game Time:           {bclevelfile.GameTime()}")
+    print(f"Estimated Game Time: {bclevelfile.EstimatedGameTime()}")
+    print(f"Day Time:            {bclevelfile.DayTime()}")
+    print(f"Estimated Day Time:  {bclevelfile.EstimatedDayTime()}")
+    print(f"Clear Weather Time:  {bclevelfile.ClearWeatherTime()}")
     print("Estimated Clear Wea: {}".format(bclevelfile.EstimatedClearWeatherTime()))
     print("Raining:             {}".format(bclevelfile.raining))
     print("Rain Time:           {}".format(bclevelfile.raintime))
