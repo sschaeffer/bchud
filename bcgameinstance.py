@@ -84,8 +84,8 @@ class BCGameInstance():
         return(self.bclevelfile.EstimatedTimeOfDay())
 
     def UpdateGameInfo(self):
-        self.bclevelfile.UpdateLevelInfo()
-        self.bclogfiles.UpdateLogInfo()
+        self.bclevelfile.UpdateLevelInfo(self.bclog)
+        self.bclogfiles.UpdateLogInfo(self.bclog)
 
     def PrintDebug(self):
         print(f"Level File:          {self.LevelFilename()}")

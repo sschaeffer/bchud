@@ -1,33 +1,48 @@
 #!/usr/bin/env python3
 
+from os import stat_result
+from re import I
 from subprocess import call
 from time import sleep
 
+
 class BCLog():
 
-    def __init__(self, logresults=True, minecraftdir="/media/local/Minecraft/server", servername="snapshot"):
+    def __init__(self, minecraftdir="/media/local/Minecraft/server", servername="snapshot"):
 
-        self._logresults = logresults
         self._minecraftdir = minecraftdir
         self._servername = servername
-        self._seed = "null"
+        self._seed = None
+
+        self._logentries = []
 
         self._outfile = None
 
     def BCLogFilename(self):
-        return (self._minecraftdir+"/bcogs/"+self._servername+"_"+self._seed)
+        result = ""
+        if(self._seed is not None):
+            result = self._minecraftdir+"/bclogs/"+self._servername+"_"+self._seed
+        return(result)
 
-    def SetSeed(seed):
+    def SetSeed(self, seed):
         self._seed = seed
+
+    def Close(self):
+        if(self._outfile):
+            self._outfile.close()
+
+    def Open(self, seed):
+        if(seed is not None):
+            self.SetSeed(seed)
+        self.Close()
+        self._outfile = open(self.BCLogFilename(),'w')
 
     def Log(self, output):
         if(self._outfile):
             self._outfile.write(output)
-            self._outfile.flush()
 
-    def LogFlush(self, output):
+    def Flush(self, output):
         if(self._outfile):
-            self._outfile.write(output)
             self._outfile.flush()
 
     def SaveAllFiles():

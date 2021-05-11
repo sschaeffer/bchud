@@ -122,7 +122,7 @@ class BCLogFilesTimeUpdate():
 
 class BCLogFiles():
 
-    def __init__(self, minecraftdir="/media/local/Minecraft/server", servername="snapshot"):
+    def __init__(self, minecraftdir="/media/local/Minecraft/server", servername="snapshot", bclog=None):
 
         self.minecraftdir=minecraftdir
         self.servername=servername
