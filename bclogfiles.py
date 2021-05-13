@@ -188,7 +188,7 @@ class BCLogFiles():
         if "We Need to Go Deeper" in line:
             logdatetime = datetime.combine(logdate,datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()).timestamp()
             username = (REGEX_NETHER_USERNAME.search(line)).group(1).lstrip().rstrip()
-            if username in users:
+            if username in self.users:
                 user = user[username]
                 user.NetherEntry(logdatetime)
 
