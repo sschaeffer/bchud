@@ -175,7 +175,7 @@ class BCLevelFile(NBTFile):
             bclog.Log(f"{self.wanderingtraderspawndelay},")
             bclog.Log(f"{self.wanderingtraderspawnchance},")
             bclog.Log(f"{self.wanderingtraderid}\n")
-            bclog.Close()
+            bclog.Flush()
 
     def UpdateLevelInfo(self, bclog):
         levelfilepath = Path(self.LevelFilename())
