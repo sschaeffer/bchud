@@ -1,91 +1,96 @@
 #!/usr/bin/env python3
 
-from re import X
 from bclevelfile import BCLevelFile
 from bclogfiles import BCLogFiles
 from bclog import BCLog
 
+from time import sleep
+
 class BCGameInstance():
 
-    def __init__(self, logresults=True, minecraftdir="/media/local/Minecraft/server", servername="snapshot", worldname="snapshot"):
+    def __init__(self, minecraftdir="/media/local/Minecraft/server", servername="snapshot", worldname="snapshot", logresults=True):
 
-        self.minecraftdir=minecraftdir
-        self.servername=servername
-        self.worldname=worldname
+        self._logresults=logresults
+        self._minecraftdir=minecraftdir
+        self._servername=servername
+        self._worldname=worldname
 
-        self.bclevelfile = BCLevelFile(minecraftdir, servername, worldname)
-        self.bclogfiles = BCLogFiles(minecraftdir, servername)
-        self.bclog = BCLog(minecraftdir,servername)
-
+        self._bclevelfile = BCLevelFile(minecraftdir, servername, worldname)
+        self._bclogfiles = BCLogFiles(minecraftdir, servername)
         #self.bcalladvancements = BCAllAdancements(minecraftdir, servername)
         #self.bcuseradvancements = BCUserAdancements(minecraftdir, servername)
 
+        self._bclog = BCLog(minecraftdir,servername)
+
     def LogFilename(self):
-        return(self.bclogfiles.LogFilename())
+        return(self._bclogfiles.LogFilename())
 
     def LevelFilename(self):
-        return(self.bclevelfile.LevelFilename())
+        return(self._bclevelfile.LevelFilename())
 
     def LevelFileLastUpdate(self):
-        return(self.bclevelfile.LevelFileLastUpdate())
+        return(self._bclevelfile.LevelFileLastUpdate())
 
     def Seed(self):
-        return(self.bclevelfile.Seed())
+        return(self._bclevelfile.Seed())
 
     def GameTime(self):
-        return(self.bclevelfile.GameTime())
+        return(self._bclevelfile.GameTime())
 
     def EstimatedGameTime(self):
-        return(self.bclevelfile.EstimatedGameTime())
+        return(self._bclevelfile.EstimatedGameTime())
 
     def DayTime(self):
-        return(self.bclevelfile.DayTime())
+        return(self._bclevelfile.DayTime())
 
     def EstimatedDayTime(self):
-        return(self.bclevelfile.EstimatedDayTime())
+        return(self._bclevelfile.EstimatedDayTime())
 
     def ClearWeatherTime(self):
-        return(self.bclevelfile.ClearWeatherTime())
+        return(self._bclevelfile.ClearWeatherTime())
 
     def EstimatedClearWeatherTime(self):
-        return(self.bclevelfile.EstimatedClearWeatherTime())
+        return(self._bclevelfile.EstimatedClearWeatherTime())
 
     def Raining(self):
-        return(self.bclevelfile.Raining())
+        return(self._bclevelfile.Raining())
 
     def RainTime(self):
-        return(self.bclevelfile.RainTime())
+        return(self._bclevelfile.RainTime())
 
     def EstimatedRainTime(self):
-        return(self.bclevelfile.EstimatedRainTime())
+        return(self._bclevelfile.EstimatedRainTime())
 
     def Thundering(self):
-        return(self.bclevelfile.Thundering())
+        return(self._bclevelfile.Thundering())
 
     def ThunderTime(self):
-        return(self.bclevelfile.ThunderTime())
+        return(self._bclevelfile.ThunderTime())
 
     def EstimatedThunderTime(self):
-        return(self.bclevelfile.EstimatedThunderTime())
+        return(self._bclevelfile.EstimatedThunderTime())
 
     def WanderingTraderSpawnDelay(self):
-        return(self.bclevelfile.WanderingTraderSpawnDelay())
+        return(self._bclevelfile.WanderingTraderSpawnDelay())
 
     def EstimatedWanderingTraderSpawnDelay(self):
-        return(self.bclevelfile.EstimatedWanderingTraderSpawnDelay())
+        return(self._bclevelfile.EstimatedWanderingTraderSpawnDelay())
 
     def WanderingTraderSpawnChance(self):
-        return(self.bclevelfile.WanderingTraderSpawnChance())
+        return(self._bclevelfile.WanderingTraderSpawnChance())
 
     def WanderingTraderID(self):
-        return(self.bclevelfile.WanderingTraderID())
+        return(self._bclevelfile.WanderingTraderID())
 
     def EstimatedTimeOfDay(self):
-        return(self.bclevelfile.EstimatedTimeOfDay())
+        return(self._bclevelfile.EstimatedTimeOfDay())
 
     def UpdateGameInfo(self):
-        self.bclevelfile.UpdateLevelInfo(self.bclog)
-        self.bclogfiles.UpdateLogInfo(self.bclog)
+        self._bclevelfile.UpdateLevelInfo()
+        self._bclogfiles.UpdateLogInfo()
+
+        if(self._logresults):
+            self._bclog.LogResults(self._bclevelfile,self._bclogfiles)
 
     def PrintDebug(self):
         print(f"Level File:          {self.LevelFilename()}")
@@ -108,11 +113,6 @@ class BCGameInstance():
         print(f"Wandering Trader Sp: {self.WanderingTraderSpawnChance()}")
         print(f"Wandering Trader Id: {self.WanderingTraderID()}")
         print(f"Estimated Time of D: {self.EstimatedTimeOfDay()}")
-     
-        print(f"\n\n")
-        print(f"Log File:            {self.LogFilename()}")
-
-
 
 def main():
 
@@ -120,14 +120,11 @@ def main():
     bcgame = BCGameInstance()
 
     bcgame.UpdateGameInfo()
-    bcgame.PrintDebug()
+    while True:
+        bcgame.UpdateGameInfo()
+        sleep(2)
+#    bcgame.PrintDebug()
 
-#    if bclevelfile.lastupdatetime == 0:
-#        print("No level.dat file")
-#    else:
-#        print("Seed:                {}".format(bclevelfile.seed))
-##        print(bclevelfile.pretty_tree())
-#
 
 if __name__ == '__main__':
     main()

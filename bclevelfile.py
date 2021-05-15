@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-from bclog import BCLog
-
 from re import I
 from nbt import NBTFile
 
@@ -120,7 +118,7 @@ class BCLevelFile(NBTFile):
 
 
 
-    def ReadLevelFile(self, levelfilepath, bclog):
+    def ReadLevelFile(self, levelfilepath):
 
         if self.lastupdatetime != levelfilepath.stat().st_mtime:
         # file has changed so lets save the previous results
@@ -163,28 +161,15 @@ class BCLevelFile(NBTFile):
             if "thundering" in self["Data"]:
                 self.thundering=bool(int(str(self["Data"]["thundering"])))
 
-            bclog.Open(self.seed)
-            bclog.Log(f"{datetime.fromtimestamp(self.lastupdatetime).strftime('%H%M%S')},")
-            bclog.Log(f"{self.gametime},")
-            bclog.Log(f"{self.daytime},")
-            bclog.Log(f"{self.clearweathertime},")
-            bclog.Log(f"{self.raining},")
-            bclog.Log(f"{self.raintime},")
-            bclog.Log(f"{self.thundering},")
-            bclog.Log(f"{self.thundertime},")
-            bclog.Log(f"{self.wanderingtraderspawndelay},")
-            bclog.Log(f"{self.wanderingtraderspawnchance},")
-            bclog.Log(f"{self.wanderingtraderid}\n")
-            bclog.Flush()
-
-    def UpdateLevelInfo(self, bclog):
+ 
+    def UpdateLevelInfo(self):
         levelfilepath = Path(self.LevelFilename())
         if not levelfilepath.exists():
             # game was reset or hasn't started yet. level_dat doesn't exist
             # also re-read the logs from scratch
             self.__init__()
         else:
-            self.ReadLevelFile(levelfilepath, bclog)
+            self.ReadLevelFile(levelfilepath)
 
     def EstimatedClearWeatherTime(self):
         result=0
@@ -270,7 +255,7 @@ def main():
     print("BCLevelFile: Unit Testing")
     bclevelfile = BCLevelFile()
 
-    bclevelfile.UpdateLevelInfo(BCLog())
+    bclevelfile.UpdateLevelInfo()
     if bclevelfile.LevelFileLastUpdate() == 0:
         print("No level.dat file")
 #        print(bclevelfile.pretty_tree())

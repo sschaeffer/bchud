@@ -167,19 +167,25 @@ class BCLogFiles():
 
         if "logged in with entity id" in line:
             logdatetime = datetime.combine(logdate,datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()).timestamp()
-            username = (REGEX_LOGIN_USERNAME.search(line)).group(1).lstrip().rstrip()
-            if username not in self.users:
-                self.users[username] = BCUserStats(username)
-            user = self.users[username]
-            user.Login(logdatetime)
+            search = REGEX_LOGIN_USERNAME.search(line)
+            if(search):
+                username = search.group(1).lstrip().rstrip()
+                if username not in self.users:
+                    self.users[username] = BCUserStats(username)
+                user = self.users[username]
+                user.Login(logdatetime)
 
         if "lost connection" in line or "[INFO] CONSOLE: Kicked player" in line:
             username = "" 
             logdatetime = datetime.combine(logdate,datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()).timestamp()
             if "lost connection" in line:
-                username = (REGEX_LOGOUT_USERNAME.search(line)).group(1).lstrip().rstrip()
+                search = REGEX_LOGOUT_USERNAME.search(line)
+                if(search):
+                    username = search.group(1).lstrip().rstrip()
             else:
-                username = (REGEX_KICK_USERNAME.search(line)).group(1).lstrip().rstrip()
+                search = REGEX_KICK_USERNAME.search(line)
+                if(search):
+                    username = search.group(1).lstrip().rstrip()
 
             if username in self.users:
                 user = self.users[username]
@@ -263,8 +269,11 @@ class BCLogFiles():
            print(f"Current Server Session End Time is:   {datetime.fromtimestamp(self.GetCurrentServerSessionEndTime())}")
 
         for username in self.users:
-            user = self.users[username]
+
+            user: BCUserStats = self.users[username]
             print(f"{user._username} - {user._logins} - {user._timeplayed} - {user._deathcount}")
+            if(not user._prevlogin):
+                print(f"{user._username} is not currently logged in")
             #self._death_types = {}
         for sessions in self.gamesessions:
             print(f"{sessions._starttime} - {sessions._endtime}")
