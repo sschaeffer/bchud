@@ -4,9 +4,6 @@ from bclevelfile import BCLevelFile
 from bclogfiles import BCLogFiles
 
 from pathlib import Path
-from re import I
-from subprocess import call
-from time import sleep
 from datetime import datetime
 
 class BCLog():
@@ -19,6 +16,7 @@ class BCLog():
         
         self._outfile = None
         self._gametime = 0
+        self._currentlogevent = 0
 
     def BCLogFilename(self):
         result = ""
@@ -29,12 +27,17 @@ class BCLog():
     def ReadExistingLog(self, bclogpath):
         filehandle = open(bclogpath)
         for line in filehandle:
-            if "Nether:" in line:
-                print(line)
             if "LevelUpdate:" in line:
                 self._gametime = int(line.split(',')[0].split()[-1])
+            if "LogEvent:" in line:
+                self._currentlogevent = int(line.split(',')[0].split()[-1])
 
         filehandle.close()
+
+    def Close(self):
+        if(self._outfile):
+            self._outfile.close()
+
 
     def Open(self, seed):
 
@@ -43,26 +46,32 @@ class BCLog():
             return()
 
         if(self._outfile and seed is not self._seed):
-            print("Closing file and opening with new seed")
-            self.Close()
-            self._gametime = 0
+            print(f"Closing file and opening with new seed {seed}:{self._seed}")
+            self._outfile.close()
+            self._outfile = None
 
         if(seed is None):
             print("Seed is blank")
-            return()
-
-        self._seed = seed
-        bclogpath = Path(self.BCLogFilename())
-        if(bclogpath.exists()):
-            self.ReadExistingLog(bclogpath)
-
-        self._outfile = open(self.BCLogFilename(),'a')
+            self._seed = None
+        else:
+            print(f"Opening new file with seed: {seed}")
+            self._seed = seed
+            self._gametime = 0
+            self._currentlogevent = 0
+            bclogpath = Path(self.BCLogFilename())
+            if(bclogpath.exists()):
+                self.ReadExistingLog(bclogpath)
+            self._outfile = open(self.BCLogFilename(),'a')
 
     def LogResults(self, levelfile: BCLevelFile, logfiles: BCLogFiles):
-        if self._seed is not levelfile.Seed():
+        if self._seed != levelfile.Seed():
             self.Open(levelfile.Seed())
+        if self._currentlogevent < logfiles.NumLogEvents() and self._outfile:
+            while self._currentlogevent < logfiles.NumLogEvents():
+                self._outfile.write(f"{logfiles.GetLogEvent(self._currentlogevent)}\n")
+                self._currentlogevent=self._currentlogevent+1
+            self._outfile.flush()
         if self._gametime != levelfile.GameTime() and self._outfile:
-            self._gametime = levelfile.GameTime()
             self._outfile.write(f"{datetime.fromtimestamp(levelfile.LevelFileLastUpdate()).strftime('%Y-%m-%d %H:%M:%S')}")
             self._outfile.write(f" LevelUpdate: ")
             self._outfile.write(f"{levelfile.GameTime()},")
@@ -76,18 +85,11 @@ class BCLog():
             self._outfile.write(f"{levelfile.WanderingTraderSpawnChance()},")
             self._outfile.write(f"{levelfile.WanderingTraderID()}\n")
             self._outfile.flush()
+            self._gametime = levelfile.GameTime()
 
     def Flush(self, output=""):
         if(self._outfile):
             self._outfile.flush()
-
-    def Close(self):
-        if(self._outfile):
-            self._outfile.close()
-
-    def SaveAllFiles():
-        call(["./save-it-all.bash"])
-        sleep(0.5)
 
 def main():
     print("BCLog: Unit Testing")

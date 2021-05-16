@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-from re import I
 from nbt import NBTFile
 
 from time import time, sleep , strftime, strptime
@@ -112,10 +111,6 @@ class BCLevelFile(NBTFile):
 
     def WanderingTraderID(self):
         return(self.wanderingtraderid)
-
-    def EstimatedTimeOfDay(self):
-        return(self.EstimatedTimeOfDay())
-
 
 
     def ReadLevelFile(self, levelfilepath):

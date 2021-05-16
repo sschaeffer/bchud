@@ -1,8 +1,6 @@
 #!/usr/bin/python3
 
-from bclevelfile import BCLevelFile
-from bclogfile import BCLogFile
-from bclog import BCLog
+from bcgameinstance import BCGameInstance
 from bcstatwindow import BCStatWindow
 from bcstatusbar import BCStatusBar
 from datetime import datetime, timedelta
@@ -18,13 +16,13 @@ import argparse
 def initserver(argv=None):
 
     parser = argparse.ArgumentParser(prog='bchud')
+    parser.add_argument('--minecraftdir', default="/media/local/Minecraft/server", help="minecraft server directory")
     parser.add_argument('--servername', default="snapshot", help="servername is the name of the server")
     parser.add_argument('--worldname', help="worldname is the name of the world (if different then server)")
     args = parser.parse_args(argv)
     if(args.worldname == None):
         args.worldname = args.servername
-    return(args.servername,args.worldname)
-
+    return(args.minecraftdir,args.servername,args.worldname)
 
 
 def cursessetup():
@@ -44,14 +42,14 @@ def cursessetup():
     curses.init_pair(BCStatusBar.STATSBAR_UNTILRAINCOLOR, curses.COLOR_BLACK, 26)
     curses.init_pair(BCStatusBar.STATSBAR_UNTILTHUNDERCOLOR, curses.COLOR_BLACK, 237)
 
-    curses.init_pair(BCLevelFile.DAWN, curses.COLOR_BLACK, 216)           # 1 BRIGHT YELLOW (1min 40secs)
-    curses.init_pair(BCLevelFile.WORKDAY, curses.COLOR_BLACK, 192)           # 2 YELLOW (5mins 50secs)
-    curses.init_pair(BCLevelFile.HAPPYHOUR, curses.COLOR_BLACK, 181)       # 3 LIGHT BLUE/PURPLE (2mins 30secs)
-    curses.init_pair(BCLevelFile.TWILIGHT, curses.COLOR_BLACK, 147)       # 4 PURPLE (27secs)
-    curses.init_pair(BCLevelFile.SLEEP, curses.COLOR_WHITE, 63)          # 5 DARK BLUE PURPLE (21secs)
-    curses.init_pair(BCLevelFile.MONSTERS, curses.COLOR_WHITE, 17)      # 7 DARKEST BLUE/BLACK (8mins 1secs)
-    curses.init_pair(BCLevelFile.NOMONSTERS, curses.COLOR_WHITE, 20)    # 8 LIGHT BLUE (11 secs)
-    curses.init_pair(BCLevelFile.NOSLEEP, curses.COLOR_WHITE, 96)        # PINK (27secs)
+    curses.init_pair(BCGameInstance.DAWN, curses.COLOR_BLACK, 216)           # 1 BRIGHT YELLOW (1min 40secs)
+    curses.init_pair(BCGameInstance.WORKDAY, curses.COLOR_BLACK, 192)           # 2 YELLOW (5mins 50secs)
+    curses.init_pair(BCGameInstance.HAPPYHOUR, curses.COLOR_BLACK, 181)       # 3 LIGHT BLUE/PURPLE (2mins 30secs)
+    curses.init_pair(BCGameInstance.TWILIGHT, curses.COLOR_BLACK, 147)       # 4 PURPLE (27secs)
+    curses.init_pair(BCGameInstance.SLEEP, curses.COLOR_WHITE, 63)          # 5 DARK BLUE PURPLE (21secs)
+    curses.init_pair(BCGameInstance.MONSTERS, curses.COLOR_WHITE, 17)      # 7 DARKEST BLUE/BLACK (8mins 1secs)
+    curses.init_pair(BCGameInstance.NOMONSTERS, curses.COLOR_WHITE, 20)    # 8 LIGHT BLUE (11 secs)
+    curses.init_pair(BCGameInstance.NOSLEEP, curses.COLOR_WHITE, 96)        # PINK (27secs)
 
 
 def rendermenubar(stdscr, servername, worldname):
@@ -60,7 +58,7 @@ def rendermenubar(stdscr, servername, worldname):
     stdscr.chgat(-1, curses.A_REVERSE)
 
 
-def main(stdscr, servername, worldname):
+def main(stdscr, minecraftdir, servername, worldname):
 
     cursessetup()
 
@@ -80,23 +78,15 @@ def main(stdscr, servername, worldname):
     key = 0
     activewindow=1
 
-    bclog = BCLog(servername,worldname)
-    bclf = BCLogFile(bclog=bclog)
-    bct = BCLevelFile(bclf=bclf, bclog=bclog)
-
-    bclf.ReadLogFile()
-    bct.ReadLevelFile()
+    bcgi = BCGameInstance(minecraftdir,servername,worldname)
 
     # Loop where k is the last character presse
     while (key != ord('q')):
 
-        if key == ord('r'):
-            bclf.ReadLogFile()
-            bct.ReadLevelFile()
-        elif key == ord('s'):
-            bclog.SaveAllFiles()
+        if key == ord('s'):
+            bcgi.SaveAllFiles()
         elif key == ord('t'):
-            bcstatwindow.RecordTime(bct)
+            bcstatwindow.RecordTime()
         elif key == ord('0'):
             stdscr.clear()
             statusbarwin.clear()
@@ -117,20 +107,19 @@ def main(stdscr, servername, worldname):
             statusbarwin.clear()
             statwin.clear()
 
-        bclf.ReadLogFile()
-        bct.ReadLevelFile()
+        bcgi.UpdateGameInfo()
 
         rendermenubar(stdscr,servername,worldname) 
-        bcstatusbar.Render(bct)
+        bcstatusbar.Render(bcgi)
         stdscr.noutrefresh()
 
         if (activewindow==1):
-            bcstatusbar.RenderWindow(bct) 
+            bcstatusbar.RenderWindow(bcgi) 
             statusbarwin.noutrefresh()
             statpanel.hide()
             statusbarpanel.show()
         elif (activewindow==2):
-            bcstatwindow.Render(bclf) 
+            bcstatwindow.Render(bcgi) 
             statwin.noutrefresh()
             statpanel.show()
             statusbarpanel.hide()
@@ -145,5 +134,5 @@ def main(stdscr, servername, worldname):
         key = stdscr.getch()
 
 if __name__ == "__main__":
-    (servername,worldname) = initserver()
-    curses.wrapper(main, servername, worldname)
+    (minecraftdir,servername,worldname) = initserver()
+    curses.wrapper(main, minecraftdir, servername, worldname)

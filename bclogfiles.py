@@ -2,7 +2,7 @@
 
 from pathlib import Path
 from datetime import date, datetime, timedelta
-from time import time, strptime, sleep
+from time import time, strptime
 from os import listdir
 import re
 import gzip
@@ -10,7 +10,7 @@ import gzip
 REGEX_LOGIN_USERNAME = re.compile("\[Server thread\/INFO\]: ([^]]+)\[")
 REGEX_LOGOUT_USERNAME = re.compile("\[Server thread\/INFO\]: ([^ ]+) lost connection")
 REGEX_KICK_USERNAME = re.compile("\[INFO\] CONSOLE: Kicked player ([^ ]*)")
-REGEX_NETHER_USERNAME = re.compile("\[Server threads\/INFO\] ([^ ]*) has made the advancement \[We Need To Go Deeper\]")
+REGEX_NETHER_USERNAME = re.compile("\[Server thread\/INFO\]: ([^ ]+) has reached the goal \[We Need to Go Deeper\]")
 DEATH_MESSAGES = (
     "was squashed by.*",
     "was pricked to death",
@@ -35,6 +35,7 @@ DEATH_MESSAGES = (
     "was shot by.*",
     "was fireballed by.*",
     "was killed.*",
+    "was impaled.*",
     "got finished off by.*",
     "tried to swim in lava.*",
     "died",
@@ -55,25 +56,45 @@ class BCUserStats:
         self._username = username
         self._logins = 0
         self._timeplayed = 0.0
+        self._deathtime = 0
         self._deathcount = 0
         self._deathtypes = {}
         self._prevlogin = None
+        self._netherentry = None
 
-    def Login(self, date):
+    def Login(self, timestamp):
         self._logins += 1
-        self._prevlogin = date
+        self._prevlogin = timestamp
 
-    def Logout(self, date):
+    def Logout(self, timestamp):
         if self._prevlogin is None:
             return
-        session = date - self._prevlogin
+        session = timestamp - self._prevlogin
         self._timeplayed += session
         self._prevlogin = None
 
-    def NetherEntry(self, date):
+    def NetherEntry(self, timestamp):
         if self._prevlogin is not None and self._netherentry is None:
-            currentsession = date - self._prevlogin
+            currentsession = timestamp - self._prevlogin
             self._netherentry = self._timeplayed + currentsession
+
+    def Death(self, timestamp, typeofdeath):
+        if self._prevlogin is not None:
+            currentsession = timestamp - self._prevlogin
+            self._deathtime = self._timeplayed + currentsession
+            self._deathcount += 1
+            if typeofdeath not in self._deathtypes:
+                self._deathtypes[typeofdeath] = 0
+            self._deathtypes[typeofdeath] += 1
+
+    def PrintTimePlayed(self):
+        return(f"{timedelta(seconds=self._timeplayed)}")
+
+    def PrintNetherEntry(self):
+        return(f"{timedelta(seconds=self._netherentry)}")
+
+    def PrintDeathTime(self):
+        return(f"{timedelta(seconds=self._deathtime)}")
 
     @property
     def username(self):
@@ -82,23 +103,6 @@ class BCUserStats:
     @property
     def logins(self):
         return self._logins
-
-
-class BCGameSession():
-    def __init__(self, starttime, endtime=0):
-        self._starttime = starttime
-        self._endtime = endtime
-
-    def SetEndTime(self,endtime):
-        self._endtime = endtime
-
-    @property
-    def starttime(self):
-        self._starttime
-
-    @property
-    def starttime(self):
-        self._endtime
 
 class BCLogFilesTimeUpdate():
 
@@ -120,6 +124,19 @@ class BCLogFilesTimeUpdate():
     def EstimatedStartTime(self):
         return(self._updatetime.timestamp()-(self._gametime/20))
 
+class BCLogEvent():
+
+    def __init__(self, timestamp, logeventmessage):
+        self._timestamp = timestamp
+        self._logeventmessage = logeventmessage 
+
+    def PrintTimeStamp(self):
+        return(f"{datetime.fromtimestamp(self._timestamp).strftime('%Y-%m-%d %H:%M:%S')}")
+
+    def PrintEventMessage(self):
+        return(self._logeventmessage)
+
+
 class BCLogFiles():
 
     def __init__(self, minecraftdir="/media/local/Minecraft/server", servername="snapshot", bclog=None):
@@ -127,7 +144,7 @@ class BCLogFiles():
         self.minecraftdir=minecraftdir
         self.servername=servername
 
-        self.gamesessions = [] 
+        self.logevents = [] 
         self.timeupdates = [] 
         self.lastfileupdate=0
         self.currentserversessionstart=0
@@ -140,6 +157,13 @@ class BCLogFiles():
     def LogFilename(self):
         return(self.minecraftdir+"/"+self.servername+"/logs/latest.log")
 
+    def GrepForDeathMessage(self,line):
+        for regex in REGEX_DEATH_MESSAGES:
+            search = regex.search(line)
+            if search:
+                return search.group(1), search.group(2)
+        return None, None
+
     def ParseLine(self, line, logdate):
         line = line.rstrip()
 #        print(line)
@@ -149,33 +173,31 @@ class BCLogFiles():
             logdatetime = datetime.combine(logdate,datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()).timestamp()
             self.currentserversessionstart = logdatetime
             self.currentserversessionend = 0
-            self.gamesessions.append(BCGameSession(logdatetime))
-#           self.bclog.Write(f"Server boot time: {datetime.fromtimestamp(starttime)}\n")
+            self.logevents.append(BCLogEvent(logdatetime,"Server session started"))
 
-        if "Stopping the server" in line:
+        elif "Stopping the server" in line:
             logdatetime = datetime.combine(logdate,datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()).timestamp()
             self.currentserversessionend = logdatetime
-            gamesession = self.gamesessions[len(self.gamesessions)-1]
-            gamesession.SetEndTime(logdatetime)
+            self.logevents.append(BCLogEvent(logdatetime,"Server session ended"))
 
-        if "The time is" in line:
+        elif "The time is" in line:
             updatetime = datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()
             updatedatetime = datetime.combine(date.today(),updatetime)
             gametime = int(line.split(" ")[6])
             self.timeupdates.append(BCLogFilesTimeUpdate(updatedatetime,gametime))
 
-
-        if "logged in with entity id" in line:
+        elif "logged in with entity id" in line:
             logdatetime = datetime.combine(logdate,datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()).timestamp()
             search = REGEX_LOGIN_USERNAME.search(line)
             if(search):
                 username = search.group(1).lstrip().rstrip()
                 if username not in self.users:
                     self.users[username] = BCUserStats(username)
-                user = self.users[username]
+                user: BCUserStats = self.users[username]
                 user.Login(logdatetime)
+                self.logevents.append(BCLogEvent(logdatetime,f"{user._username} logged in {user.PrintTimePlayed()}"))
 
-        if "lost connection" in line or "[INFO] CONSOLE: Kicked player" in line:
+        elif "lost connection" in line or "[INFO] CONSOLE: Kicked player" in line:
             username = "" 
             logdatetime = datetime.combine(logdate,datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()).timestamp()
             if "lost connection" in line:
@@ -190,14 +212,24 @@ class BCLogFiles():
             if username in self.users:
                 user = self.users[username]
                 user.Logout(logdatetime)
+                self.logevents.append(BCLogEvent(logdatetime,f"{user._username} logged out {user.PrintTimePlayed()}"))
 
-        if "We Need to Go Deeper" in line:
+        elif "We Need to Go Deeper" in line:
             logdatetime = datetime.combine(logdate,datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()).timestamp()
             username = (REGEX_NETHER_USERNAME.search(line)).group(1).lstrip().rstrip()
             if username in self.users:
-                user = user[username]
+                user = self.users[username]
                 user.NetherEntry(logdatetime)
+                self.logevents.append(BCLogEvent(logdatetime,f"{user._username} entered the nether at {user.PrintNetherEntry()}"))
 
+        else:
+            username, typeofdeath = self.GrepForDeathMessage(line)
+            if(username != None):
+                logdatetime = datetime.combine(logdate,datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()).timestamp()
+                if username in self.users:
+                    user = self.users[username]
+                    user.Death(logdatetime,typeofdeath)
+                    self.logevents.append(BCLogEvent(logdatetime,f"{username} {typeofdeath} {user.PrintDeathTime()}"))
 
     def ReadPreviousLogFiles(self):
         for logname in sorted(listdir(self.minecraftdir+"/"+self.servername+"/logs")):
@@ -263,21 +295,40 @@ class BCLogFiles():
         else:
             return False
 
+    def ServerStarted(self):
+        if(self.currentserversessionstart==0):
+            return False
+        else:
+            return True
+
+    def NumLogEvents(self):
+        return len(self.logevents)
+
+    def GetLogEvent(self,eventid):
+        return f"{self.logevents[eventid].PrintTimeStamp()} LogEvent: {eventid+1}, {self.logevents[eventid].PrintEventMessage()}"
+
     def PrintDebug(self):
-        print(f"Current Server Session Start Time is: {datetime.fromtimestamp(self.GetCurrentServerSessionStartTime())}")
-        if(not self.ServerActive()):
-           print(f"Current Server Session End Time is:   {datetime.fromtimestamp(self.GetCurrentServerSessionEndTime())}")
 
-        for username in self.users:
+        if(not self.ServerStarted()):
+            print("Server isn't started")
+        else:
+            print(f"Current Server Session Start Time is: {datetime.fromtimestamp(self.GetCurrentServerSessionStartTime())}")
+            if(not self.ServerActive()):
+               print(f"Current Server Session End Time is:   {datetime.fromtimestamp(self.GetCurrentServerSessionEndTime())}")
+            for i in range(self.NumLogEvents()):
+                print(self.GetLogEvent(i))
 
-            user: BCUserStats = self.users[username]
-            print(f"{user._username} - {user._logins} - {user._timeplayed} - {user._deathcount}")
-            if(not user._prevlogin):
-                print(f"{user._username} is not currently logged in")
-            #self._death_types = {}
-        for sessions in self.gamesessions:
-            print(f"{sessions._starttime} - {sessions._endtime}")
-#        for timeupdate in self.timeupdates:
+
+    #    for username in self.users:
+#
+#            user: BCUserStats = self.users[username]
+#            print(f"{user._username} - {user._logins} - {user._timeplayed} - {user._deathcount}")
+#            if(not user._prevlogin):
+#                print(f"{user._username} is not currently logged in")
+#            #self._death_types = {}
+#        for sessions in self.gamesessions:
+#            print(f"{sessions._starttime} - {sessions._endtime}")
+##        for timeupdate in self.timeupdates:
 #            print("{} - {} - {} - {}".format(timeupdate._updatetime,timeupdate._gametime,timeupdate.estgametime(),timeupdate.eststarttime()))
 
 
@@ -285,10 +336,13 @@ class BCLogFiles():
 def main():
     print("BCLogFiles: Unit Testing")
     bclf = BCLogFiles()
-    while(True):
-        bclf.UpdateLogInfo()
-        bclf.PrintDebug()
-        sleep(2)
+    bclf.UpdateLogInfo()
+    bclf.PrintDebug()
+
+#    while(True):
+#        bclf.UpdateLogInfo()
+#        bclf.PrintDebug()
+#        sleep(2)
 
 
 if __name__ == '__main__':
