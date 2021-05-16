@@ -4,7 +4,7 @@ from datetime import datetime
 from time import sleep, strftime
 from subprocess import call
 
-class BCStatWindow():
+class BCTimerWindow():
 
     def __init__(self, window):
         self.window = window
