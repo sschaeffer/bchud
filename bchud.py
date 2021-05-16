@@ -3,13 +3,10 @@
 from bcgameinstance import BCGameInstance
 from bcstatwindow import BCStatWindow
 from bcstatusbar import BCStatusBar
-from datetime import datetime, timedelta
-#from math import floor
-#from time import time, sleep, strftime, strptime
+
 import curses
 import curses.panel
 
-from sys import argv
 import argparse
 
 

@@ -229,7 +229,7 @@ class BCLogFiles():
                 if username in self.users:
                     user = self.users[username]
                     user.Death(logdatetime,typeofdeath)
-                    self.logevents.append(BCLogEvent(logdatetime,f"{username} {typeofdeath} {user.PrintDeathTime()}"))
+                    self.logevents.append(BCLogEvent(logdatetime,f"{username} death - {typeofdeath} {user.PrintDeathTime()}"))
 
     def ReadPreviousLogFiles(self):
         for logname in sorted(listdir(self.minecraftdir+"/"+self.servername+"/logs")):
@@ -264,7 +264,7 @@ class BCLogFiles():
             # Log file was deleted so re-init the stats
             self.__init__(self.minecraftdir,self.servername)
         else:
-            if(self.fileBytePosition==0):
+            if(self.fileBytePosition is 0):
                 # First time reading the file so re-init and read previous logs (if any) 
                 self.__init__(self.minecraftdir,self.servername)
                 self.ReadPreviousLogFiles()
@@ -283,11 +283,8 @@ class BCLogFiles():
     def GetLastLogTimeUpdate(self):
         return self.GetLogTimeUpdate(self.NumLogTimeUpdates()-1)
 
-    def GetCurrentServerSessionStartTime(self):
+    def ServerStartTime(self):
         return self.currentserversessionstart
-
-    def GetCurrentServerSessionEndTime(self):
-        return self.currentserversessionend
 
     def ServerActive(self):
         if(self.currentserversessionend==0):
