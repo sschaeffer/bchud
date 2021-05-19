@@ -229,7 +229,7 @@ class BCLogFiles():
                 if username in self.users:
                     user = self.users[username]
                     user.Death(logdatetime,typeofdeath)
-                    self.logevents.append(BCLogEvent(logdatetime,f"{username} {typeofdeath} {user.PrintDeathTime()}"))
+                    self.logevents.append(BCLogEvent(logdatetime,f"{username} death - {typeofdeath} {user.PrintDeathTime()}"))
 
     def ReadPreviousLogFiles(self):
         for logname in sorted(listdir(self.minecraftdir+"/"+self.servername+"/logs")):
