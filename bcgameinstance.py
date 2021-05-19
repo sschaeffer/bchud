@@ -62,21 +62,13 @@ class BCGameInstance():
         return(self._bclevelfile.GameTime())
 
     def EstimatedGameTime(self):
-        result = self._bclevelfile.EstimatedGameTime()
-        if result <= 0:
-            if self._bclogfiles.GetCurrentServerSessionStartTime() > 0:
-                result = round(time()-self._bclogfiles.GetCurrentServerSessionStartTime())*20
-        return result
+        return(self._bclevelfile.EstimatedGameTime())
 
     def DayTime(self):
         return(self._bclevelfile.DayTime())
 
     def EstimatedDayTime(self):
-        result = self._bclevelfile.EstimatedDayTime()
-        if result <= 0:
-            if self._bclogfiles.GetCurrentServerSessionStartTime() > 0:
-                result = round(time()-self._bclogfiles.GetCurrentServerSessionStartTime())*20
-        return result
+        return(self._bclevelfile.EstimatedDayTime())
 
     def ClearWeatherTime(self):
         return(self._bclevelfile.ClearWeatherTime())
@@ -129,19 +121,16 @@ class BCGameInstance():
     def EstimatedIsBedUsable(self):
         return(self._bclevelfile.EstimatedIsBedUsable())
 
-    def UpdateGameInfo(self):
-        self._bclevelfile.UpdateLevelInfo()
-        self._bclogfiles.UpdateLogInfo()
+    def ServerActive(self):
+        return(self._bclogfiles.ServerActive())
 
-        if(self._logresults):
-            self._bclog.LogResults(self._bclevelfile,self._bclogfiles)
-
-    def SaveAllFiles():
-        call(["./save-it-all.bash"])
+    def ServerStartTime(self):
+        return(self._bclogfiles.ServerStartTime())
 
     def UpdateGameInfo(self):
-        self._bclevelfile.UpdateLevelInfo()
+
         self._bclogfiles.UpdateLogInfo()
+        self._bclevelfile.UpdateLevelInfo(self.ServerActive(),self.ServerStartTime())
 
         if(self._logresults):
             self._bclog.LogResults(self._bclevelfile,self._bclogfiles)

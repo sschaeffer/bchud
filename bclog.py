@@ -51,19 +51,19 @@ class BCLog():
     def Open(self, seed):
 
         if(self._outfile and seed is self._seed):
-            print("Seed is the same and the file is already open")
+#            print("Seed is the same and the file is already open")
             return()
 
         if(self._outfile and seed is not self._seed):
-            print(f"Closing file and opening with new seed {seed}:{self._seed}")
+#            print(f"Closing file and opening with new seed {seed}:{self._seed}")
             self._outfile.close()
             self._outfile = None
 
         if(seed is None):
-            print("Seed is blank")
+#            print("Seed is blank")
             self._seed = None
         else:
-            print(f"Opening new file with seed: {seed}")
+#            print(f"Opening new file with seed: {seed}")
             self._seed = seed
             self._gametime = 0
             self._currentlogevent = 0

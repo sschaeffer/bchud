@@ -35,12 +35,15 @@ class BCLevelFile(NBTFile):
 #    RAINMONSTERS=6   # DARK BLUE (11secs)
 #    NORAINMONSTERS=9 # LIGHTER BLUE/PINK (22secs)
 
-    def __init__(self, minecraftdir="/media/local/Minecraft/server", servername="snapshot", worldname="snapshot"):
+    def __init__(self, minecraftdir="/media/local/Minecraft/server", servername="snapshot", worldname="snapshot", serveractive=False, serverstarttime=0):
 
         self.minecraftdir=minecraftdir
         self.servername=servername
         self.worldname=worldname
         self.levelfilename="level.dat"
+
+        self._serveractive=serveractive
+        self._serverstarttime=serverstarttime
 
         self.lastupdatetime=0
         self.seed=None
@@ -68,25 +71,8 @@ class BCLevelFile(NBTFile):
     def GameTime(self):
         return(self.gametime)
 
-    def EstimatedGameTime(self):
-        result = 0
-        if self.gametime > 0:
-            result = round(self.gametime+((time()-self.lastupdatetime)*20))
-#        elif self.bclf.GetStarttime() > 0:
-#            result = round(time()-self.bclf.GetStarttime())*20
-        return result
-
     def DayTime(self):
         return(self.daytime)
-
-    def EstimatedDayTime(self):
-        result = 0
-        if self.daytime > 0:
-            # if self.daytime is less than zero or zero it means the game is still starting
-            result = round(self.daytime+((time()-self.lastupdatetime)*20))
-#        elif self.bclf.GetStarttime() > 0:
-#            result = round(time()-self.bclf.GetStarttime())*20
-        return result
 
     def ClearWeatherTime(self):
         return(self.clearweathertime)
@@ -157,14 +143,38 @@ class BCLevelFile(NBTFile):
                 self.thundering=bool(int(str(self["Data"]["thundering"])))
 
  
-    def UpdateLevelInfo(self):
+    def UpdateLevelInfo(self,serveractive,serverstarttime):
         levelfilepath = Path(self.LevelFilename())
         if not levelfilepath.exists():
             # game was reset or hasn't started yet. level_dat doesn't exist
             # also re-read the logs from scratch
-            self.__init__()
+            self.__init__(serveractive=serveractive,serverstarttime=serverstarttime)
         else:
+            self._serveractive = serveractive
+            self._serverstarttime = serverstarttime
             self.ReadLevelFile(levelfilepath)
+
+    def EstimatedGameTime(self):
+        result = 0
+        if not self._serveractive:
+            result = self.GameTime()
+        elif self.gametime > 0:
+            result = round(self.gametime+((time()-self.lastupdatetime)*20))
+        elif self._serverstarttime > 0:
+            result = round(time()-self._serverstarttime)*20
+        return result
+
+
+    def EstimatedDayTime(self):
+        result = 0
+        if not self._serveractive:
+            result = self.DayTime()
+        elif self.daytime > 0:
+            # if self.daytime is less than zero or zero it means the game is still starting
+            result = round(self.daytime+((time()-self.lastupdatetime)*20))
+        elif self._serverstarttime > 0:
+            result = round(time()-self._serverstarttime)*20
+        return result
 
     def EstimatedClearWeatherTime(self):
         result=0
@@ -250,7 +260,7 @@ def main():
     print("BCLevelFile: Unit Testing")
     bclevelfile = BCLevelFile()
 
-    bclevelfile.UpdateLevelInfo()
+    bclevelfile.UpdateLevelInfo(False,0)
     if bclevelfile.LevelFileLastUpdate() == 0:
         print("No level.dat file")
 #        print(bclevelfile.pretty_tree())

@@ -1,15 +1,12 @@
 #!/usr/bin/python3
 
 from bcgameinstance import BCGameInstance
-from bcstatwindow import BCStatWindow
+from bctimerwindow import BCTimerWindow
 from bcstatusbar import BCStatusBar
-from datetime import datetime, timedelta
-#from math import floor
-#from time import time, sleep, strftime, strptime
+
 import curses
 import curses.panel
 
-from sys import argv
 import argparse
 
 
@@ -66,13 +63,13 @@ def main(stdscr, minecraftdir, servername, worldname):
     stdscr.noutrefresh()
     height, width = stdscr.getmaxyx()
 
-    statwin = curses.newwin(height-2,width,1,0)
+    timerwindow = curses.newwin(height-2,width,1,0)
     statusbarwin = curses.newwin(height-2,width,1,0)
 
-    bcstatwindow = BCStatWindow(statwin)
+    bctimerwindow = BCTimerWindow(timerwindow)
     bcstatusbar = BCStatusBar(stdscr,statusbarwin)
 
-    statpanel = curses.panel.new_panel(statwin)
+    statpanel = curses.panel.new_panel(timerwindow)
     statusbarpanel = curses.panel.new_panel(statusbarwin)
 
     key = 0
@@ -86,26 +83,26 @@ def main(stdscr, minecraftdir, servername, worldname):
         if key == ord('s'):
             bcgi.SaveAllFiles()
         elif key == ord('t'):
-            bcstatwindow.RecordTime()
+            bctimerwindow.RecordTime()
         elif key == ord('0'):
             stdscr.clear()
             statusbarwin.clear()
-            statwin.clear()
+            timerwindow.clear()
             activewindow = 0
         elif key == ord('1'):
             stdscr.clear()
             statusbarwin.clear()
-            statwin.clear()
+            timerwindow.clear()
             activewindow = 1
         elif key == ord('2'):
             stdscr.clear()
             statusbarwin.clear()
-            statwin.clear()
+            timerwindow.clear()
             activewindow = 2 
         elif key == curses.KEY_RESIZE or key == ord('w'):
             stdscr.clear()
             statusbarwin.clear()
-            statwin.clear()
+            timerwindow.clear()
 
         bcgi.UpdateGameInfo()
 
@@ -119,8 +116,8 @@ def main(stdscr, minecraftdir, servername, worldname):
             statpanel.hide()
             statusbarpanel.show()
         elif (activewindow==2):
-            bcstatwindow.Render(bcgi) 
-            statwin.noutrefresh()
+            bctimerwindow.Render(bcgi) 
+            timerwindow.noutrefresh()
             statpanel.show()
             statusbarpanel.hide()
         else:
