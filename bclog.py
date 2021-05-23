@@ -4,7 +4,7 @@ from bclevelfile import BCLevelFile
 from bclogfiles import BCLogFiles
 
 from pathlib import Path
-from os import symlink, unlink
+#from os import symlink, unlink
 from datetime import datetime
 
 
@@ -28,10 +28,10 @@ class BCLog():
 
     def BCSymLink(self):
         if(self._seed is not None):
-            link = self._minecraftdir+"/bclogs/latest_"+self._servername
-            if(Path(link).exists()):
-                unlink(link)
-            symlink(self.BCLogFilename(),link)
+            link = Path(self._minecraftdir+"/bclogs/latest_"+self._servername)
+            if(link.is_symlink()):
+                link.unlink()
+            link.symlink_to(self.BCLogFilename())
 
     def ReadExistingLog(self, bclogpath):
         filehandle = open(bclogpath)
