@@ -3,7 +3,7 @@
 from pathlib import Path
 from datetime import date, datetime, timedelta
 from time import time, strptime
-from os import listdir
+from os import kill, listdir
 import re
 import gzip
 
@@ -11,6 +11,8 @@ REGEX_LOGIN_USERNAME = re.compile("\[Server thread\/INFO\]: ([^]]+)\[")
 REGEX_LOGOUT_USERNAME = re.compile("\[Server thread\/INFO\]: ([^ ]+) lost connection")
 REGEX_KICK_USERNAME = re.compile("\[INFO\] CONSOLE: Kicked player ([^ ]*)")
 REGEX_NETHER_USERNAME = re.compile("\[Server thread\/INFO\]: ([^ ]+) has reached the goal \[We Need to Go Deeper\]")
+REGEX_THEEND_USERNAME = re.compile("\[Server thread\/INFO\]: ([^ ]+) has reached the goal \[The End\?\]")
+REGEX_KILL_DRAGON_USERNAME = re.compile("\[Server thread\/INFO\]: ([^ ]+) has reached the goal \[Free the End\]")
 DEATH_MESSAGES = (
     "was squashed by.*",
     "was pricked to death",
@@ -61,6 +63,8 @@ class BCUserStats:
         self._deathtypes = {}
         self._prevlogin = None
         self._netherentry = None
+        self._endentry = None
+        self._dragonkilled = None
 
     def Login(self, timestamp):
         self._logins += 1
@@ -78,6 +82,16 @@ class BCUserStats:
             currentsession = timestamp - self._prevlogin
             self._netherentry = self._timeplayed + currentsession
 
+    def EndEntry(self, timestamp):
+        if self._prevlogin is not None and self._endentry is None:
+            currentsession = timestamp - self._prevlogin
+            self._endentry = self._timeplayed + currentsession
+
+    def KilledTheDragon(self, timestamp):
+        if self._prevlogin is not None and self._dragonkilled is None:
+            currentsession = timestamp - self._prevlogin
+            self._dragonkilled = self._timeplayed + currentsession
+
     def Death(self, timestamp, typeofdeath):
         if self._prevlogin is not None:
             currentsession = timestamp - self._prevlogin
@@ -92,6 +106,12 @@ class BCUserStats:
 
     def PrintNetherEntry(self):
         return(f"{timedelta(seconds=self._netherentry)}")
+
+    def PrintEndEntry(self):
+        return(f"{timedelta(seconds=self._endentry)}")
+
+    def PrintDragonKilled(self):
+        return(f"{timedelta(seconds=self._dragonkilled)}")
 
     def PrintDeathTime(self):
         return(f"{timedelta(seconds=self._deathtime)}")
@@ -221,6 +241,22 @@ class BCLogFiles():
                 user = self.users[username]
                 user.NetherEntry(logdatetime)
                 self.logevents.append(BCLogEvent(logdatetime,f"{user._username} entered the nether at {user.PrintNetherEntry()}"))
+
+        elif "The End?" in line:
+            logdatetime = datetime.combine(logdate,datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()).timestamp()
+            username = (REGEX_THEEND_USERNAME.search(line)).group(1).lstrip().rstrip()
+            if username in self.users:
+                user = self.users[username]
+                user.EndEntry(logdatetime)
+                self.logevents.append(BCLogEvent(logdatetime,f"{user._username} entered the end at {user.PrintEndEntry()}"))
+
+        elif "Free the End" in line:
+            logdatetime = datetime.combine(logdate,datetime.strptime(line.split(" ")[0], "[%H:%M:%S]").time()).timestamp()
+            username = (REGEX_KILL_DRAGON_USERNAME.search(line)).group(1).lstrip().rstrip()
+            if username in self.users:
+                user = self.users[username]
+                user.KilledTheDragon(logdatetime)
+                self.logevents.append(BCLogEvent(logdatetime,f"{user._username} win - killed the dragon at {user.PrintDragonKilled()}"))
 
         else:
             username, typeofdeath = self.GrepForDeathMessage(line)

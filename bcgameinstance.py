@@ -3,6 +3,7 @@
 from bclevelfile import BCLevelFile
 from bclogfiles import BCLogFiles
 from bclog import BCLog
+from bcalladvancements import BCAllAdvancements
 
 from time import sleep, time
 from subprocess import call
@@ -41,7 +42,7 @@ class BCGameInstance():
 
         self._bclevelfile = BCLevelFile(minecraftdir, servername, worldname)
         self._bclogfiles = BCLogFiles(minecraftdir, servername)
-        #self.bcalladvancements = BCAllAdancements(minecraftdir, servername)
+        self._bcalladvancements = BCAllAdvancements(minecraftdir, servername)
         #self.bcuseradvancements = BCUserAdancements(minecraftdir, servername)
 
         self._bclog = BCLog(minecraftdir,servername)
