@@ -4,24 +4,40 @@ import json
 class BCAdvancement():
 
     def __init__(self, name, filename):
+
         self._name = name
         self._filename = filename
         self._title = ""
         self._parent = ""
 
+        self._section = ADVANCEMENT_EMPTY
+        if(name.startswith("blazeandcave:animal")):
+            self._section == ADVANCEMENT_ADVENTURE
+        if(name.startswith("blazeandcave:bacap")):
+            self._section == "bacap"
+        elif(name.startswith("blazeandcave:adventure")):
+            self._section == "adventure"
+        elif(name.startswith("blazeandcave:animal")):
+            self._section == "adventure"
+
     def ReadAdvancement(self):
         advancement_file = open(self._filename,'r')
         advancement_info = json.load(advancement_file)
         if 'display' not in advancement_info:
-            print ("No Display")
+#            print ("No Display")
+            pass
         elif 'title' not in advancement_info['display']:
-            print ("No Title")
+#            print ("No Title")
+            pass
         elif 'translate' not in advancement_info['display']['title']:
-            print ("No Translate")
+#            print ("No Translate")
+            pass
         else:
             self._title = advancement_info['display']['title']['translate']
+ 
         if 'parent' not in advancement_info:
-            print ("No Parent")
+#            print ("No Parent")
+            pass
         else:
             self._parent = advancement_info['parent']
         
