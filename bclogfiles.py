@@ -300,7 +300,7 @@ class BCLogFiles():
             # Log file was deleted so re-init the stats
             self.__init__(self.minecraftdir,self.servername)
         else:
-            if(self.fileBytePosition is 0):
+            if(self.fileBytePosition == 0):
                 # First time reading the file so re-init and read previous logs (if any) 
                 self.__init__(self.minecraftdir,self.servername)
                 self.ReadPreviousLogFiles()
@@ -345,7 +345,7 @@ class BCLogFiles():
         if(not self.ServerStarted()):
             print("Server isn't started")
         else:
-            print(f"Current Server Session Start Time is: {datetime.fromtimestamp(self.GetCurrentServerSessionStartTime())}")
+            print(f"Current Server Session Start Time is: {datetime.fromtimestamp(self.currentserversessionstart)}")
             if(not self.ServerActive()):
                print(f"Current Server Session End Time is:   {datetime.fromtimestamp(self.GetCurrentServerSessionEndTime())}")
             for i in range(self.NumLogEvents()):
