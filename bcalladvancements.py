@@ -1,5 +1,6 @@
 from os import listdir
 import json
+import collections
 
 class BCAdvancement():
 
@@ -62,6 +63,29 @@ class BCAdvancement():
         elif(name.startswith("blazeandcave:weaponry")):
             self._section = self.ADVANCEMENT_WEAPONRY
 
+    def findpaths(self, container):
+        def recurse(container, prefix):
+            if isinstance(container, list):
+                container = enumerate(container)
+            else:
+                container = container.items()
+            for key, value in container:
+                keys[key].append(prefix)
+                fullkey = prefix + (key,)
+                if isinstance(value, (list, dict)):
+                    recurse(value, fullkey)
+                else:
+                    values[value].append(fullkey)
+        keys = collections.defaultdict(list)
+        values = collections.defaultdict(list)
+        recurse(container, ())
+        return keys, values
+
+    def retrievebypath(self, container, keys):
+        for key in keys:
+            container = container[key]
+        return container
+
     def ReadAdvancement(self):
         advancement_file = open(self._filename,'r')
         advancement_info = json.load(advancement_file)
@@ -117,8 +141,23 @@ class BCAdvancement():
             elif(self._parent.startswith("blazeandcave:weaponry")):
                 self._section = self.ADVANCEMENT_WEAPONRY
 
-            elif(self._name=="minecraft:adventure/root" or self._name=="minecraft:adventure/summon_iron_golem"):
+            elif(self._name=="minecraft:adventure/root"):
                 self._section = self.ADVANCEMENT_ADVENTURE
+            elif(self._name=="minecraft:end/root"):
+                self._section = self.ADVANCEMENT_END
+            elif(self._name=="minecraft:husbandry/root"):
+                self._section = self.ADVANCEMENT_ANIMAL
+            elif(self._name=="minecraft:nether/root"):
+                self._section = self.ADVANCEMENT_ANIMAL
+
+        if 'criteria'  not in advancement_info:
+            print(f"No criteria for {self._name}")
+            pass
+        else:
+            keys, values = self.findpaths(advancement_info)
+            for key, value in sorted(keys.items(), key=str):
+                print(key, sorted(value))
+           # print(f"{self._name}: {self.retrievebypath(advancement_info, keys['items'][0])}")
 
 
 
@@ -202,8 +241,20 @@ class BCAllAdvancements():
         self.BuildStandardAdvancements("nether")
         self.BuildStandardAdvancements("story")
 
+    def ParentSection(self,advancement):
+        if self._advancements[advancement]._section != BCAdvancement.ADVANCEMENT_EMPTY:
+            return self._advancements[advancement]._section
+        else:
+            parent = self._advancements[advancement]._parent
+            if parent in self._advancements:
+                return self.ParentSection(parent)
+        return BCAdvancement.ADVANCEMENT_EMPTY
+
     def SortAllAdvancements(self):
         for advancement in self._advancements:
+            if self._advancements[advancement]._section == BCAdvancement.ADVANCEMENT_EMPTY:
+                self._advancements[advancement]._section = self.ParentSection(advancement)
+
             if self._advancements[advancement]._section == BCAdvancement.ADVANCEMENT_ADVENTURE:
                 if advancement not in self._adventure_advancements:
                     self._adventure_advancements[advancement] = self._advancements[advancement]
@@ -263,31 +314,58 @@ class BCAllAdvancements():
 
         print(f"Total Advancements: {len(self._advancements)}")
 
-        print(f"Total Adventure Advancements: {len(self._adventure_advancements)}")
-        print(f"Total Animal Advancements: {len(self._animal_advancements)}")
-        print(f"Total Bacap Advancements: {len(self._bacap_advancements)}")
-        print(f"Total Biomes Advancements: {len(self._biomes_advancements)}")
+#        print(f"Total Adventure Advancements: {len(self._adventure_advancements)}")
+#        print(f"Total Animal Advancements: {len(self._animal_advancements)}")
+#        print(f"Total Bacap Advancements: {len(self._bacap_advancements)}")
+#        print(f"Total Biomes Advancements: {len(self._biomes_advancements)}")
 
-        print(f"Total Building Advancements: {len(self._building_advancements)}")
-        print(f"Total Challenges Advancements: {len(self._challenges_advancements)}")
-        print(f"Total Enchanting Advancements: {len(self._enchanting_advancements)}")
-        print(f"Total End Advancements: {len(self._end_advancements)}")
+#        print(f"Total Building Advancements: {len(self._building_advancements)}")
+#        print(f"Total Challenges Advancements: {len(self._challenges_advancements)}")
+#        print(f"Total Enchanting Advancements: {len(self._enchanting_advancements)}")
+#        print(f"Total End Advancements: {len(self._end_advancements)}")
 
-        print(f"Total Farming Advancements: {len(self._farming_advancements)}")
+#        print(f"Total Farming Advancements: {len(self._farming_advancements)}")
+#        print(f"Total Mining Advancements: {len(self._mining_advancements)}")
+#        print(f"Total Monsters Advancements: {len(self._monsters_advancements)}")
+#        print(f"Total Nether Advancements: {len(self._nether_advancements)}")
+
+#        print(f"Total Potion Advancements: {len(self._potion_advancements)}")
+#        print(f"Total Redstone Advancements: {len(self._redstone_advancements)}")
+#        print(f"Total Statistics Advancements: {len(self._statistics_advancements)}")
+#        print(f"Total Weaponry Advancements: {len(self._weaponry_advancements)}")
+
         print(f"Total Mining Advancements: {len(self._mining_advancements)}")
+        print(f"Total Building Advancements: {len(self._building_advancements)}")
+        print(f"Total Farming Advancements: {len(self._farming_advancements)}")
+        print(f"Total Animal Advancements: {len(self._animal_advancements)}")
+
         print(f"Total Monsters Advancements: {len(self._monsters_advancements)}")
+        print(f"Total Weaponry Advancements: {len(self._weaponry_advancements)}")
+        print(f"Total Biomes Advancements: {len(self._biomes_advancements)}")
+        print(f"Total Adventure Advancements: {len(self._adventure_advancements)}")
+
+        print(f"Total Redstone Advancements: {len(self._redstone_advancements)}")
+        print(f"Total Enchanting Advancements: {len(self._enchanting_advancements)}")
+        print(f"Total Statistics Advancements: {len(self._statistics_advancements)}")
         print(f"Total Nether Advancements: {len(self._nether_advancements)}")
 
         print(f"Total Potion Advancements: {len(self._potion_advancements)}")
-        print(f"Total Redstone Advancements: {len(self._redstone_advancements)}")
-        print(f"Total Statistics Advancements: {len(self._statistics_advancements)}")
-        print(f"Total Weaponry Advancements: {len(self._weaponry_advancements)}")
+        print(f"Total End Advancements: {len(self._end_advancements)}")
+        print(f"Total Challenges Advancements: {len(self._challenges_advancements)}")
+        print(f"Total Bacap Advancements: {len(self._bacap_advancements)}")
 
-        i=1
-        for advancement in sorted(self._advancements):
-            if self._advancements[advancement]._section == BCAdvancement.ADVANCEMENT_EMPTY:
-                print(f"{i}:{advancement}\t\t\t{self._advancements[advancement]._parent}")
-                i+=1
+
+#        i=1
+#        for advancement in sorted(self._building_advancements):
+#            print(f"{i}:{advancement}\t\t{self._building_advancements[advancement]._parent}")
+#            i+=1
+            
+
+#        i=1
+#        for advancement in sorted(self._advancements):
+#            if self._advancements[advancement]._section == BCAdvancement.ADVANCEMENT_EMPTY:
+#                print(f"{i}:{advancement}\t\t\t{self._advancements[advancement]._parent}")
+#                i+=1
 
 
 
