@@ -117,6 +117,8 @@ class BCAdvancement():
             elif(self._parent.startswith("blazeandcave:weaponry")):
                 self._section = self.ADVANCEMENT_WEAPONRY
 
+            elif(self._name=="minecraft:adventure/root" or self._name=="minecraft:adventure/summon_iron_golem"):
+                self._section = self.ADVANCEMENT_ADVENTURE
 
 
 
@@ -143,6 +145,16 @@ class BCAllAdvancements():
         self._challenges_advancements={}
         self._enchanting_advancements={}
         self._end_advancements={}
+
+        self._farming_advancements={}
+        self._mining_advancements={}
+        self._monsters_advancements={}
+        self._nether_advancements={}
+
+        self._potion_advancements={}
+        self._redstone_advancements={}
+        self._statistics_advancements={}
+        self._weaponry_advancements={}
 
     def BuildAdvancements(self, type, name, dirname):
         advancement_dir = dirname + "/" + name
@@ -218,8 +230,33 @@ class BCAllAdvancements():
                 if advancement not in self._end_advancements:
                     self._end_advancements[advancement] = self._advancements[advancement]
 
-#            if(advancement.startswith("minecraft:adventure/summon") or\
-#                advancement.startswith("minecraft:adventure/root")):
+            elif self._advancements[advancement]._section == BCAdvancement.ADVANCEMENT_FARMING:
+                if advancement not in self._farming_advancements:
+                    self._farming_advancements[advancement] = self._advancements[advancement]
+            elif self._advancements[advancement]._section == BCAdvancement.ADVANCEMENT_MINING:
+                if advancement not in self._mining_advancements:
+                    self._mining_advancements[advancement] = self._advancements[advancement]
+            elif self._advancements[advancement]._section == BCAdvancement.ADVANCEMENT_MONSTERS:
+                if advancement not in self._monsters_advancements:
+                    self._monsters_advancements[advancement] = self._advancements[advancement]
+            elif self._advancements[advancement]._section == BCAdvancement.ADVANCEMENT_NETHER:
+                if advancement not in self._nether_advancements:
+                    self._nether_advancements[advancement] = self._advancements[advancement]
+
+            elif self._advancements[advancement]._section == BCAdvancement.ADVANCEMENT_POTION:
+                if advancement not in self._potion_advancements:
+                    self._potion_advancements[advancement] = self._advancements[advancement]
+            elif self._advancements[advancement]._section == BCAdvancement.ADVANCEMENT_REDSTONE:
+                if advancement not in self._redstone_advancements:
+                    self._redstone_advancements[advancement] = self._advancements[advancement]
+            elif self._advancements[advancement]._section == BCAdvancement.ADVANCEMENT_STATISTICS:
+                if advancement not in self._statistics_advancements:
+                    self._statistics_advancements[advancement] = self._advancements[advancement]
+            elif self._advancements[advancement]._section == BCAdvancement.ADVANCEMENT_WEAPONRY:
+                if advancement not in self._weaponry_advancements:
+                    self._weaponry_advancements[advancement] = self._advancements[advancement]
+
+
 
 
     def PrintAllAdvancements(self):
@@ -236,10 +273,21 @@ class BCAllAdvancements():
         print(f"Total Enchanting Advancements: {len(self._enchanting_advancements)}")
         print(f"Total End Advancements: {len(self._end_advancements)}")
 
-#        i=1
-#        for advancement in sorted(self._adventure_advancements):
-#            print(f"{i}:{advancement}")
-#            i+=1
+        print(f"Total Farming Advancements: {len(self._farming_advancements)}")
+        print(f"Total Mining Advancements: {len(self._mining_advancements)}")
+        print(f"Total Monsters Advancements: {len(self._monsters_advancements)}")
+        print(f"Total Nether Advancements: {len(self._nether_advancements)}")
+
+        print(f"Total Potion Advancements: {len(self._potion_advancements)}")
+        print(f"Total Redstone Advancements: {len(self._redstone_advancements)}")
+        print(f"Total Statistics Advancements: {len(self._statistics_advancements)}")
+        print(f"Total Weaponry Advancements: {len(self._weaponry_advancements)}")
+
+        i=1
+        for advancement in sorted(self._advancements):
+            if self._advancements[advancement]._section == BCAdvancement.ADVANCEMENT_EMPTY:
+                print(f"{i}:{advancement}\t\t\t{self._advancements[advancement]._parent}")
+                i+=1
 
 
 
