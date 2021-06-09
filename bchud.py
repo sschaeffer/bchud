@@ -14,7 +14,7 @@ def initserver(argv=None):
 
     parser = argparse.ArgumentParser(prog='bchud')
     parser.add_argument('--minecraftdir', default="/media/local/Minecraft/server", help="minecraft server directory")
-    parser.add_argument('--servername', default="snapshot", help="servername is the name of the server")
+    parser.add_argument('--servername', default="fury", help="servername is the name of the server")
     parser.add_argument('--worldname', help="worldname is the name of the world (if different then server)")
     args = parser.parse_args(argv)
     if(args.worldname == None):

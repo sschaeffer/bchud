@@ -184,7 +184,7 @@ class BCAdvancement():
 
 class BCAllAdvancements():
 
-    def __init__(self, minecraftdir="/media/local/Minecraft/server", servername="snapshot", worldname="snapshot"):
+    def __init__(self, minecraftdir="/media/local/Minecraft/server", servername="fury", worldname="fury"):
 
         self._minecraftdir=minecraftdir
         self._servername=servername
@@ -429,7 +429,17 @@ class BCAllAdvancements():
 #                print(f"{i}:{advancement}\t\t\t{self._advancements[advancement]._parent}")
 #                i+=1
 
+    def SaveReportFile(self):
+        reportfilename = self._minecraftdir+"/bclogs/latest_advancement_report"
+        reportfile = open(reportfilename, "w")
 
+        for advancement in sorted(self._bacap_advancements):
+            stillneeded = list(set(self._advancements[advancement]._criteria)-set(self._advancements[advancement]._finished))
+            reportfile.write(f"{advancement},")
+            reportfile.write(f"{self._advancements[advancement]._completed},")
+            reportfile.write(f"{stillneeded},")
+            reportfile.write(f"\n") 
+        reportfile.close
 
 def main():
 
@@ -438,14 +448,15 @@ def main():
 
     bcgame.UpdateAdvancements()
     bcgame.PrintAllAdvancements()
-    bcgame._advancements["blazeandcave:bacap/advancement_legend"].PrintAdvancement()
+    bcgame.SaveReportFile()
+#    bcgame._advancements["blazeandcave:bacap/advancement_legend"].PrintAdvancement()
     
-    while True:
-        sleep(2)
-        print()
-        bcgame.UpdateAdvancements()
-        bcgame.PrintAllAdvancements()
-        bcgame._advancements["blazeandcave:bacap/advancement_legend"].PrintAdvancement()
+#    while True:
+#        sleep(2)
+#        print()
+#        bcgame.UpdateAdvancements()
+#        bcgame.PrintAllAdvancements()
+#        bcgame._advancements["blazeandcave:bacap/advancement_legend"].PrintAdvancement()
 
 if __name__ == '__main__':
     main()

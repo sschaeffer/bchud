@@ -42,7 +42,7 @@ class BCGameInstance():
 
         self._bclevelfile = BCLevelFile(minecraftdir, servername, worldname)
         self._bclogfiles = BCLogFiles(minecraftdir, servername)
-        self._bcalladvancements = BCAllAdvancements(minecraftdir, servername)
+        self._bcalladvancements = BCAllAdvancements(minecraftdir, servername, worldname)
         #self.bcuseradvancements = BCUserAdancements(minecraftdir, servername)
 
         self._bclog = BCLog(minecraftdir,servername)
