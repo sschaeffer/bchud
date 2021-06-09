@@ -1,5 +1,8 @@
 from os import listdir
+from pathlib import Path
+from time import sleep
 import json
+
 class BCAdvancement():
 
     ADVANCEMENT_EMPTY = 0
@@ -163,11 +166,13 @@ class BCAdvancement():
             print(f"Advancement Required:  ALL")
 
         print(f"Advancement Criteria:  ", end='')
+        print(f"({len(self._criteria)}) ", end='')
         for criteria in self._criteria:
             print(f"{criteria} ", end='')
         print()
 
         print(f"Advancement Finished:  ", end='')
+        print(f"({len(self._finished)}) ", end='')
         for criteria in self._finished:
             print(f"{criteria} ", end='')
         print()
@@ -187,6 +192,7 @@ class BCAllAdvancements():
 
         self._bacadvancement_dirname=""
         self._standardadvancement_dirname=""
+        self._lastupdatetime=0
 
         self._advancements={}
 
@@ -210,6 +216,10 @@ class BCAllAdvancements():
         self._statistics_advancements={}
         self._weaponry_advancements={}
 
+        self.BuildAllAdvancements()
+        self.SortAllAdvancements()
+
+
     def BuildAdvancements(self, type, name, dirname):
         advancement_dir = dirname + "/" + name
         for advancement_file in listdir(advancement_dir):
@@ -229,6 +239,8 @@ class BCAllAdvancements():
         self._bac_dirname = self._minecraftdir+"/"+self._servername+"/"+self._worldname+"/datapacks/bac_advancements"
         self._bacadvancement_dirname = self._bac_dirname + "/data/blazeandcave/advancements"
         self._standardadvancement_dirname = self._bac_dirname + "/data/minecraft/advancements"
+        self._useradvancements_dirname = self._minecraftdir+"/"+self._servername+"/"+self._worldname+"/advancements"
+        self._useradvancements_filename = self._useradvancements_dirname + "/0204da8b-0edd-47ad-8890-ac5ee611b575.json"
 
         self.BuildBACAdvancements("adventure")
         self.BuildBACAdvancements("animal")
@@ -322,21 +334,35 @@ class BCAllAdvancements():
                 if advancement not in self._weaponry_advancements:
                     self._weaponry_advancements[advancement] = self._advancements[advancement]
 
-    def ScanAdvancements(self):
 
-        advancement_file = open("/media/local/Minecraft/server/snapshot/snapshot/advancements/0204da8b-0edd-47ad-8890-ac5ee611b575.json",'r')
-        completed_info = json.load(advancement_file)
-        advancement_file.close()
+    def UpdateAdvancements(self):
 
-        for i in completed_info:
-            if not i.startswith("minecraft:recipes") and not i == "DataVersion":
-                if i in self._advancements:
-                    if 'done' in completed_info[i] and completed_info[i]['done'] == True:
-                        self._advancements[i]._completed = BCAdvancement.ADVANCEMENT_COMPLETED
-                    if 'criteria' in completed_info[i]:
-                        for criteria in completed_info[i]['criteria']:
-                            if criteria not in self._advancements[i]._finished:
-                                self._advancements[i]._finished.append(criteria)
+        useradvancement_filepath = Path(self._useradvancements_filename)
+        if useradvancement_filepath.exists() and self._lastupdatetime != useradvancement_filepath.stat().st_mtime:
+        # file has changed so lets save the previous results
+            self._lastupdatetime = useradvancement_filepath.stat().st_mtime
+            advancement_file = useradvancement_filepath.open('r')
+            completed_info = json.load(advancement_file)
+            advancement_file.close()
+
+            for i in completed_info:
+                if not i.startswith("minecraft:recipes") and not i == "DataVersion":
+                    if i in self._advancements:
+                        if 'done' in completed_info[i] and completed_info[i]['done'] == True:
+                            self._advancements[i]._completed = BCAdvancement.ADVANCEMENT_COMPLETED
+                        if 'criteria' in completed_info[i]:
+                            for criteria in completed_info[i]['criteria']:
+                                if criteria not in self._advancements[i]._finished:
+                                    self._advancements[i]._finished.append(criteria)
+
+
+    def GetMilestone(self,name):
+        total_advancements = total_advancements_completed = 0
+        if name in self._advancements:
+            total_advancements = len(self._advancements[name]._criteria)
+            total_advancements_completed = len(self._advancements[name]._finished)
+        milestone = f"{total_advancements_completed:3}({total_advancements:3})"
+        return milestone
 
 
     def PrintMilestone(self, title, name, num ):
@@ -390,7 +416,6 @@ class BCAllAdvancements():
         self.PrintMilestone("Total Potion Advancements:     ","blazeandcave:bacap/potion_milestone",len(self._potion_advancements))
         self.PrintMilestone("Total End Advancements:        ","blazeandcave:bacap/end_milestone",len(self._end_advancements))
         self.PrintMilestone("Total Challenges Advancements: ","blazeandcave:bacap/challenges_milestone",len(self._challenges_advancements))
-        self.PrintMilestone("Total Bacap Advancements:      ","blazeandcave:bacap/bacap_milestone",len(self._bacap_advancements))
 
 #        i=1
 #        for advancement in sorted(self._building_advancements):
@@ -410,12 +435,17 @@ def main():
 
     print("BCAllAdvancements: Unit Testing")
     bcgame = BCAllAdvancements()
-    bcgame.BuildAllAdvancements()
-    bcgame.SortAllAdvancements()
-    bcgame.ScanAdvancements()
+
+    bcgame.UpdateAdvancements()
     bcgame.PrintAllAdvancements()
-
-
+    bcgame._advancements["blazeandcave:bacap/advancement_legend"].PrintAdvancement()
+    
+    while True:
+        sleep(2)
+        print()
+        bcgame.UpdateAdvancements()
+        bcgame.PrintAllAdvancements()
+        bcgame._advancements["blazeandcave:bacap/advancement_legend"].PrintAdvancement()
 
 if __name__ == '__main__':
     main()

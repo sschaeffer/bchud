@@ -128,10 +128,14 @@ class BCGameInstance():
     def ServerStartTime(self):
         return(self._bclogfiles.ServerStartTime())
 
+    def AllAdvancementsCount(self):
+        return(self._bcalladvancements.GetMilestone("blazeandcave:bacap/advancement_legend"))
+
     def UpdateGameInfo(self):
 
         self._bclogfiles.UpdateLogInfo()
         self._bclevelfile.UpdateLevelInfo(self.ServerActive(),self.ServerStartTime())
+        self._bcalladvancements.UpdateAdvancements()
 
         if(self._logresults):
             self._bclog.LogResults(self._bclevelfile,self._bclogfiles)
@@ -165,6 +169,7 @@ class BCGameInstance():
         print(f"Wandering Trader Sp: {self.WanderingTraderSpawnChance()}")
         print(f"Wandering Trader Id: {self.WanderingTraderID()}")
         print(f"Estimated Time of D: {self.EstimatedTimeOfDay()}")
+        self._bcalladvancements.PrintAllAdvancements()
 
 def main():
 
@@ -172,10 +177,14 @@ def main():
     bcgame = BCGameInstance()
 
     bcgame.UpdateGameInfo()
+    bcgame.PrintDebug()
+
     while True:
-        bcgame.UpdateGameInfo()
         sleep(2)
-#    bcgame.PrintDebug()
+        print()
+        bcgame.UpdateGameInfo()
+        bcgame.PrintDebug()
+
 
 
 if __name__ == '__main__':

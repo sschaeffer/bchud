@@ -49,9 +49,10 @@ def cursessetup():
     curses.init_pair(BCGameInstance.NOSLEEP, curses.COLOR_WHITE, 96)        # PINK (27secs)
 
 
-def rendermenubar(stdscr, servername, worldname):
+def rendermenubar(stdscr, bcgi):
 
-    stdscr.addstr(0,0,f"BC HUD {servername}:{worldname}", curses.A_BOLD | curses.A_REVERSE)
+#    stdscr.addstr(0,0,f"BC HUD {servername}:{worldname}", curses.A_BOLD | curses.A_REVERSE)
+    stdscr.addstr(0,0,f"BC HUD {bcgi.AllAdvancementsCount()}", curses.A_BOLD | curses.A_REVERSE)
     stdscr.chgat(-1, curses.A_REVERSE)
 
 
@@ -106,7 +107,7 @@ def main(stdscr, minecraftdir, servername, worldname):
 
         bcgi.UpdateGameInfo()
 
-        rendermenubar(stdscr,servername,worldname) 
+        rendermenubar(stdscr,bcgi) 
         bcstatusbar.Render(bcgi)
         stdscr.noutrefresh()
 
