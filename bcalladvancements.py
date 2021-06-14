@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from os import listdir
 from pathlib import Path
 from time import sleep
@@ -139,7 +141,7 @@ class BCAdvancement():
             elif(self._name=="minecraft:husbandry/root"):
                 self._section = self.ADVANCEMENT_ANIMAL
             elif(self._name=="minecraft:nether/root"):
-                self._section = self.ADVANCEMENT_ANIMAL
+                self._section = self.ADVANCEMENT_NETHER
 
         if 'criteria'  not in advancement_info:
             print(f"No criteria for {self._name}")
@@ -184,6 +186,142 @@ class BCAdvancement():
 
 class BCAllAdvancements():
 
+    BACAP_LIST=["blazeandcave:bacap/root",\
+                "blazeandcave:bacap/getting_wood",\
+                "minecraft:story/root",\
+                "blazeandcave:bacap/time_to_mine",\
+                "blazeandcave:bacap/time_to_strike",\
+                "blazeandcave:bacap/time_to_chop",\
+                "blazeandcave:bacap/time_to_dig",\
+                "blazeandcave:bacap/time_to_farm",\
+                "blazeandcave:bacap/mining_milestone",\
+                "blazeandcave:bacap/building_milestone",\
+                "blazeandcave:bacap/farming_milestone",\
+                "blazeandcave:bacap/animal_milestone",\
+                "blazeandcave:bacap/monsters_milestone",\
+                "blazeandcave:bacap/weaponry_milestone",\
+                "blazeandcave:bacap/biomes_milestone",\
+                "blazeandcave:bacap/adventure_milestone",\
+                "blazeandcave:bacap/redstone_milestone",\
+                "blazeandcave:bacap/enchanting_milestone",\
+                "blazeandcave:bacap/statistics_milestone",\
+                "blazeandcave:bacap/nether_milestone",\
+                "blazeandcave:bacap/potion_milestone",\
+                "blazeandcave:bacap/end_milestone",\
+                "blazeandcave:bacap/challenges_milestone",\
+                "blazeandcave:bacap/advancement_legend"]
+
+    MINING_LIST=["blazeandcave:mining/root",
+                "minecraft:story/mine_stone",
+                "blazeandcave:mining/aww_it_broke",
+                "blazeandcave:mining/spelunker",
+                "blazeandcave:mining/heart_of_darkness",
+                "blazeandcave:mining/my_work_here_is_done",
+                "blazeandcave:mining/nananananananana",
+                "blazeandcave:mining/filthy_lich",
+                "blazeandcave:mining/thats_the_point",
+                "blazeandcave:mining/particle_fan",
+                "blazeandcave:mining/deep_slate_nine",
+                "blazeandcave:mining/tuff_stuff",
+                "blazeandcave:mining/rock_bottom",
+                "blazeandcave:mining/moss_maker",
+                "blazeandcave:mining/iggy",
+                "blazeandcave:mining/lush_hour",
+                "blazeandcave:mining/dungeons_and_spawners",
+                "blazeandcave:mining/this_is_mine_now",
+                "blazeandcave:mining/eeuuwww",
+                "blazeandcave:mining/steals_on_wheels",
+                "blazeandcave:mining/a_shiny_treat",
+                "blazeandcave:mining/gold_mine",
+                "minecraft:story/upgrade_tools",
+                "blazeandcave:mining/moar_tools",
+                "blazeandcave:mining/chestful_of_cobblestone",
+                "blazeandcave:mining/bulldozer",
+                "blazeandcave:mining/meet_the_flintstones",
+                "blazeandcave:mining/flint_miner",
+                "blazeandcave:mining/strike_a_light",
+                "blazeandcave:mining/bonfire_night",
+                "blazeandcave:mining/fossil_fuel",
+                "blazeandcave:mining/coal_miner",
+                "blazeandcave:mining/master_coal_miner",
+                "blazeandcave:mining/hot_topic",
+                "blazeandcave:mining/renewable_energy",
+                "blazeandcave:mining/smokin_hot",
+                "blazeandcave:mining/youll_never_take_me_alive_copper",
+                "blazeandcave:mining/budget_channeling",
+                "minecraft:adventure/lightning_rod_with_villager_no_fire",
+                "blazeandcave:mining/called_shot",
+                "blazeandcave:mining/dont_come_a_copper",
+                "minecraft:husbandry/wax_on",
+                "minecraft:husbandry/wax_off",
+                "blazeandcave:mining/the_statue_of_liberty",
+                "blazeandcave:mining/sly_copper_the_copper_heist",
+                "blazeandcave:mining/copper_miner",
+                "blazeandcave:mining/master_copper_miner",
+                "minecraft:story/smelt_iron",
+                "blazeandcave:mining/not_chicken_mcnuggets",
+                "minecraft:story/iron_tools",
+                "minecraft:story/obtain_armor",
+                "blazeandcave:mining/iron_man",
+                "blazeandcave:mining/iron_miner",
+                "blazeandcave:mining/master_iron_miner",
+                "blazeandcave:mining/gold_rush",
+                "blazeandcave:mining/living_like_kings",
+                "blazeandcave:mining/the_mistake",
+                "blazeandcave:mining/gold_miner",
+                "blazeandcave:mining/master_gold_miner",
+                "blazeandcave:mining/bling_bling_gone",
+                "blazeandcave:mining/weve_broken_our_last_shovel",
+                "blazeandcave:mining/moar_broken_tools",
+                "blazeandcave:mining/where_are_all_your_clothes",
+                "blazeandcave:mining/diam_oh_wait_no",
+                "blazeandcave:mining/lapis_lazuli_miner",
+                "blazeandcave:mining/seeing_red",
+                "blazeandcave:mining/the_way_to_spawn",
+                "blazeandcave:mining/whats_the_time_mr_wolf",
+                "blazeandcave:mining/redstone_miner",
+                "blazeandcave:mining/gi_geode",
+                "blazeandcave:mining/good_for_your_bones",
+                "blazeandcave:mining/galileo_figaro",
+                "blazeandcave:mining/pixel_perfect",
+                "blazeandcave:mining/blackout",
+                "blazeandcave:mining/amethyst_miner",
+                "minecraft:story/mine_diamond",
+                "blazeandcave:mining/iconic_merchandising_prop",
+                "blazeandcave:mining/stabcraft",
+                "blazeandcave:mining/even_moar_tools",
+                "blazeandcave:mining/rest_in_pickaxes",
+                "minecraft:story/shiny_gear",
+                "blazeandcave:mining/diamond_clad",
+                "blazeandcave:mining/diamond_miner",
+                "blazeandcave:mining/diamonds_to_you",
+                "blazeandcave:mining/mineral_collection",
+                "blazeandcave:mining/master_diamond_miner",
+                "blazeandcave:mining/mr_bean",
+                "blazeandcave:mining/emerald_miner",
+                "blazeandcave:mining/oresome",
+                "minecraft:story/lava_bucket",
+                "minecraft:story/form_obsidian",
+                "minecraft:story/enchant_item",
+                "minecraft:story/enter_the_nether",
+                "blazeandcave:mining/obsidian_miner"]
+
+    BUILDING_LIST=["blazeandcave:building/root",
+                "blazeandcave:building/your_door_was_locked",
+                "blazeandcave:building/cut_in_half",
+                "blazeandcave:building/stairs_no",
+                "blazeandcave:building/slabs_for_days",
+                "blazeandcave:building/ah_my_old_enemy",
+                "blazeandcave:building/sweet_dreams",
+                "blazeandcave:building/change_of_sheets",
+                "blazeandcave:building/rainbow_dreams",
+                "blazeandcave:building/insomniac",
+                "blazeandcave:building/ladder_climbers_inc",
+                "blazeandcave:building/its_a_trap",
+                "blazeandcave:building/and_open",
+                "blazeandcave:building/en_garde"]
+
+
     def __init__(self, minecraftdir="/media/local/Minecraft/server", servername="fury", worldname="fury"):
 
         self._minecraftdir=minecraftdir
@@ -223,11 +361,12 @@ class BCAllAdvancements():
     def BuildAdvancements(self, type, name, dirname):
         advancement_dir = dirname + "/" + name
         for advancement_file in listdir(advancement_dir):
-            advancement_name = type+":"+name+"/"+advancement_file.rsplit(".",1)[0]
-            if advancement_name not in self._advancements:
-                self._advancements[advancement_name] = BCAdvancement(advancement_name, advancement_dir+"/"+advancement_file)
-            advancement: BCAdvancement = self._advancements[advancement_name]
-            advancement.ReadAdvancement()
+            if(advancement_file.endswith(".json")):
+                advancement_name = type+":"+name+"/"+advancement_file.rsplit(".",1)[0]
+                if advancement_name not in self._advancements:
+                    self._advancements[advancement_name] = BCAdvancement(advancement_name, advancement_dir+"/"+advancement_file)
+                advancement: BCAdvancement = self._advancements[advancement_name]
+                advancement.ReadAdvancement()
 
     def BuildBACAdvancements(self, name):
         self.BuildAdvancements("blazeandcave",name,self._bacadvancement_dirname)
@@ -429,16 +568,65 @@ class BCAllAdvancements():
 #                print(f"{i}:{advancement}\t\t\t{self._advancements[advancement]._parent}")
 #                i+=1
 
+    def DiffMilestone(self, name, milestone_json, advancements,sheetslist):
+
+        milestone_filename = self._bacadvancement_dirname+milestone_json
+        advancement_file = open(milestone_filename,'r')
+        advancement_info = json.load(advancement_file)
+        milestonelist = []
+        for i in advancement_info["criteria"]:
+            key = next(iter(advancement_info["criteria"][i]["conditions"]["player"]["player"]["advancements"]))
+            milestonelist.append(key)
+        print(f"{name:10}: {len(milestonelist):3} - ",end="")
+        print(f"{len(advancements):3} - ",end="")
+        print(f"{len(sheetslist):3}  ",end="")
+        if(len(advancements)<len(milestonelist)):
+            differences = list(set(milestonelist)-set(advancements))
+        else:
+            differences = list(set(advancements)-set(milestonelist))
+        print(differences)
+
+
+    def SaveReportAdvancement(self,advancement,reportfile):
+        if advancement in self._advancements:
+            stillneeded = list(set(self._advancements[advancement]._criteria)-set(self._advancements[advancement]._finished))
+            if(self._advancements[advancement]._completed==BCAdvancement.ADVANCEMENT_COMPLETED):
+                reportfile.write(f"{self._advancements[advancement]._completed},")
+            else:
+                reportfile.write(f" ,")
+            reportfile.write(f"{advancement},")
+            reportfile.write(f"{self._advancements[advancement]._title},")
+            if(self._advancements[advancement]._completed==BCAdvancement.ADVANCEMENT_NOTCOMPLETED):
+                first=True
+                for item in stillneeded:
+                    if(first):
+                        reportfile.write(f"{item}")
+                        first=False
+                    else:
+                        reportfile.write(f" {item}")
+#                       reportfile.write(f",")
+            reportfile.write(f"\n") 
+
     def SaveReportFile(self):
-        reportfilename = self._minecraftdir+"/bclogs/latest_advancement_report"
+        reportfilename = self._minecraftdir+"/bclogs/advancement_report.csv"
         reportfile = open(reportfilename, "w")
 
-        for advancement in sorted(self._bacap_advancements):
-            stillneeded = list(set(self._advancements[advancement]._criteria)-set(self._advancements[advancement]._finished))
-            reportfile.write(f"{advancement},")
-            reportfile.write(f"{self._advancements[advancement]._completed},")
-            reportfile.write(f"{stillneeded},")
-            reportfile.write(f"\n") 
+        reportfile.write("BAC Advancements\n")
+        for item in self.BACAP_LIST:
+            self.SaveReportAdvancement(item,reportfile)
+
+        reportfile.write("\nMining\n")
+        for item in self.MINING_LIST:
+            self.SaveReportAdvancement(item,reportfile)
+
+        reportfile.write("\nBuilding\n")
+        for item in self.BUILDING_LIST:
+            self.SaveReportAdvancement(item,reportfile)
+
+
+        for advancement in sorted(self._building_advancements):
+            print(f"{self._advancements[advancement]._title},{advancement}")
+
         reportfile.close
 
 def main():
@@ -449,6 +637,12 @@ def main():
     bcgame.UpdateAdvancements()
     bcgame.PrintAllAdvancements()
     bcgame.SaveReportFile()
+
+    bcgame.DiffMilestone("Mining", "/bacap/mining_milestone.json", bcgame._mining_advancements, bcgame.MINING_LIST)
+    bcgame.DiffMilestone("Building","/bacap/building_milestone.json", bcgame._building_advancements, bcgame.BACAP_LIST)
+    bcgame.DiffMilestone("Farming","/bacap/farming_milestone.json", bcgame._farming_advancements, bcgame.BACAP_LIST)
+    bcgame.DiffMilestone("Animal","/bacap/animal_milestone.json", bcgame._animal_advancements, bcgame.BACAP_LIST)
+
 #    bcgame._advancements["blazeandcave:bacap/advancement_legend"].PrintAdvancement()
     
 #    while True:
