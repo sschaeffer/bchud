@@ -307,19 +307,18 @@ class BCAllAdvancements():
                 "blazeandcave:mining/obsidian_miner"]
 
     BUILDING_LIST=["blazeandcave:building/root",
-                    "blazeandcave:building/building",
                     "blazeandcave:building/your_door_was_locked",
                     "blazeandcave:building/cut_in_half",
-                    "blazeandcave:building/stairs_nooooo",
+                    "blazeandcave:building/stairs_no",
                     "blazeandcave:building/slabs_for_days",
-                    "blazeandcave:building/ah_my_old_enemy...",
-                    "blazeandcave:building/sweet_dreams",
+                    "blazeandcave:building/ah_my_old_enemy",
+                    "minecraft:adventure/sleep_in_bed",
                     "blazeandcave:building/change_of_sheets",
                     "blazeandcave:building/rainbow_dreams",
                     "blazeandcave:building/insomniac",
-                    "blazeandcave:building/ladder_climbers_inc.",
+                    "blazeandcave:building/ladder_climbers_inc",
                     "blazeandcave:building/its_a_trap",
-                    "blazeandcave:building/aaaaaand..._open",
+                    "blazeandcave:building/and_open",
                     "blazeandcave:building/en_garde",
                     "blazeandcave:building/the_walls",
                     "blazeandcave:building/crazy_walls",
@@ -332,7 +331,7 @@ class BCAllAdvancements():
                     "blazeandcave:building/mannequin",
                     "blazeandcave:building/armor_display",
                     "blazeandcave:building/art_gallery",
-                    "blazeandcave:building/help_ive_been_framed",
+                    "blazeandcave:building/display_your_items_for_all_to_see",
                     "blazeandcave:building/raise_the_flag",
                     "blazeandcave:building/no_banner_only_color",
                     "blazeandcave:building/prepare_to_meet_your_loom",
@@ -376,7 +375,7 @@ class BCAllAdvancements():
                     "blazeandcave:building/rainbow_sand",
                     "blazeandcave:building/concrete_evidence",
                     "blazeandcave:building/the_rainbow_you_always_wanted",
-                    "blazeandcave:building/clay-dough",
+                    "blazeandcave:building/clay_dough",
                     "blazeandcave:building/bricks",
                     "blazeandcave:building/pot_planter",
                     "blazeandcave:building/harry_potter",
@@ -401,6 +400,273 @@ class BCAllAdvancements():
                     "blazeandcave:building/agent_smithing_table",
                     "blazeandcave:building/bubble_bubble_toil_and_trouble",
                     "blazeandcave:building/washing_machine"]
+
+    FARMING_LIST=["blazeandcave:farming/root",
+                    "blazeandcave:farming/care_for_the_environment",
+                    "blazeandcave:farming/bapple",
+                    "blazeandcave:farming/trimming_the_treetops",
+                    "blazeandcave:farming/foilage",
+                    "blazeandcave:farming/yay_deadbush",
+                    "blazeandcave:farming/ultra_hardcore",
+                    "blazeandcave:farming/ecologist",
+                    "blazeandcave:farming/an_apple_a_day",
+                    "blazeandcave:farming/berry_nice",
+                    "blazeandcave:farming/disen_berry_berry_bad",
+                    "blazeandcave:farming/shrooms",
+                    "blazeandcave:farming/mushroom_mushroom",
+                    "blazeandcave:farming/mega_mushroom",
+                    "blazeandcave:farming/suspicious_looking_stew",
+                    "blazeandcave:farming/im_gonna_be_sick",
+                    "blazeandcave:farming/sugar_sugar",
+                    "blazeandcave:farming/its_full_of_ink",
+                    "blazeandcave:farming/write_your_thoughts",
+                    "blazeandcave:farming/an_amazing_story",
+                    "blazeandcave:farming/kelp_me",
+                    "blazeandcave:farming/aquatic_biofuel",
+                    "blazeandcave:farming/undersea_gardener",
+                    "blazeandcave:farming/castaway",
+                    "blazeandcave:farming/its_a_cactus",
+                    "blazeandcave:farming/spikey",
+                    "minecraft:husbandry/plant_seed",
+                    "blazeandcave:farming/souperman",
+                    "blazeandcave:farming/bake_bread",
+                    "blazeandcave:farming/the_lie",
+                    "blazeandcave:farming/hay_there",
+                    "blazeandcave:farming/must_be_your_birthday",
+                    "blazeandcave:farming/its_where_nutella_comes_from",
+                    "blazeandcave:farming/me_love_cookie",
+                    "blazeandcave:farming/naturally_carved",
+                    "blazeandcave:farming/the_pie",
+                    "blazeandcave:farming/olaf",
+                    "blazeandcave:farming/unmasked",
+                    "blazeandcave:farming/pumpa_kungen",
+                    "blazeandcave:farming/the_melon_the_melon_the_melon",
+                    "blazeandcave:farming/scientific_inaccuracy",
+                    "blazeandcave:farming/the_meloncholy_dane",
+                    "blazeandcave:farming/die_potato",
+                    "blazeandcave:farming/not_today",
+                    "blazeandcave:farming/24_carrot_gold",
+                    "blazeandcave:farming/the_garbage_will_do",
+                    "blazeandcave:farming/natural_fertiliser",
+                    "blazeandcave:farming/one_course_meal",
+                    "blazeandcave:farming/combine_harvester",
+                    "blazeandcave:farming/whats_new_with_composting",
+                    "blazeandcave:farming/come_to_the_countryside",
+                    "minecraft:husbandry/break_diamond_hoe",
+                    "blazeandcave:farming/full_stomach",
+                    "blazeandcave:farming/vegetarian",
+                    "blazeandcave:farming/meat_lovers",
+                    "minecraft:husbandry/balanced_diet",
+                    "blazeandcave:farming/a_gluttonous_diet"]
+
+    ANIMAL_LIST=["minecraft:husbandry/root",
+                    "blazeandcave:animal/bacon",
+                    "blazeandcave:animal/pork_chop",
+                    "blazeandcave:animal/when_pigs_used_to_fly",
+                    "blazeandcave:animal/pig_slaughterer",
+                    "blazeandcave:animal/swine_sailing",
+                    "blazeandcave:animal/rabbit_season",
+                    "blazeandcave:animal/theyre_breeding_like_rabbits",
+                    "blazeandcave:animal/lucky_charm",
+                    "blazeandcave:animal/humble_bundle",
+                    "blazeandcave:animal/getting_into_a_stew",
+                    "blazeandcave:animal/in_a_hole_there_lived_a_rabbit",
+                    "blazeandcave:animal/bunny_lover",
+                    "blazeandcave:animal/fractal",
+                    "blazeandcave:animal/going_down_the_rabbit_hole",
+                    "blazeandcave:animal/just_keeps_going",
+                    "blazeandcave:animal/cow_tipper",
+                    "blazeandcave:animal/high_steaks",
+                    "minecraft:husbandry/breed_an_animal",
+                    "blazeandcave:animal/milk_does_your_body_good",
+                    "blazeandcave:animal/true_cow_tipper",
+                    "blazeandcave:animal/mooshroom_kingdom",
+                    "blazeandcave:animal/super_mooshroom",
+                    "blazeandcave:animal/milkshroom",
+                    "blazeandcave:animal/mushroom_scientist",
+                    "minecraft:husbandry/bred_all_animals",
+                    "blazeandcave:animal/cool_kids",
+                    "blazeandcave:animal/fashion_statement",
+                    "blazeandcave:animal/shoe_shed",
+                    "blazeandcave:animal/tickle_time",
+                    "blazeandcave:animal/so_good",
+                    "blazeandcave:animal/which_came_first",
+                    "blazeandcave:animal/feeding_the_chickens",
+                    "blazeandcave:animal/chicken_cooper",
+                    "blazeandcave:animal/chatterbox",
+                    "minecraft:adventure/spyglass_at_parrot",
+                    "blazeandcave:animal/birdkeeper",
+                    "blazeandcave:animal/wooly",
+                    "blazeandcave:animal/feeling_sheepish",
+                    "blazeandcave:animal/mary_had_a_little_lamb",
+                    "blazeandcave:animal/have_a_shearful_day",
+                    "blazeandcave:animal/sheariously",
+                    "blazeandcave:animal/live_and_let_dye",
+                    "blazeandcave:animal/rainbow_collection",
+                    "blazeandcave:animal/fuzzy_feet",
+                    "blazeandcave:animal/goat_out_of_here",
+                    "blazeandcave:animal/billy_the_kid",
+                    "blazeandcave:animal/goat_simulator",
+                    "minecraft:husbandry/ride_a_boat_with_a_goat",
+                    "blazeandcave:animal/screaming_milk",
+                    "blazeandcave:animal/ya_like_jazz",
+                    "minecraft:husbandry/safely_harvest_honey",
+                    "blazeandcave:animal/hive_mind",
+                    "blazeandcave:animal/not_the_bees",
+                    "minecraft:husbandry/silk_touch_nest",
+                    "blazeandcave:animal/honey_im_home",
+                    "blazeandcave:animal/nest_quick",
+                    "blazeandcave:animal/winnie_the_pooh",
+                    "minecraft:adventure/honey_block_slide",
+                    "blazeandcave:animal/wheres_the_honey_lebowski",
+                    "blazeandcave:animal/cowboy",
+                    "blazeandcave:animal/horse_armorer",
+                    "blazeandcave:animal/colorful_cavalry",
+                    "blazeandcave:animal/foal_play",
+                    "blazeandcave:animal/so_hungry_i_could_eat_a_horse",
+                    "blazeandcave:animal/a_horse_in_shining_armor",
+                    "blazeandcave:animal/are_we_there_yet",
+                    "blazeandcave:animal/artificial_selection",
+                    "blazeandcave:animal/master_farrier",
+                    "blazeandcave:animal/stay_calmer",
+                    "blazeandcave:animal/so_i_got_that_going_for_me",
+                    "blazeandcave:animal/llama_llama_duck_king",
+                    "blazeandcave:animal/llama_festival",
+                    "blazeandcave:animal/heavy_duty_caravan",
+                    "blazeandcave:animal/blistering_barnacles",
+                    "blazeandcave:animal/lead_the_way",
+                    "blazeandcave:animal/beeloons",
+                    "blazeandcave:animal/you_lead_ill_follow",
+                    "blazeandcave:animal/follow_the_leader",
+                    "minecraft:husbandry/tame_an_animal",
+                    "blazeandcave:animal/puppies_yipe",
+                    "blazeandcave:animal/what_does_the_fox_say",
+                    "blazeandcave:animal/snow_fox_64",
+                    "blazeandcave:animal/foxy_thievery",
+                    "minecraft:husbandry/fishy_business",
+                    "blazeandcave:animal/direct_fishing",
+                    "blazeandcave:animal/grinding_nemo",
+                    "blazeandcave:animal/cephalight",
+                    "minecraft:husbandry/make_a_sign_glow",
+                    "blazeandcave:animal/flashy_items",
+                    "blazeandcave:animal/iceologer_shouldve_won",
+                    "minecraft:husbandry/tactical_fishing",
+                    "blazeandcave:animal/aquarium",
+                    "blazeandcave:animal/tropical_collection",
+                    "minecraft:husbandry/axolotl_in_a_bucket",
+                    "minecraft:husbandry/kill_axolotl_target",
+                    "blazeandcave:animal/thanks_a_lotl",
+                    "blazeandcave:animal/axolittle",
+                    "blazeandcave:animal/axolotl_of_them",
+                    "blazeandcave:animal/axeolotl",
+                    "blazeandcave:animal/delicious_fish",
+                    "blazeandcave:animal/sushi",
+                    "blazeandcave:animal/salmonella_poisoning",
+                    "blazeandcave:animal/catching_nemo",
+                    "blazeandcave:animal/what_a_piece_of_junk",
+                    "blazeandcave:animal/treasure_hunter",
+                    "blazeandcave:animal/someones_been_here_before",
+                    "blazeandcave:animal/master_angler",
+                    "blazeandcave:animal/totally_not_an_afk_fisher",
+                    "blazeandcave:animal/poacher",
+                    "blazeandcave:animal/hey_look_mom",
+                    "blazeandcave:animal/scuttler",
+                    "blazeandcave:animal/turtle_soldier",
+                    "blazeandcave:animal/save_the_turtles",
+                    "blazeandcave:animal/turtle_army"]
+
+    MONSTERS_LIST=["blazeandcave:monsters/monsters",
+"blazeandcave:monsters/monster_hunter",
+"blazeandcave:monsters/dead_dont_die",
+"blazeandcave:monsters/there_has_to_be_another_way",
+"blazeandcave:monsters/iron_belly",
+"blazeandcave:monsters/desert_nomad",
+"blazeandcave:monsters/zombie_slayer",
+"blazeandcave:monsters/dead_really_dont_die",
+"blazeandcave:monsters/freezing",
+"blazeandcave:monsters/still_talking",
+"blazeandcave:monsters/family_reunion",
+"blazeandcave:monsters/custom_boss_fight",
+"blazeandcave:monsters/trick_or_treat",
+"blazeandcave:monsters/handsome_jack",
+"blazeandcave:monsters/a_watery_grave",
+"blazeandcave:monsters/tridented_shield",
+"blazeandcave:monsters/because_im_aquaman",
+"blazeandcave:monsters/mollusc_man",
+"blazeandcave:monsters/captain_etho",
+"blazeandcave:monsters/ooh_baby",
+"blazeandcave:monsters/baby_baby_baby_nooo",
+"blazeandcave:monsters/poultry_boy",
+"blazeandcave:monsters/spooky_skeleton",
+"blazeandcave:monsters/boned",
+"blazeandcave:monsters/not_today_thank_you",
+"blazeandcave:monsters/frosty",
+"blazeandcave:monsters/skeleton_smiter",
+"blazeandcave:monsters/paleontologist",
+"blazeandcave:monsters/the_undead_cavalry",
+"blazeandcave:monsters/melting",
+"blazeandcave:monsters/spooky_skulls",
+"blazeandcave:monsters/bone_to_party",
+"blazeandcave:monsters/ew_ew_ew",
+"blazeandcave:monsters/poisonous_ew",
+"blazeandcave:monsters/spider_smasher",
+"blazeandcave:monsters/spider_skeleton",
+"blazeandcave:monsters/the_ghastly_eyes",
+"blazeandcave:monsters/pupil_poppers",
+"blazeandcave:monsters/what_a_creep",
+"blazeandcave:monsters/keep_your_distance",
+"blazeandcave:monsters/blast_shield",
+"blazeandcave:monsters/controlled_detonation",
+"blazeandcave:monsters/aww_man",
+"blazeandcave:monsters/creeper_killer",
+"blazeandcave:monsters/creepy_heads",
+"blazeandcave:monsters/camouflage",
+"blazeandcave:monsters/the_ender_of_ender",
+"blazeandcave:monsters/ender_worm",
+"blazeandcave:monsters/tele_morph",
+"blazeandcave:monsters/enderman_destroyer",
+"blazeandcave:monsters/plane_walker",
+"blazeandcave:monsters/impossible",
+"blazeandcave:monsters/basketblock_championship",
+"blazeandcave:monsters/witch",
+"blazeandcave:monsters/miracle_drink",
+"blazeandcave:monsters/taste_of_your_own_medicine",
+"blazeandcave:monsters/gelatinous_cube",
+"blazeandcave:monsters/trampoline",
+"blazeandcave:monsters/slime_squisher",
+"blazeandcave:monsters/iskallium_collector",
+"blazeandcave:monsters/termite_control",
+"blazeandcave:monsters/the_phantom_menace",
+"blazeandcave:monsters/ricochet_swoop",
+"blazeandcave:monsters/phantom_slayer",
+"blazeandcave:monsters/anti_air",
+"blazeandcave:monsters/two_birds_one_arrow",
+"blazeandcave:monsters/well_handle_this",
+"blazeandcave:monsters/night_runner",
+"blazeandcave:monsters/hell_hunter",
+"blazeandcave:monsters/void_ender",
+"blazeandcave:monsters/dungeon_crawler",
+"blazeandcave:monsters/monsters_hunted"]
+
+
+
+
+    WEAPONRY_LIST=[]
+    BIOMES_LIST=[]
+    ADVENTURE_LIST=[]
+    REDSTONE_LIST=[]
+    ENCHANTING_LIST=[]
+    STATISTICS_LIST=[]
+    NETHER_LIST=[]
+    POTIONS_LIST=[]
+    END_LIST=[]
+    CHALLENGES_LIST=[]
+
+
+
+
+
+
 
 
     def __init__(self, minecraftdir="/media/local/Minecraft/server", servername="fury", worldname="fury"):
@@ -649,7 +915,7 @@ class BCAllAdvancements():
 #                print(f"{i}:{advancement}\t\t\t{self._advancements[advancement]._parent}")
 #                i+=1
 
-    def DiffMilestone(self, name, milestone_json, advancements,sheetslist):
+    def DiffMilestone(self, name, milestone_json, advancements, sheetslist):
 
         milestone_filename = self._bacadvancement_dirname+milestone_json
         advancement_file = open(milestone_filename,'r')
@@ -665,6 +931,10 @@ class BCAllAdvancements():
             differences = list(set(milestonelist)-set(advancements))
         else:
             differences = list(set(advancements)-set(milestonelist))
+        if(len(sheetslist)<len(milestonelist)):
+            differences = list(set(milestonelist)-set(sheetslist))
+        else:
+            differences = list(set(sheetslist)-set(milestonelist))
         print(differences)
 
 
@@ -704,9 +974,61 @@ class BCAllAdvancements():
         for item in self.BUILDING_LIST:
             self.SaveReportAdvancement(item,reportfile)
 
+        reportfile.write("\nFarming\n")
+        for item in self.FARMING_LIST:
+            self.SaveReportAdvancement(item,reportfile)
 
-        for advancement in sorted(self._building_advancements):
-            print(f"{self._advancements[advancement]._title},{advancement}")
+        reportfile.write("\nAnimal\n")
+        for item in self.ANIMAL_LIST:
+            self.SaveReportAdvancement(item,reportfile)
+
+        reportfile.write("\nMonsters\n")
+        for item in self.MONSTERS_LIST:
+            self.SaveReportAdvancement(item,reportfile)
+
+        reportfile.write("\nWeaponry\n")
+        for item in self.WEAPONRY_LIST:
+            self.SaveReportAdvancement(item,reportfile)
+
+        reportfile.write("\nBiomes\n")
+        for item in self.BIOMES_LIST:
+            self.SaveReportAdvancement(item,reportfile)
+
+        reportfile.write("\nAdventure\n")
+        for item in self.ADVENTURE_LIST:
+            self.SaveReportAdvancement(item,reportfile)
+
+        reportfile.write("\nRedstone\n")
+        for item in self.REDSTONE_LIST:
+            self.SaveReportAdvancement(item,reportfile)
+
+        reportfile.write("\nEnchanting\n")
+        for item in self.ENCHANTING_LIST:
+            self.SaveReportAdvancement(item,reportfile)
+
+        reportfile.write("\nStatistics\n")
+        for item in self.STATISTICS_LIST:
+            self.SaveReportAdvancement(item,reportfile)
+
+        reportfile.write("\nNether\n")
+        for item in self.NETHER_LIST:
+            self.SaveReportAdvancement(item,reportfile)
+
+        reportfile.write("\nPotions\n")
+        for item in self.POTIONS_LIST:
+            self.SaveReportAdvancement(item,reportfile)
+
+        reportfile.write("\nEnd\n")
+        for item in self.END_LIST:
+            self.SaveReportAdvancement(item,reportfile)
+
+        reportfile.write("\nChallenges\n")
+        for item in self.CHALLENGES_LIST:
+            self.SaveReportAdvancement(item,reportfile)
+
+
+#        for advancement in sorted(self._animal_advancements):
+#            print(f"{self._advancements[advancement]._title},{advancement}")
 
         reportfile.close
 
@@ -720,9 +1042,23 @@ def main():
     bcgame.SaveReportFile()
 
     bcgame.DiffMilestone("Mining", "/bacap/mining_milestone.json", bcgame._mining_advancements, bcgame.MINING_LIST)
-    bcgame.DiffMilestone("Building","/bacap/building_milestone.json", bcgame._building_advancements, bcgame.BACAP_LIST)
-    bcgame.DiffMilestone("Farming","/bacap/farming_milestone.json", bcgame._farming_advancements, bcgame.BACAP_LIST)
-    bcgame.DiffMilestone("Animal","/bacap/animal_milestone.json", bcgame._animal_advancements, bcgame.BACAP_LIST)
+    bcgame.DiffMilestone("Building","/bacap/building_milestone.json", bcgame._building_advancements, bcgame.BUILDING_LIST)
+    bcgame.DiffMilestone("Farming","/bacap/farming_milestone.json", bcgame._farming_advancements, bcgame.FARMING_LIST)
+    bcgame.DiffMilestone("Animal","/bacap/animal_milestone.json", bcgame._animal_advancements, bcgame.ANIMAL_LIST)
+
+    bcgame.DiffMilestone("Monsters","/bacap/monsters_milestone.json", bcgame._monsters_advancements, bcgame.MONSTERS_LIST)
+    bcgame.DiffMilestone("Weaponry","/bacap/weaponry_milestone.json", bcgame._weaponry_advancements, bcgame.WEAPONRY_LIST)
+    bcgame.DiffMilestone("Biomes","/bacap/biomes_milestone.json", bcgame._biomes_advancements, bcgame.BIOMES_LIST)
+    bcgame.DiffMilestone("Adventure","/bacap/adventure_milestone.json", bcgame._adventure_advancements, bcgame.ADVENTURE_LIST)
+
+#redstone
+#enchanting
+#statistics
+#nether
+
+#potions
+#end
+#challenges
 
 #    bcgame._advancements["blazeandcave:bacap/advancement_legend"].PrintAdvancement()
     
