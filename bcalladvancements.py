@@ -575,8 +575,8 @@ class BCAllAdvancements():
                     "blazeandcave:animal/save_the_turtles",
                     "blazeandcave:animal/turtle_army"]
 
-    MONSTERS_LIST=["blazeandcave:monsters/monsters",
-                    "blazeandcave:monsters/monster_hunter",
+    MONSTERS_LIST=["blazeandcave:monsters/root",
+                    "minecraft:adventure/kill_a_mob",
                     "blazeandcave:monsters/dead_dont_die",
                     "blazeandcave:monsters/there_has_to_be_another_way",
                     "blazeandcave:monsters/iron_belly",
@@ -595,11 +595,11 @@ class BCAllAdvancements():
                     "blazeandcave:monsters/mollusc_man",
                     "blazeandcave:monsters/captain_etho",
                     "blazeandcave:monsters/ooh_baby",
-                    "blazeandcave:monsters/baby_baby_baby_nooo",
+                    "blazeandcave:monsters/baby_baby_baby_noo",
                     "blazeandcave:monsters/poultry_boy",
                     "blazeandcave:monsters/spooky_skeleton",
                     "blazeandcave:monsters/boned",
-                    "blazeandcave:monsters/not_today_thank_you",
+                    "minecraft:story/deflect_arrow",
                     "blazeandcave:monsters/frosty",
                     "blazeandcave:monsters/skeleton_smiter",
                     "blazeandcave:monsters/paleontologist",
@@ -640,24 +640,24 @@ class BCAllAdvancements():
                     "blazeandcave:monsters/ricochet_swoop",
                     "blazeandcave:monsters/phantom_slayer",
                     "blazeandcave:monsters/anti_air",
-                    "blazeandcave:monsters/two_birds_one_arrow",
+                    "minecraft:adventure/two_birds_one_arrow",
                     "blazeandcave:monsters/well_handle_this",
                     "blazeandcave:monsters/night_runner",
                     "blazeandcave:monsters/hell_hunter",
                     "blazeandcave:monsters/void_ender",
                     "blazeandcave:monsters/dungeon_crawler",
-                    "blazeandcave:monsters/monsters_hunted"]
+                    "minecraft:adventure/kill_all_mobs"]
 
-    WEAPONRY_LIST=[ "blazeandcave:weaponry/weaponry",
-                    "blazeandcave:weaponry/take_aim",
+    WEAPONRY_LIST=[ "blazeandcave:weaponry/root",
+                    "minecraft:adventure/shoot_arrow",
                     "blazeandcave:weaponry/that_is_so_fletch",
                     "blazeandcave:weaponry/point_blank",
                     "blazeandcave:weaponry/bow_spammer",
-                    "blazeandcave:weaponry/sniper_duel",
+                    "minecraft:adventure/sniper_duel",
                     "blazeandcave:weaponry/the_mighty_hunter",
                     "blazeandcave:weaponry/x_bow",
-                    "blazeandcave:weaponry/ol_betsy",
-                    "blazeandcave:weaponry/whos_the_pillager_now",
+                    "minecraft:adventure/ol_betsy",
+                    "minecraft:adventure/whos_the_pillager_now",
                     "blazeandcave:weaponry/artillery",
                     "blazeandcave:weaponry/fireworks_display",
                     "blazeandcave:weaponry/pyrotechnic",
@@ -672,7 +672,7 @@ class BCAllAdvancements():
                     "blazeandcave:weaponry/axeman",
                     "blazeandcave:weaponry/shovel_knight",
                     "blazeandcave:weaponry/multiclassed",
-                    "blazeandcave:weaponry/a_throwaway_joke",
+                    "minecraft:adventure/throw_trident",
                     "blazeandcave:weaponry/king_of_the_sea",
                     "blazeandcave:weaponry/the_aquatic_hunter",
                     "blazeandcave:weaponry/poseidon_vs_hades",
@@ -696,7 +696,7 @@ class BCAllAdvancements():
                     "blazeandcave:weaponry/loser",
                     "blazeandcave:weaponry/half_heart_life"]
 
-    BIOMES_LIST=["blazeandcave:biomes/biomes",
+    BIOMES_LIST=["blazeandcave:biomes/root",
                     "blazeandcave:biomes/for_you_my_sweet",
                     "blazeandcave:biomes/theres_a_zombie_on_the_lawn",
                     "blazeandcave:biomes/enchanted_forest",
@@ -715,7 +715,7 @@ class BCAllAdvancements():
                     "blazeandcave:biomes/pandamonium",
                     "blazeandcave:biomes/smooth_operator",
                     "blazeandcave:biomes/this_snow_is_snowier",
-                    "blazeandcave:biomes/light_as_a_rabbit",
+                    "minecraft:adventure/walk_on_powder_snow_with_leather_boots",
                     "blazeandcave:biomes/powder_full",
                     "blazeandcave:biomes/thin_ice",
                     "blazeandcave:biomes/spike_ice",
@@ -726,7 +726,7 @@ class BCAllAdvancements():
                     "blazeandcave:biomes/the_sea_calls_you",
                     "blazeandcave:biomes/boaty_mcboatface",
                     "blazeandcave:biomes/dolphin_dasher",
-                    "blazeandcave:biomes/so_long_&_thanks_for_the_fish",
+                    "blazeandcave:biomes/so_long_and_thanks_for_all_the_fish",
                     "blazeandcave:biomes/free_diver",
                     "blazeandcave:biomes/sleep_with_the_fishes",
                     "blazeandcave:biomes/the_great_blocky_reef",
@@ -750,9 +750,9 @@ class BCAllAdvancements():
                     "blazeandcave:biomes/snow_feet",
                     "blazeandcave:biomes/overgrown",
                     "blazeandcave:biomes/wet_feet",
-                    "blazeandcave:biomes/adventuring_time"]
+                    "minecraft:adventure/adventuring_time"]
 
-    ADVENTURE_LIST=[ "blazeandcave:adventure/adventure",
+    ADVENTURE_LIST=[ "minecraft:adventure/root",
                     "blazeandcave:adventure/i_hereby_dub_thee",
                     "blazeandcave:adventure/i_just_want_to_make_toast",
                     "blazeandcave:adventure/whats_up_doc",
@@ -771,14 +771,14 @@ class BCAllAdvancements():
                     "blazeandcave:adventure/raidin_master",
                     "blazeandcave:adventure/out_of_posts",
                     "blazeandcave:adventure/riot_shield",
-                    "blazeandcave:adventure/ive_got_a_bad_feeling_about_this",
+                    "minecraft:adventure/voluntary_exile",
                     "blazeandcave:adventure/redemption_arc",
                     "blazeandcave:adventure/were_being_attacked",
                     "blazeandcave:adventure/its_so_beast_like",
                     "blazeandcave:adventure/i_am_ravager_hear_me_roar",
                     "blazeandcave:adventure/picador",
                     "blazeandcave:adventure/feeling_ill",
-                    "blazeandcave:adventure/hero_of_the_village",
+                    "minecraft:adventure/hero_of_the_village",
                     "blazeandcave:adventure/superhero_of_the_village",
                     "blazeandcave:adventure/justice",
                     "blazeandcave:adventure/buy_low_sell_high",
@@ -794,11 +794,11 @@ class BCAllAdvancements():
                     "blazeandcave:adventure/do_you_want_to_trade",
                     "blazeandcave:adventure/oh_look_it_dings",
                     "blazeandcave:adventure/prime_specimen",
-                    "blazeandcave:adventure/what_a_deal",
+                    "minecraft:adventure/trade",
                     "blazeandcave:adventure/crazy_cat_lady",
                     "blazeandcave:adventure/if_only_cats_grew_into_kittens",
-                    "blazeandcave:adventure/a_complete_catalogue",
-                    "blazeandcave:adventure/hired_help",
+                    "minecraft:husbandry/complete_catalogue",
+                    "minecraft:adventure/summon_iron_golem",
                     "blazeandcave:adventure/your_daily_fix",
                     "blazeandcave:adventure/murderer",
                     "blazeandcave:adventure/rekt",
@@ -832,11 +832,11 @@ class BCAllAdvancements():
                     "blazeandcave:adventure/dry_spell",
                     "blazeandcave:adventure/sponge_miner",
                     "blazeandcave:adventure/house_of_psychos",
-                    "blazeandcave:adventure/heeeres_johnny",
+                    "blazeandcave:adventure/heres_johnny",
                     "blazeandcave:adventure/the_shielding",
                     "blazeandcave:adventure/ghostbuster",
                     "blazeandcave:adventure/wololo",
-                    "blazeandcave:adventure/postmortal"]
+                    "minecraft:adventure/totem_of_undying"]
 
     REDSTONE_LIST=["blazeandcave:redstone/root",
                     "blazeandcave:redstone/under_pressure",
@@ -1452,12 +1452,13 @@ class BCAllAdvancements():
         if(len(advancements)<len(milestonelist)):
             differences = list(set(milestonelist)-set(advancements))
         else:
-            differences = list(set(advancements)-set(milestonelist))
+           differences = list(set(advancements)-set(milestonelist))
         if(len(sheetslist)<len(milestonelist)):
             differences = list(set(milestonelist)-set(sheetslist))
         else:
             differences = list(set(sheetslist)-set(milestonelist))
         print(differences)
+
 
 
     def SaveReportAdvancement(self,advancement,reportfile):
@@ -1549,8 +1550,8 @@ class BCAllAdvancements():
             self.SaveReportAdvancement(item,reportfile)
 
 
-        for advancement in sorted(self._nether_advancements):
-            print(f"{self._advancements[advancement]._title},{advancement}")
+#        for advancement in sorted(self._monsters_advancements):
+#            print(f"{self._advancements[advancement]._title},{advancement}")
 
         reportfile.close
 
