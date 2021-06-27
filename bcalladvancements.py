@@ -1472,6 +1472,7 @@ class BCAllAdvancements():
             reportfile.write(f"{self._advancements[advancement]._title},")
             if(self._advancements[advancement]._completed==BCAdvancement.ADVANCEMENT_NOTCOMPLETED):
                 first=True
+                reportfile.write(f"{len(stillneeded)},")
                 for item in stillneeded:
                     if(first):
                         reportfile.write(f"{item}")
