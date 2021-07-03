@@ -140,11 +140,11 @@ class BCGameInstance():
         if(self._logresults):
             self._bclog.LogResults(self._bclevelfile,self._bclogfiles)
 
-    def SaveAllFiles():
+    def SaveAllFiles(self):
         call(["./save-it-all.bash"])
         sleep(0.5)
 
-    def QueryTime():
+    def QueryTime(self):
         call(["./query-time.bash"])
         sleep(0.5)
 

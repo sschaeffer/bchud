@@ -84,7 +84,7 @@ def main(stdscr, minecraftdir, servername, worldname):
         if key == ord('s'):
             bcgi.SaveAllFiles()
         elif key == ord('t'):
-            bctimerwindow.RecordTime()
+            bctimerwindow.RecordTime(bcgi)
         elif key == ord('0'):
             stdscr.clear()
             statusbarwin.clear()
