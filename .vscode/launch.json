@@ -9,9 +9,17 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "BCHud Single Player",
+            "type": "python",
+            "request": "launch",
+            "program": "bchud.py",
             "args": [
-//                "--servername","snapshot.1327"
-//                "--worldname","world"
+                "--minecraftdir","/home/integ/.minecraft",
+                "--servername","saves",
+                "--worldname","Battlefield Hardcore"
             ],
             "console": "integratedTerminal"
         }

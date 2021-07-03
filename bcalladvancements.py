@@ -31,6 +31,7 @@ class BCAdvancement():
     ADVANCEMENT_NOTCOMPLETED = 0
     ADVANCEMENT_COMPLETED = 1
 
+
     def __init__(self, name, filename):
 
         self._name = name
@@ -185,6 +186,16 @@ class BCAdvancement():
             print(f"Advancement Completed: FALSE")
 
 class BCAllAdvancements():
+
+    USERS = [["0204da8b-0edd-47ad-8890-ac5ee611b575.json", "stephenschaeffer"],
+            ["9c5f8bcb-b09e-4e62-b3ac-52ca81fe0a39.json","diggles"],
+            ["5274e06b-16ee-497d-91e0-979875774d7d.json", "LastStay"],
+            ["07214cf4-dfdf-455d-a27a-29e6f59321d2.json", "Lilly__Bug"],
+            ["a1262701-5209-467e-9255-01a3584e83c5.json", "Noodle_Hair"],
+            ["c5656bcb-e2e2-4cd2-966d-e63b4ca78ffd.json", "Sebbac80"],
+            ["d30b6742-bb04-4af4-9eb1-cb8bf3792741.json", "Yee_L"]]
+
+    PRIMARY = "0204da8b-0edd-47ad-8890-ac5ee611b575.json"
 
     BACAP_LIST=["blazeandcave:bacap/root",\
                 "blazeandcave:bacap/getting_wood",\
@@ -1248,7 +1259,6 @@ class BCAllAdvancements():
         self._bacadvancement_dirname = self._bac_dirname + "/data/blazeandcave/advancements"
         self._standardadvancement_dirname = self._bac_dirname + "/data/minecraft/advancements"
         self._useradvancements_dirname = self._minecraftdir+"/"+self._servername+"/"+self._worldname+"/advancements"
-        self._useradvancements_filename = self._useradvancements_dirname + "/0204da8b-0edd-47ad-8890-ac5ee611b575.json"
 
         self.BuildBACAdvancements("adventure")
         self.BuildBACAdvancements("animal")
@@ -1343,8 +1353,15 @@ class BCAllAdvancements():
                     self._weaponry_advancements[advancement] = self._advancements[advancement]
 
 
-    def UpdateAdvancements(self):
+    def ResetAdvancements(self):
+        for i in self._advancements:
+            self._advancements[i]._completed = BCAdvancement.ADVANCEMENT_NOTCOMPLETED
+            self._advancements[i]._finished.clear()
+        self._lastupdatetime=0
 
+    def UpdateAdvancements(self, user):
+
+        self._useradvancements_filename = self._useradvancements_dirname + "/" + user
         useradvancement_filepath = Path(self._useradvancements_filename)
         if useradvancement_filepath.exists() and self._lastupdatetime != useradvancement_filepath.stat().st_mtime:
         # file has changed so lets save the previous results
@@ -1380,6 +1397,13 @@ class BCAllAdvancements():
             total_advancements = len(self._advancements[name]._criteria)
             total_advancements_completed = len(self._advancements[name]._finished)
         print(f"{title} {total_advancements_completed:3} out of {total_advancements:3} ({num})")
+
+    def TotalAdvancements(self):
+        total_advancements_completed = 0
+        name = "blazeandcave:bacap/advancement_legend"
+        if name in self._advancements:
+            total_advancements_completed = len(self._advancements[name]._finished)
+        return total_advancements_completed
 
     def PrintAllAdvancements(self):
 
@@ -1561,28 +1585,35 @@ def main():
     print("BCAllAdvancements: Unit Testing")
     bcgame = BCAllAdvancements()
 
-    bcgame.UpdateAdvancements()
+    bcgame.UpdateAdvancements(bcgame.PRIMARY)
     bcgame.PrintAllAdvancements()
     bcgame.SaveReportFile()
 
-    bcgame.DiffMilestone("Mining", "/bacap/mining_milestone.json", bcgame._mining_advancements, bcgame.MINING_LIST)
-    bcgame.DiffMilestone("Building","/bacap/building_milestone.json", bcgame._building_advancements, bcgame.BUILDING_LIST)
-    bcgame.DiffMilestone("Farming","/bacap/farming_milestone.json", bcgame._farming_advancements, bcgame.FARMING_LIST)
-    bcgame.DiffMilestone("Animal","/bacap/animal_milestone.json", bcgame._animal_advancements, bcgame.ANIMAL_LIST)
+#    bcgame.DiffMilestone("Mining", "/bacap/mining_milestone.json", bcgame._mining_advancements, bcgame.MINING_LIST)
+#    bcgame.DiffMilestone("Building","/bacap/building_milestone.json", bcgame._building_advancements, bcgame.BUILDING_LIST)
+#    bcgame.DiffMilestone("Farming","/bacap/farming_milestone.json", bcgame._farming_advancements, bcgame.FARMING_LIST)
+#    bcgame.DiffMilestone("Animal","/bacap/animal_milestone.json", bcgame._animal_advancements, bcgame.ANIMAL_LIST)
+#
+#    bcgame.DiffMilestone("Monsters","/bacap/monsters_milestone.json", bcgame._monsters_advancements, bcgame.MONSTERS_LIST)
+#    bcgame.DiffMilestone("Weaponry","/bacap/weaponry_milestone.json", bcgame._weaponry_advancements, bcgame.WEAPONRY_LIST)
+#    bcgame.DiffMilestone("Biomes","/bacap/biomes_milestone.json", bcgame._biomes_advancements, bcgame.BIOMES_LIST)
+#    bcgame.DiffMilestone("Adventure","/bacap/adventure_milestone.json", bcgame._adventure_advancements, bcgame.ADVENTURE_LIST)
+#
+#    bcgame.DiffMilestone("Redstone","/bacap/redstone_milestone.json", bcgame._redstone_advancements, bcgame.REDSTONE_LIST)
+#    bcgame.DiffMilestone("Enchanting","/bacap/enchanting_milestone.json", bcgame._enchanting_advancements, bcgame.ENCHANTING_LIST)
+#    bcgame.DiffMilestone("Statistics","/bacap/statistics_milestone.json", bcgame._statistics_advancements, bcgame.STATISTICS_LIST)
+#    bcgame.DiffMilestone("Nether","/bacap/nether_milestone.json", bcgame._nether_advancements, bcgame.NETHER_LIST)
+#
+#    bcgame.DiffMilestone("Potion","/bacap/potion_milestone.json", bcgame._potion_advancements, bcgame.POTION_LIST)
+#    bcgame.DiffMilestone("End","/bacap/end_milestone.json", bcgame._end_advancements, bcgame.END_LIST)
+#    bcgame.DiffMilestone("Challenges","/bacap/challenges_milestone.json", bcgame._challenges_advancements, bcgame.CHALLENGES_LIST)
 
-    bcgame.DiffMilestone("Monsters","/bacap/monsters_milestone.json", bcgame._monsters_advancements, bcgame.MONSTERS_LIST)
-    bcgame.DiffMilestone("Weaponry","/bacap/weaponry_milestone.json", bcgame._weaponry_advancements, bcgame.WEAPONRY_LIST)
-    bcgame.DiffMilestone("Biomes","/bacap/biomes_milestone.json", bcgame._biomes_advancements, bcgame.BIOMES_LIST)
-    bcgame.DiffMilestone("Adventure","/bacap/adventure_milestone.json", bcgame._adventure_advancements, bcgame.ADVENTURE_LIST)
-
-    bcgame.DiffMilestone("Redstone","/bacap/redstone_milestone.json", bcgame._redstone_advancements, bcgame.REDSTONE_LIST)
-    bcgame.DiffMilestone("Enchanting","/bacap/enchanting_milestone.json", bcgame._enchanting_advancements, bcgame.ENCHANTING_LIST)
-    bcgame.DiffMilestone("Statistics","/bacap/statistics_milestone.json", bcgame._statistics_advancements, bcgame.STATISTICS_LIST)
-    bcgame.DiffMilestone("Nether","/bacap/nether_milestone.json", bcgame._nether_advancements, bcgame.NETHER_LIST)
-
-    bcgame.DiffMilestone("Potion","/bacap/potion_milestone.json", bcgame._potion_advancements, bcgame.POTION_LIST)
-    bcgame.DiffMilestone("End","/bacap/end_milestone.json", bcgame._end_advancements, bcgame.END_LIST)
-    bcgame.DiffMilestone("Challenges","/bacap/challenges_milestone.json", bcgame._challenges_advancements, bcgame.CHALLENGES_LIST)
+    print()
+    for i in bcgame.USERS:
+        bcgame.ResetAdvancements()
+        bcgame.UpdateAdvancements(i[0])
+        print(f"{i[0]}:  ",end="")
+        print(f"{i[1]} - {bcgame.TotalAdvancements()}")
 
 #    bcgame._advancements["blazeandcave:bacap/advancement_legend"].PrintAdvancement()
     

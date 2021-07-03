@@ -135,7 +135,7 @@ class BCGameInstance():
 
         self._bclogfiles.UpdateLogInfo()
         self._bclevelfile.UpdateLevelInfo(self.ServerActive(),self.ServerStartTime())
-        self._bcalladvancements.UpdateAdvancements()
+        self._bcalladvancements.UpdateAdvancements(self._bcalladvancements.PRIMARY)
 
         if(self._logresults):
             self._bclog.LogResults(self._bclevelfile,self._bclogfiles)
