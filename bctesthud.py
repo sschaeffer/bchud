@@ -34,6 +34,7 @@ def cursessetup():
 
     if curses.has_colors():
         curses.start_color()
+        curses.use_default_colors()
 
     curses.init_pair(BCStatusBar.STATSBAR_COLOR, curses.COLOR_WHITE, 240)
     curses.init_pair(BCStatusBar.STATSBAR_REALTIMECOLOR, curses.COLOR_BLACK, 34)
@@ -49,8 +50,13 @@ def cursessetup():
     curses.init_pair(BCGameInstance.NOMONSTERS, curses.COLOR_WHITE, 20)    # 8 LIGHT BLUE (11 secs)
     curses.init_pair(BCGameInstance.NOSLEEP, curses.COLOR_WHITE, 96)       # PINK (27secs)
 
+    curses.init_pair(BCAdvancementWindow.ADVANCEMENT_COMPLETE, 46, -1)
+    curses.init_pair(BCAdvancementWindow.ADVANCEMENT_INCOMPLETE, 46, -1)
 
 class BCHUD():
+
+    UP = -1
+    DOWN = 1
 
     def __init__(self, stdscr:curses.window, bcgi:BCGameInstance):
 
@@ -60,29 +66,61 @@ class BCHUD():
         self.currentmode = 0
         self.width = 0
         self.height = 0
+        self.top = 0
+        self.bottom = 0 
+        self.currentitem = 0
+        self.maxlines =0
 
-
-        self.advancementwindow = curses.newwin(1,0)
+        self.advancementwindow = curses.newwin(0,0)
         self.advancementpanel = curses.panel.new_panel(self.advancementwindow)
-        self.bcadvancementwindow = BCAdvancementWindow(self.advancementwindow)
+        self.bcadvancementwindow = BCAdvancementWindow(self.advancementwindow,self.bcgi)
 
     def Render(self):
         (height,width) = self.stdscr.getmaxyx()
         if(height!=self.height or width!=self.width):
             self.height = height
+            self.maxlines = height-2
             self.width = width
 
-        self.bcadvancementwindow.Render(height,width)
+        self.bottom = self.bcadvancementwindow.Render(height,width,self.currentitem,self.top)
         self.advancementpanel.move(1,0)
         self.advancementpanel.show()
+
         curses.panel.update_panels()
         curses.doupdate()
-    
-    
+
+    def Scroll(self, direction):
+        """Scrolling the window when pressing up/down arrow keys"""
+        # next cursor position after scrolling
+        next_line = self.currentitem + direction
+
+        if (direction == self.UP) and (self.top > 0 and self.currentitem == 0):
+            self.top += direction
+            return
+        if (direction == self.DOWN) and (next_line == self.maxlines) and (self.top + self.maxlines < self.bottom):
+            self.top += direction
+            return
+        if (direction == self.UP) and (self.top > 0 or self.currentitem > 0):
+            self.currentitem = next_line
+            return
+        if (direction == self.DOWN) and (next_line < self.maxlines) and (self.top + next_line < self.bottom):
+            self.currentitem = next_line
+            return
+
     def EventHandler(self,input):
         self.lastinputkey = input
-        if(input== ord('q')):
+        if input== ord('q'):
             self.currentmode = -1
+        elif input == curses.KEY_UP:
+            self.Scroll(self.UP)
+        elif input == curses.KEY_DOWN:
+            self.Scroll(self.DOWN)
+#        elif input == curses.KEY_LEFT:
+#            self.paging(self.UP)
+#        elif input == curses.KEY_RIGHT:
+#            self.paging(self.DOWN)
+ #       elif ch == curses.ascii.ESC:
+ #           break
 
 
     def Exit(self):

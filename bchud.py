@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+from bcadvancementwindow import BCAdvancementWindow
 from bcgameinstance import BCGameInstance
 from bctimerwindow import BCTimerWindow
 from bcstatusbar import BCStatusBar
@@ -47,6 +48,7 @@ def cursessetup():
     curses.init_pair(BCGameInstance.MONSTERS, curses.COLOR_WHITE, 17)      # 7 DARKEST BLUE/BLACK (8mins 1secs)
     curses.init_pair(BCGameInstance.NOMONSTERS, curses.COLOR_WHITE, 20)    # 8 LIGHT BLUE (11 secs)
     curses.init_pair(BCGameInstance.NOSLEEP, curses.COLOR_WHITE, 96)        # PINK (27secs)
+ 
 
 
 def rendermenubar(stdscr, bcgi):

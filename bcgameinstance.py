@@ -131,6 +131,9 @@ class BCGameInstance():
     def AllAdvancementsCount(self):
         return(self._bcalladvancements.GetMilestone("blazeandcave:bacap/advancement_legend"))
 
+    def MiningAdvancements(self):
+        return(self._bcalladvancements._mining_advancements)
+
     def UpdateGameInfo(self):
 
         self._bclogfiles.UpdateLogInfo()
