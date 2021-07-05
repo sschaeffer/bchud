@@ -10,32 +10,52 @@ class BCAdvancementWindow():
     def __init__(self, window, bcgi):
         self.window:curses.window = window
         self.bcgi:BCGameInstance = bcgi
+        self._selectedItem = ""
 
-    def Render(self,height,width,currentitem,topitem):
+
+    def Render(self,height,width,currentitem,topitem,currentcrit,topcrit):
         self.window.resize(height-2,width)
         self.window.clear()
 
-        currentitemidx=0
-        if currentitem > height-2:
-            currentitemidx = height
-        if currentitem > 0:
-            currentitemidx = currentitem
+        criterialen = 0
 
         mining_advancements = self.bcgi.MiningAdvancements()
         mining_advancements_list = list(mining_advancements.items())
         for i in range(len(mining_advancements_list))[topitem:topitem+height-2]:
             j=i-topitem
             advancementname:str = mining_advancements_list[i][0].split('/')[1]
-            if(mining_advancements[mining_advancements_list[i][0]]._completed == BCAdvancement.ADVANCEMENT_COMPLETED):
-                if j == currentitem:
-                    self.window.addstr(j,0,advancementname, curses.color_pair(self.ADVANCEMENT_COMPLETE)|curses.A_BOLD)
+            if j == currentitem:
+                self._highlightedItem = mining_advancements_list[i][0]
+                if(mining_advancements[mining_advancements_list[i][0]]._completed == BCAdvancement.ADVANCEMENT_COMPLETED):
+                    self.window.addstr(j,0,advancementname, curses.color_pair(self.ADVANCEMENT_COMPLETE)|curses.A_REVERSE|curses.A_BOLD)
                 else:
-                    self.window.addstr(j,0,advancementname, curses.color_pair(self.ADVANCEMENT_COMPLETE))
+                    self.window.addstr(j,0,advancementname, curses.A_REVERSE|curses.A_BOLD)
             else:
-                if j == currentitem:
-                    self.window.addstr(j,0,advancementname, curses.A_BOLD)
+                if(mining_advancements[mining_advancements_list[i][0]]._completed == BCAdvancement.ADVANCEMENT_COMPLETED):
+                    self.window.addstr(j,0,advancementname, curses.color_pair(self.ADVANCEMENT_COMPLETE))
                 else:
                     self.window.addstr(j,0,advancementname)
 
-        return len(mining_advancements_list)
+        if self._selectedItem != "":
+            advancement:BCAdvancement = self.bcgi._bcalladvancements._advancements[self._selectedItem]
+            criterialen = len(advancement._criteria) 
+            for i in range(criterialen)[topcrit:topcrit+height-2]:
+                j=i-topcrit
+                if j == currentcrit:
+                    if advancement._criteria[i] in advancement._finished:
+                        self.window.addstr(j,30,advancement._criteria[i], curses.color_pair(self.ADVANCEMENT_COMPLETE)|curses.A_REVERSE|curses.A_BOLD)
+                    else:
+                        self.window.addstr(j,30,advancement._criteria[i], curses.A_REVERSE|curses.A_BOLD)
+                else:
+                    if advancement._criteria[i] in advancement._finished:
+                        self.window.addstr(j,30,advancement._criteria[i], curses.color_pair(self.ADVANCEMENT_COMPLETE))
+                    else:
+                        self.window.addstr(j,30,advancement._criteria[i])
 
+        return (len(mining_advancements_list),criterialen)
+
+    def SelectAdvancement(self):
+        self._selectedItem = self._highlightedItem
+
+    def DeselectAdvancement(self):
+        self._selectedItem = ""
