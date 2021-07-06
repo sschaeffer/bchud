@@ -32,9 +32,6 @@ class BCLevelFile(NBTFile):
     RAIN_NOSLEEP=23992        # 23992 No sleeping rainy days (19:59/9:33)
     DAY_FULLDAY=24000        # 24000 Full-day 
 
-#    RAINMONSTERS=6   # DARK BLUE (11secs)
-#    NORAINMONSTERS=9 # LIGHTER BLUE/PINK (22secs)
-
     def __init__(self, minecraftdir="/media/local/Minecraft/server", servername="snapshot", worldname="snapshot", serveractive=False, serverstarttime=0):
 
         self.minecraftdir=minecraftdir

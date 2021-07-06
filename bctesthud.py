@@ -32,10 +32,8 @@ def cursessetup(stdscr):
     curses.halfdelay(10)
 
     # Start colors in curses
-
     if curses.has_colors():
         curses.start_color()
-#        curses.use_default_colors()
 
     curses.init_pair(BCStatusBar.STATSBAR_COLOR, curses.COLOR_WHITE, 240)
     curses.init_pair(BCStatusBar.STATSBAR_REALTIMECOLOR, curses.COLOR_BLACK, 34)

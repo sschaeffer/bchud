@@ -11,6 +11,7 @@ class BCAdvancementWindow():
         self.window:curses.window = window
         self.bcgi:BCGameInstance = bcgi
         self._selectedItem = ""
+        self._highlightedItem = ""
 
 
     def Render(self,height,width,currentitem,topitem,currentcrit,topcrit):
@@ -36,21 +37,21 @@ class BCAdvancementWindow():
                 else:
                     self.window.addstr(j,0,advancementname)
 
-        if self._selectedItem != "":
-            advancement:BCAdvancement = self.bcgi._bcalladvancements._advancements[self._selectedItem]
+        if self._highlightedItem != "":
+            advancement:BCAdvancement = self.bcgi._bcalladvancements._advancements[self._highlightedItem]
             criterialen = len(advancement._criteria) 
             for i in range(criterialen)[topcrit:topcrit+height-2]:
                 j=i-topcrit
-                if j == currentcrit:
-                    if advancement._criteria[i] in advancement._finished:
-                        self.window.addstr(j,30,advancement._criteria[i], curses.color_pair(self.ADVANCEMENT_COMPLETE)|curses.A_REVERSE|curses.A_BOLD)
-                    else:
-                        self.window.addstr(j,30,advancement._criteria[i], curses.A_REVERSE|curses.A_BOLD)
+#                if j == currentcrit:
+#                    if advancement._criteria[i] in advancement._finished:
+#                        self.window.addstr(j,30,advancement._criteria[i], curses.color_pair(self.ADVANCEMENT_COMPLETE)|curses.A_REVERSE|curses.A_BOLD)
+#                    else:
+#                        self.window.addstr(j,30,advancement._criteria[i], curses.A_REVERSE|curses.A_BOLD)
+#                else:
+                if advancement._criteria[i] in advancement._finished:
+                    self.window.addstr(j,30,advancement._criteria[i], curses.color_pair(self.ADVANCEMENT_COMPLETE))
                 else:
-                    if advancement._criteria[i] in advancement._finished:
-                        self.window.addstr(j,30,advancement._criteria[i], curses.color_pair(self.ADVANCEMENT_COMPLETE))
-                    else:
-                        self.window.addstr(j,30,advancement._criteria[i])
+                    self.window.addstr(j,30,advancement._criteria[i])
 
         return (len(mining_advancements_list),criterialen)
 
