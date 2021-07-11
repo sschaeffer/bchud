@@ -33,7 +33,7 @@ class BCGameInstance():
     RAIN_NOSLEEP=BCLevelFile.RAIN_NOSLEEP        # 23992 No sleeping rainy days (19:59/9:33)
     DAY_FULLDAY=BCLevelFile.DAY_FULLDAY        # 24000 Full-day
 
-    def __init__(self, minecraftdir="/media/local/Minecraft/server", servername="snapshot", worldname="snapshot", logresults=True):
+    def __init__(self, minecraftdir="/media/local/Minecraft/server", servername="fury", worldname="fury", logresults=True):
 
         self._logresults=logresults
         self._minecraftdir=minecraftdir
@@ -43,150 +43,163 @@ class BCGameInstance():
         self._bclevelfile = BCLevelFile(minecraftdir, servername, worldname)
         self._bclogfiles = BCLogFiles(minecraftdir, servername)
         self._bcalladvancements = BCAllAdvancements(minecraftdir, servername, worldname)
-        #self.bcuseradvancements = BCUserAdancements(minecraftdir, servername)
 
         self._bclog = BCLog(minecraftdir,servername)
 
-    def LogFilename(self):
-        return(self._bclogfiles.LogFilename())
+    def log_filename(self):
+        return(self._bclogfiles.log_filename())
 
-    def LevelFilename(self):
-        return(self._bclevelfile.LevelFilename())
+    def level_filename(self):
+        return(self._bclevelfile.level_filename())
 
-    def LevelFileLastUpdate(self):
-        return(self._bclevelfile.LevelFileLastUpdate())
+    def advancement_dir(self):
+        return(self._bcalladvancements.advancement_dir())
 
-    def Seed(self):
-        return(self._bclevelfile.Seed())
+    def level_file_last_update(self):
+        return(self._bclevelfile.level_file_last_update())
 
-    def GameTime(self):
-        return(self._bclevelfile.GameTime())
+    def seed(self):
+        return(self._bclevelfile.seed())
 
-    def EstimatedGameTime(self):
-        return(self._bclevelfile.EstimatedGameTime())
+    def game_time(self):
+        return(self._bclevelfile.game_time())
 
-    def DayTime(self):
-        return(self._bclevelfile.DayTime())
+    def estimated_game_time(self):
+        return(self._bclevelfile.estimated_game_time())
 
-    def EstimatedDayTime(self):
-        return(self._bclevelfile.EstimatedDayTime())
+    def day_time(self):
+        return(self._bclevelfile.day_time())
 
-    def ClearWeatherTime(self):
-        return(self._bclevelfile.ClearWeatherTime())
+    def estimated_day_time(self):
+        return(self._bclevelfile.estimated_day_time())
 
-    def EstimatedClearWeatherTime(self):
-        return(self._bclevelfile.EstimatedClearWeatherTime())
+    def clear_weather_time(self):
+        return(self._bclevelfile.clear_weather_time())
 
-    def Raining(self):
-        return(self._bclevelfile.Raining())
+    def estimated_clear_weather_time(self):
+        return(self._bclevelfile.estimated_clear_weather_time())
 
-    def RainTime(self):
-        return(self._bclevelfile.RainTime())
+    def raining(self):
+        return(self._bclevelfile.raining())
 
-    def EstimatedRainTime(self):
-        return(self._bclevelfile.EstimatedRainTime())
+    def rain_time(self):
+        return(self._bclevelfile.rain_time())
 
-    def EstimatedIsRaining(self):
-        return(self._bclevelfile.EstimatedIsRaining())
+    def estimated_rain_time(self):
+        return(self._bclevelfile.estimated_rain_time())
 
-    def Thundering(self):
-        return(self._bclevelfile.Thundering())
+    def estimated_is_raining(self):
+        return(self._bclevelfile.estimated_is_raining())
 
-    def ThunderTime(self):
-        return(self._bclevelfile.ThunderTime())
+    def thundering(self):
+        return(self._bclevelfile.thundering())
 
-    def EstimatedThunderTime(self):
-        return(self._bclevelfile.EstimatedThunderTime())
+    def thunder_time(self):
+        return(self._bclevelfile.thunder_time())
 
-    def EstimatedIsThundering(self):
-        return(self._bclevelfile.EstimatedIsThundering())
+    def estimated_thunder_time(self):
+        return(self._bclevelfile.estimated_thunder_time())
 
-    def WanderingTraderSpawnDelay(self):
-        return(self._bclevelfile.WanderingTraderSpawnDelay())
+    def estimated_is_thundering(self):
+        return(self._bclevelfile.estimated_is_thundering())
 
-    def EstimatedWanderingTraderSpawnDelay(self):
-        return(self._bclevelfile.EstimatedWanderingTraderSpawnDelay())
+    def wandering_trader_spawn_delay(self):
+        return(self._bclevelfile.wandering_trader_spawn_delay())
 
-    def WanderingTraderSpawnChance(self):
-        return(self._bclevelfile.WanderingTraderSpawnChance())
+    def estimated_wandering_trader_spawn_delay(self):
+        return(self._bclevelfile.estimated_wandering_trader_spawn_delay())
 
-    def WanderingTraderID(self):
-        return(self._bclevelfile.WanderingTraderID())
+    def wandering_trader_spawn_chance(self):
+        return(self._bclevelfile.wandering_trader_spawn_chance())
 
-    def EstimatedTimeOfDay(self):
-        return(self._bclevelfile.EstimatedTimeOfDay())
+    def wandering_trader_id(self):
+        return(self._bclevelfile.wandering_trader_id())
 
-    def EstimatedIsMonsters(self):
-        return(self._bclevelfile.EstimatedIsMonsters())
+    def estimated_time_of_day(self):
+        return(self._bclevelfile.estimated_time_of_day())
 
-    def EstimatedIsBedUsable(self):
-        return(self._bclevelfile.EstimatedIsBedUsable())
+    def estimated_is_monsters(self):
+        return(self._bclevelfile.estimated_is_monsters())
 
-    def ServerActive(self):
-        return(self._bclogfiles.ServerActive())
+    def estimated_is_bed_usable(self):
+        return(self._bclevelfile.estimated_is_bed_usable())
 
-    def ServerStartTime(self):
-        return(self._bclogfiles.ServerStartTime())
+    def server_active(self):
+        return(self._bclogfiles.server_active())
 
-    def AllAdvancementsCount(self):
-        return(self._bcalladvancements.GetMilestone("blazeandcave:bacap/advancement_legend"))
+    def server_start_time(self):
+        return(self._bclogfiles.server_start_time())
 
-    def MiningAdvancements(self):
-        return(self._bcalladvancements._mining_advancements)
+    def all_advancements_count(self):
+        return(self._bcalladvancements.get_milestone("blazeandcave:bacap/advancement_legend"))
 
-    def UpdateGameInfo(self):
+    def get_advancement(self,name):
+        return(self._bcalladvancements.get_advancement(name))
 
-        self._bclogfiles.UpdateLogInfo()
-        self._bclevelfile.UpdateLevelInfo(self.ServerActive(),self.ServerStartTime())
-        self._bcalladvancements.UpdateAdvancements(self._bcalladvancements.PRIMARY)
+    def bacap_advancements_list(self):
+        return(self._bcalladvancements.BACAP_LIST)
+
+    def mining_advancements_list(self):
+        return(self._bcalladvancements.MINING_LIST)
+
+    def building_advancements_list(self):
+        return(self._bcalladvancements.BUILDING_LIST)
+
+    def update_game_info(self):
+
+        self._bclogfiles.update_log_info()
+        self._bclevelfile.update_level_info(self.server_active(),self.server_start_time())
+        self._bcalladvancements.update_advancements(self._bcalladvancements.PRIMARY)
 
         if(self._logresults):
-            self._bclog.LogResults(self._bclevelfile,self._bclogfiles)
+            self._bclog.log_results(self._bclevelfile,self._bclogfiles)
 
-    def SaveAllFiles(self):
+    def save_all_files(self):
         call(["./save-it-all.bash"])
         sleep(0.5)
 
-    def QueryTime(self):
+    def query_time(self):
         call(["./query-time.bash"])
         sleep(0.5)
 
-    def PrintDebug(self):
-        print(f"Level File:          {self.LevelFilename()}")
-        print(f"Last Update Time:    {self.LevelFileLastUpdate()}")
-        print(f"Seed:                {self.Seed()}")
-        print(f"Game Time:           {self.GameTime()}")
-        print(f"Estimated Game Time: {self.EstimatedGameTime()}")
-        print(f"Day Time:            {self.DayTime()}")
-        print(f"Estimated Day Time:  {self.EstimatedDayTime()}")
-        print(f"Clear Weather Time:  {self.ClearWeatherTime()}")
-        print(f"Estimated Clear Wea: {self.EstimatedClearWeatherTime()}")
-        print(f"Raining:             {self.Raining()}")
-        print(f"Rain Time:           {self.RainTime()}")
-        print(f"Estimated Rain Time: {self.EstimatedRainTime()}")
-        print(f"Thundering:          {self.Thundering()}")
-        print(f"Thunder Time:        {self.ThunderTime()}")
-        print(f"Estimated Thunder T: {self.EstimatedThunderTime()}")
-        print(f"Wandering Trader Sp: {self.WanderingTraderSpawnDelay()}")
-        print(f"Estimated Wandering: {self.EstimatedWanderingTraderSpawnDelay()}")
-        print(f"Wandering Trader Sp: {self.WanderingTraderSpawnChance()}")
-        print(f"Wandering Trader Id: {self.WanderingTraderID()}")
-        print(f"Estimated Time of D: {self.EstimatedTimeOfDay()}")
-        self._bcalladvancements.PrintAllAdvancements()
+    def print_debug(self):
+        print(f"Level File:          {self.level_filename()}")
+        print(f"Log File:            {self.log_filename()}")
+        print(f"Advancement Dir:     {self.advancement_dir()}")
+        print(f"Last Update Time:    {self.level_file_last_update()}")
+        print(f"Seed:                {self.seed()}")
+        print(f"Game Time:           {self.game_time()}")
+        print(f"Estimated Game Time: {self.estimated_game_time()}")
+        print(f"Day Time:            {self.day_time()}")
+        print(f"Estimated Day Time:  {self.estimated_day_time()}")
+        print(f"Clear Weather Time:  {self.clear_weather_time()}")
+        print(f"Estimated Clear Wea: {self.estimated_clear_weather_time()}")
+        print(f"Raining:             {self.raining()}")
+        print(f"Rain Time:           {self.rain_time()}")
+        print(f"Estimated Rain Time: {self.estimated_rain_time()}")
+        print(f"Thundering:          {self.thundering()}")
+        print(f"Thunder Time:        {self.thunder_time()}")
+        print(f"Estimated Thunder T: {self.estimated_thunder_time()}")
+        print(f"Wandering Trader Sp: {self.wandering_trader_spawn_delay()}")
+        print(f"Estimated Wandering: {self.estimated_wandering_trader_spawn_delay()}")
+        print(f"Wandering Trader Sp: {self.wandering_trader_spawn_chance()}")
+        print(f"Wandering Trader Id: {self.wandering_trader_id()}")
+        print(f"Estimated Time of D: {self.estimated_time_of_day()}")
+        self._bcalladvancements.print_all_advancements()
 
 def main():
 
     print("BCGameInstance: Unit Testing")
     bcgame = BCGameInstance()
 
-    bcgame.UpdateGameInfo()
-    bcgame.PrintDebug()
+    bcgame.update_game_info()
+    bcgame.print_debug()
 
-    while True:
-        sleep(2)
-        print()
-        bcgame.UpdateGameInfo()
-        bcgame.PrintDebug()
+#    while True:
+#        sleep(2)
+#        print()
+#        bcgame.update_game_info()
+#        bcgame.print_debug()
 
 
 

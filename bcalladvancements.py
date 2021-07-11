@@ -2,7 +2,6 @@
 
 from os import listdir
 from pathlib import Path
-from time import sleep
 import json
 
 class BCAdvancement():
@@ -77,7 +76,7 @@ class BCAdvancement():
         elif(name.startswith("blazeandcave:weaponry")):
             self._section = self.ADVANCEMENT_WEAPONRY
 
-    def ReadAdvancement(self):
+    def read_advancement(self):
 
         advancement_file = open(self._filename,'r')
         advancement_info = json.load(advancement_file)
@@ -157,7 +156,7 @@ class BCAdvancement():
 
 
 
-    def PrintAdvancement(self):
+    def print_advancement(self):
         print(f"Advancement Name:      {self._name}")
         print(f"Advancement Filename:  {self._filename}")
         print(f"Advancement Title:     {self._title}")
@@ -1234,71 +1233,75 @@ class BCAllAdvancements():
         self._statistics_advancements={}
         self._weaponry_advancements={}
 
-        self.BuildAllAdvancements()
-        self.SortAllAdvancements()
+        self.build_all_advancements()
+        self.sort_all_advancements()
 
+    def advancement_dir(self):
+        return(self._bacadvancement_dirname)
 
-    def BuildAdvancements(self, type, name, dirname):
+    def build_advancements(self, type, name, dirname):
         advancement_dir = dirname + "/" + name
+        if not Path(advancement_dir).is_dir():
+            return
         for advancement_file in listdir(advancement_dir):
             if(advancement_file.endswith(".json")):
                 advancement_name = type+":"+name+"/"+advancement_file.rsplit(".",1)[0]
                 if advancement_name not in self._advancements:
                     self._advancements[advancement_name] = BCAdvancement(advancement_name, advancement_dir+"/"+advancement_file)
                 advancement: BCAdvancement = self._advancements[advancement_name]
-                advancement.ReadAdvancement()
+                advancement.read_advancement()
 
-    def BuildBACAdvancements(self, name):
-        self.BuildAdvancements("blazeandcave",name,self._bacadvancement_dirname)
+    def build_bacadvancements(self, name):
+        self.build_advancements("blazeandcave",name,self._bacadvancement_dirname)
 
-    def BuildStandardAdvancements(self, name):
-        self.BuildAdvancements("minecraft",name,self._standardadvancement_dirname)
+    def build_standard_advancements(self, name):
+        self.build_advancements("minecraft",name,self._standardadvancement_dirname)
 
-    def BuildAllAdvancements(self):
+    def build_all_advancements(self):
         self._bac_dirname = self._minecraftdir+"/"+self._servername+"/"+self._worldname+"/datapacks/bac_advancements"
         self._bacadvancement_dirname = self._bac_dirname + "/data/blazeandcave/advancements"
         self._standardadvancement_dirname = self._bac_dirname + "/data/minecraft/advancements"
         self._useradvancements_dirname = self._minecraftdir+"/"+self._servername+"/"+self._worldname+"/advancements"
 
-        self.BuildBACAdvancements("adventure")
-        self.BuildBACAdvancements("animal")
-        self.BuildBACAdvancements("bacap")
-        self.BuildBACAdvancements("biomes")
+        self.build_bacadvancements("adventure")
+        self.build_bacadvancements("animal")
+        self.build_bacadvancements("bacap")
+        self.build_bacadvancements("biomes")
 
-        self.BuildBACAdvancements("building")
-        self.BuildBACAdvancements("challenges")
-        self.BuildBACAdvancements("enchanting")
-        self.BuildBACAdvancements("end")
+        self.build_bacadvancements("building")
+        self.build_bacadvancements("challenges")
+        self.build_bacadvancements("enchanting")
+        self.build_bacadvancements("end")
 
-        self.BuildBACAdvancements("farming")
-        self.BuildBACAdvancements("mining")
-        self.BuildBACAdvancements("monsters")
-        self.BuildBACAdvancements("nether")
+        self.build_bacadvancements("farming")
+        self.build_bacadvancements("mining")
+        self.build_bacadvancements("monsters")
+        self.build_bacadvancements("nether")
 
-        self.BuildBACAdvancements("potion")
-        self.BuildBACAdvancements("redstone")
-        self.BuildBACAdvancements("statistics")
-        self.BuildBACAdvancements("weaponry")
+        self.build_bacadvancements("potion")
+        self.build_bacadvancements("redstone")
+        self.build_bacadvancements("statistics")
+        self.build_bacadvancements("weaponry")
 
-        self.BuildStandardAdvancements("adventure")
-        self.BuildStandardAdvancements("end")
-        self.BuildStandardAdvancements("husbandry")
-        self.BuildStandardAdvancements("nether")
-        self.BuildStandardAdvancements("story")
+        self.build_standard_advancements("adventure")
+        self.build_standard_advancements("end")
+        self.build_standard_advancements("husbandry")
+        self.build_standard_advancements("nether")
+        self.build_standard_advancements("story")
 
-    def ParentSection(self,advancement):
+    def parent_section(self,advancement):
         if self._advancements[advancement]._section != BCAdvancement.ADVANCEMENT_EMPTY:
             return self._advancements[advancement]._section
         else:
             parent = self._advancements[advancement]._parent
             if parent in self._advancements:
-                return self.ParentSection(parent)
+                return self.parent_section(parent)
         return BCAdvancement.ADVANCEMENT_EMPTY
 
-    def SortAllAdvancements(self):
+    def sort_all_advancements(self):
         for advancement in self._advancements:
             if self._advancements[advancement]._section == BCAdvancement.ADVANCEMENT_EMPTY:
-                self._advancements[advancement]._section = self.ParentSection(advancement)
+                self._advancements[advancement]._section = self.parent_section(advancement)
 
             if self._advancements[advancement]._section == BCAdvancement.ADVANCEMENT_ADVENTURE:
                 if advancement not in self._adventure_advancements:
@@ -1353,13 +1356,13 @@ class BCAllAdvancements():
                     self._weaponry_advancements[advancement] = self._advancements[advancement]
 
 
-    def ResetAdvancements(self):
+    def reset_advancements(self):
         for i in self._advancements:
             self._advancements[i]._completed = BCAdvancement.ADVANCEMENT_NOTCOMPLETED
             self._advancements[i]._finished.clear()
         self._lastupdatetime=0
 
-    def UpdateAdvancements(self, user):
+    def update_advancements(self, user):
 
         self._useradvancements_filename = self._useradvancements_dirname + "/" + user
         useradvancement_filepath = Path(self._useradvancements_filename)
@@ -1381,7 +1384,7 @@ class BCAllAdvancements():
                                     self._advancements[i]._finished.append(criteria)
 
 
-    def GetMilestone(self,name):
+    def get_milestone(self,name):
         total_advancements = total_advancements_completed = 0
         if name in self._advancements:
             total_advancements = len(self._advancements[name]._criteria)
@@ -1390,7 +1393,7 @@ class BCAllAdvancements():
         return milestone
 
 
-    def PrintMilestone(self, title, name, num ):
+    def print_milestone(self, title, name, num ):
 
         total_advancements = total_advancements_completed = 0
         if name in self._advancements:
@@ -1398,16 +1401,17 @@ class BCAllAdvancements():
             total_advancements_completed = len(self._advancements[name]._finished)
         print(f"{title} {total_advancements_completed:3} out of {total_advancements:3} ({num})")
 
-    def TotalAdvancements(self):
+    def total_advancements(self):
         total_advancements_completed = 0
         name = "blazeandcave:bacap/advancement_legend"
         if name in self._advancements:
             total_advancements_completed = len(self._advancements[name]._finished)
         return total_advancements_completed
 
-    def PrintAllAdvancements(self):
+    def print_all_advancements(self):
 
-        self.PrintMilestone("Total Advancements:            ","blazeandcave:bacap/advancement_legend",len(self._advancements))
+        self.print_milestone("Total Advancements:            ",
+                             "blazeandcave:bacap/advancement_legend",len(self._advancements))
         print()
 
 #        print(f"Total Adventure Advancements: {len(self._adventure_advancements)}")
@@ -1430,24 +1434,39 @@ class BCAllAdvancements():
 #        print(f"Total Statistics Advancements: {len(self._statistics_advancements)}")
 #        print(f"Total Weaponry Advancements: {len(self._weaponry_advancements)}")
 
-        self.PrintMilestone("Total Mining Advancements:     ","blazeandcave:bacap/mining_milestone",len(self._mining_advancements))
-        self.PrintMilestone("Total Building Advancements:   ","blazeandcave:bacap/building_milestone",len(self._building_advancements))
-        self.PrintMilestone("Total Farming Advancements:    ","blazeandcave:bacap/farming_milestone",len(self._farming_advancements))
-        self.PrintMilestone("Total Animal Advancements:     ","blazeandcave:bacap/animal_milestone",len(self._animal_advancements))
+        self.print_milestone("Total Mining Advancements:     ",
+                             "blazeandcave:bacap/mining_milestone",len(self._mining_advancements))
+        self.print_milestone("Total Building Advancements:   ",
+                             "blazeandcave:bacap/building_milestone",len(self._building_advancements))
+        self.print_milestone("Total Farming Advancements:    ",
+                             "blazeandcave:bacap/farming_milestone",len(self._farming_advancements))
+        self.print_milestone("Total Animal Advancements:     ",
+                             "blazeandcave:bacap/animal_milestone",len(self._animal_advancements))
 
-        self.PrintMilestone("Total Monsters Advancements:   ","blazeandcave:bacap/monsters_milestone",len(self._monsters_advancements))
-        self.PrintMilestone("Total Weaponry Advancements:   ","blazeandcave:bacap/weaponry_milestone",len(self._weaponry_advancements))
-        self.PrintMilestone("Total Biomes Advancements:     ","blazeandcave:bacap/biomes_milestone",len(self._biomes_advancements))
-        self.PrintMilestone("Total Adventure Advancements:  ","blazeandcave:bacap/adventure_milestone",len(self._adventure_advancements))
+        self.print_milestone("Total Monsters Advancements:   ",
+                             "blazeandcave:bacap/monsters_milestone",len(self._monsters_advancements))
+        self.print_milestone("Total Weaponry Advancements:   ",
+                             "blazeandcave:bacap/weaponry_milestone",len(self._weaponry_advancements))
+        self.print_milestone("Total Biomes Advancements:     ",
+                             "blazeandcave:bacap/biomes_milestone",len(self._biomes_advancements))
+        self.print_milestone("Total Adventure Advancements:  ",
+                             "blazeandcave:bacap/adventure_milestone",len(self._adventure_advancements))
 
-        self.PrintMilestone("Total Redstone Advancements:   ","blazeandcave:bacap/redstone_milestone",len(self._redstone_advancements))
-        self.PrintMilestone("Total Enchanting Advancements: ","blazeandcave:bacap/enchanting_milestone",len(self._enchanting_advancements))
-        self.PrintMilestone("Total Statistics Advancements: ","blazeandcave:bacap/statistics_milestone",len(self._statistics_advancements))
-        self.PrintMilestone("Total Nether Advancements:     ","blazeandcave:bacap/nether_milestone",len(self._nether_advancements))
+        self.print_milestone("Total Redstone Advancements:   ",
+                             "blazeandcave:bacap/redstone_milestone",len(self._redstone_advancements))
+        self.print_milestone("Total Enchanting Advancements: ",
+                             "blazeandcave:bacap/enchanting_milestone",len(self._enchanting_advancements))
+        self.print_milestone("Total Statistics Advancements: ",
+                             "blazeandcave:bacap/statistics_milestone",len(self._statistics_advancements))
+        self.print_milestone("Total Nether Advancements:     ",
+                             "blazeandcave:bacap/nether_milestone",len(self._nether_advancements))
 
-        self.PrintMilestone("Total Potion Advancements:    ","blazeandcave:bacap/potion_milestone",len(self._potion_advancements))
-        self.PrintMilestone("Total End Advancements:        ","blazeandcave:bacap/end_milestone",len(self._end_advancements))
-        self.PrintMilestone("Total Challenges Advancements: ","blazeandcave:bacap/challenges_milestone",len(self._challenges_advancements))
+        self.print_milestone("Total Potion Advancements:    ",
+                             "blazeandcave:bacap/potion_milestone",len(self._potion_advancements))
+        self.print_milestone("Total End Advancements:        ",
+                             "blazeandcave:bacap/end_milestone",len(self._end_advancements))
+        self.print_milestone("Total Challenges Advancements: ",
+                             "blazeandcave:bacap/challenges_milestone",len(self._challenges_advancements))
 
 #        i=1
 #        for advancement in sorted(self._building_advancements):
@@ -1461,7 +1480,7 @@ class BCAllAdvancements():
 #                print(f"{i}:{advancement}\t\t\t{self._advancements[advancement]._parent}")
 #                i+=1
 
-    def DiffMilestone(self, name, milestone_json, advancements, sheetslist):
+    def diff_milestone(self, name, milestone_json, advancements, sheetslist):
 
         milestone_filename = self._bacadvancement_dirname+milestone_json
         advancement_file = open(milestone_filename,'r')
@@ -1485,7 +1504,7 @@ class BCAllAdvancements():
 
 
 
-    def SaveReportAdvancement(self,advancement,reportfile):
+    def save_report_advancement(self,advancement,reportfile):
         if advancement in self._advancements:
             stillneeded = list(set(self._advancements[advancement]._criteria)-set(self._advancements[advancement]._finished))
             if(self._advancements[advancement]._completed==BCAdvancement.ADVANCEMENT_COMPLETED):
@@ -1506,73 +1525,73 @@ class BCAllAdvancements():
 #                       reportfile.write(f",")
             reportfile.write(f"\n") 
 
-    def SaveReportFile(self):
+    def save_report_file(self):
         reportfilename = self._minecraftdir+"/bclogs/advancement_report.csv"
         reportfile = open(reportfilename, "w")
 
         reportfile.write("BAC Advancements\n")
         for item in self.BACAP_LIST:
-            self.SaveReportAdvancement(item,reportfile)
+            self.save_report_advancement(item,reportfile)
 
         reportfile.write("\nMining\n")
         for item in self.MINING_LIST:
-            self.SaveReportAdvancement(item,reportfile)
+            self.save_report_advancement(item,reportfile)
 
         reportfile.write("\nBuilding\n")
         for item in self.BUILDING_LIST:
-            self.SaveReportAdvancement(item,reportfile)
+            self.save_report_advancement(item,reportfile)
 
         reportfile.write("\nFarming\n")
         for item in self.FARMING_LIST:
-            self.SaveReportAdvancement(item,reportfile)
+            self.save_report_advancement(item,reportfile)
 
         reportfile.write("\nAnimal\n")
         for item in self.ANIMAL_LIST:
-            self.SaveReportAdvancement(item,reportfile)
+            self.save_report_advancement(item,reportfile)
 
         reportfile.write("\nMonsters\n")
         for item in self.MONSTERS_LIST:
-            self.SaveReportAdvancement(item,reportfile)
+            self.save_report_advancement(item,reportfile)
 
         reportfile.write("\nWeaponry\n")
         for item in self.WEAPONRY_LIST:
-            self.SaveReportAdvancement(item,reportfile)
+            self.save_report_advancement(item,reportfile)
 
         reportfile.write("\nBiomes\n")
         for item in self.BIOMES_LIST:
-            self.SaveReportAdvancement(item,reportfile)
+            self.save_report_advancement(item,reportfile)
 
         reportfile.write("\nAdventure\n")
         for item in self.ADVENTURE_LIST:
-            self.SaveReportAdvancement(item,reportfile)
+            self.save_report_advancement(item,reportfile)
 
         reportfile.write("\nRedstone\n")
         for item in self.REDSTONE_LIST:
-            self.SaveReportAdvancement(item,reportfile)
+            self.save_report_advancement(item,reportfile)
 
         reportfile.write("\nEnchanting\n")
         for item in self.ENCHANTING_LIST:
-            self.SaveReportAdvancement(item,reportfile)
+            self.save_report_advancement(item,reportfile)
 
         reportfile.write("\nStatistics\n")
         for item in self.STATISTICS_LIST:
-            self.SaveReportAdvancement(item,reportfile)
+            self.save_report_advancement(item,reportfile)
 
         reportfile.write("\nNether\n")
         for item in self.NETHER_LIST:
-            self.SaveReportAdvancement(item,reportfile)
+            self.save_report_advancement(item,reportfile)
 
         reportfile.write("\nPotion\n")
         for item in self.POTION_LIST:
-            self.SaveReportAdvancement(item,reportfile)
+            self.save_report_advancement(item,reportfile)
 
         reportfile.write("\nEnd\n")
         for item in self.END_LIST:
-            self.SaveReportAdvancement(item,reportfile)
+            self.save_report_advancement(item,reportfile)
 
         reportfile.write("\nChallenges\n")
         for item in self.CHALLENGES_LIST:
-            self.SaveReportAdvancement(item,reportfile)
+            self.save_report_advancement(item,reportfile)
 
 
 #        for advancement in sorted(self._monsters_advancements):
@@ -1580,14 +1599,26 @@ class BCAllAdvancements():
 
         reportfile.close
 
+    def get_advancement(self,name):
+        advancement=None
+        if name in self._advancements:
+            advancement=self._advancements[name]
+        return(advancement)
+
+    def mining_advancements(self):
+        return self._mining_advancements
+
+    def building_advancements(self):
+        return self._building_advancements
+
 def main():
 
     print("BCAllAdvancements: Unit Testing")
     bcgame = BCAllAdvancements()
 
-    bcgame.UpdateAdvancements(bcgame.PRIMARY)
-    bcgame.PrintAllAdvancements()
-    bcgame.SaveReportFile()
+    bcgame.update_advancements(bcgame.PRIMARY)
+    bcgame.print_all_advancements()
+    bcgame.save_report_file()
 
 #    bcgame.DiffMilestone("Mining", "/bacap/mining_milestone.json", bcgame._mining_advancements, bcgame.MINING_LIST)
 #    bcgame.DiffMilestone("Building","/bacap/building_milestone.json", bcgame._building_advancements, bcgame.BUILDING_LIST)
@@ -1610,10 +1641,10 @@ def main():
 
     print()
     for i in bcgame.USERS:
-        bcgame.ResetAdvancements()
-        bcgame.UpdateAdvancements(i[0])
+        bcgame.reset_advancements()
+        bcgame.update_advancements(i[0])
         print(f"{i[0]}:  ",end="")
-        print(f"{i[1]} - {bcgame.TotalAdvancements()}")
+        print(f"{i[1]} - {bcgame.total_advancements()}")
 
 #    bcgame._advancements["blazeandcave:bacap/advancement_legend"].PrintAdvancement()
     

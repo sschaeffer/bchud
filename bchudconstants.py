@@ -4,16 +4,24 @@ from argparse import ArgumentParser
 
 class BCHudConstants():
 
+    MINIMUM_HEIGHT=20
+    MINIMUM_WIDTH=40
+
     BCMENU_EXIT=-1
     BCMENU_NOCHANGE=0
     BCMENU_REFRESH=1
 
-    BCMENU_DAY_NIGHT_CYCLE=11
-    BCMENU_LEVEL_INFO=12
-    BCMENU_BCLOGS=13
-    BCMENU_LATEST_LOG=14
-    BCMENU_TIMING=15
-    BCMENU_CHANGE_SERVER_WORLD=16
+    BCMENU_AUTO_UPDATE=11
+    BCMENU_AUTO_BACKUP=12
+    BCMENU_DAY_NIGHT_CYCLE=13
+    BCMENU_LEVEL_INFO=14
+    BCMENU_BCLOGS=15
+    BCMENU_LATEST_LOG=16
+    BCMENU_TIMING_WINDOW=17
+    BCMENU_CHANGE_SERVER_WORLD=18
+    BCMENU_SAVE_LEVEL_FILE=19
+    BCMENU_UPDATE=20
+    BCMENU_RECORD_TIME=21
 
     BCMENU_CURRENTUSER=50
     BCMENU_USER1=51
@@ -42,6 +50,7 @@ class BCHudConstants():
     BCMENU_SUPER_CHALLENGES=115
 
     COLOR_BCMENU_SELECTED_MENU=2
+    COLOR_ADVANCEMENT_COMPLETE=3
 
     DAWN=1           # LIGHT ORANGE (1min 40secs)
     WORKDAY=2        # LIGHT YELLOW (5mins 50secs)
@@ -77,7 +86,7 @@ class BCHudConstants():
     DAY_FULLDAY=24000        # 24000 Full-day 
 
 
-    def cursessetup(stdscr):
+    def curses_setup(stdscr):
 
         curses.noecho()
         curses.cbreak()
@@ -90,8 +99,9 @@ class BCHudConstants():
 
 #        curses.init_pair(BCHudConstants.MENUBAR_COLOR, 0, curses.COLOR_BLACK)
         curses.init_pair(BCHudConstants.COLOR_BCMENU_SELECTED_MENU, curses.COLOR_WHITE, curses.COLOR_BLACK)
+        curses.init_pair(BCHudConstants.COLOR_ADVANCEMENT_COMPLETE, 46, 0) #GREEN, and default background
 
-    def initserver(argv=None):
+    def init_server(argv=None):
 
         parser = ArgumentParser(prog='bchud')
         parser.add_argument('--minecraftdir', default="/media/local/Minecraft/server", help="minecraft server directory")
@@ -101,6 +111,15 @@ class BCHudConstants():
         if(args.worldname == None):
             args.worldname = args.servername
         return(args.minecraftdir,args.servername,args.worldname)
+
+    def check_minimum_size(stdscr:curses.window):
+        (height,width) = stdscr.getmaxyx()
+        if(height<BCHudConstants.MINIMUM_HEIGHT or width<BCHudConstants.MINIMUM_WIDTH):
+            stdscr.clear()
+            stdscr.addstr(int(height/2),int((width/2)-5),
+                          f"Resize{BCHudConstants.MINIMUM_HEIGHT}x{BCHudConstants.MINIMUM_WIDTH}")
+            stdscr.noutrefresh()
+        return(height,width)
 
 def main():
 
