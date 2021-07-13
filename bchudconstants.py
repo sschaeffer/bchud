@@ -49,8 +49,13 @@ class BCHudConstants():
     BCMENU_END_ADVANCEMENTS=114
     BCMENU_SUPER_CHALLENGES=115
 
+    COLOR_BCMENU_MENU=1
     COLOR_BCMENU_SELECTED_MENU=2
     COLOR_ADVANCEMENT_COMPLETE=3
+    COLOR_STATUS_BAR=4
+    COLOR_STATUS_BAR_GAME_TIME=5
+    COLOR_STATUS_BAR_UNTIL_RAIN=6
+    COLOR_STATUS_BAR_UNTIL_THUNDER=7
 
     DAWN=1           # LIGHT ORANGE (1min 40secs)
     WORKDAY=2        # LIGHT YELLOW (5mins 50secs)
@@ -99,7 +104,11 @@ class BCHudConstants():
 
 #        curses.init_pair(BCHudConstants.MENUBAR_COLOR, 0, curses.COLOR_BLACK)
         curses.init_pair(BCHudConstants.COLOR_BCMENU_SELECTED_MENU, curses.COLOR_WHITE, curses.COLOR_BLACK)
-        curses.init_pair(BCHudConstants.COLOR_ADVANCEMENT_COMPLETE, 46, 0) #GREEN, and default background
+        curses.init_pair(BCHudConstants.COLOR_ADVANCEMENT_COMPLETE, 46, 0) #GREEN text and default bkgd
+        curses.init_pair(BCHudConstants.COLOR_STATUS_BAR, curses.COLOR_WHITE, 240) #WHITE text and Dark Grey
+        curses.init_pair(BCHudConstants.COLOR_STATUS_BAR_GAME_TIME, curses.COLOR_WHITE, 34) #WHITE text and BRIGHT GREEN bkgd 
+        curses.init_pair(BCHudConstants.COLOR_STATUS_BAR_UNTIL_RAIN, curses.COLOR_BLACK, 26) #BLACK text and  
+        curses.init_pair(BCHudConstants.COLOR_STATUS_BAR_UNTIL_THUNDER, curses.COLOR_CYAN, 237) #BLACK text and  
 
     def init_server(argv=None):
 

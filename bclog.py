@@ -76,7 +76,7 @@ class BCLog():
         if self._seed != levelfile.seed():
             self.open(levelfile.seed())
         if self._currentlogevent < logfiles.num_log_events() and self._outfile:
-            while self._currentlogevent < logfiles._num_log_events():
+            while self._currentlogevent < logfiles.num_log_events():
                 self._outfile.write(f"{logfiles.get_log_event(self._currentlogevent)}\n")
                 self._currentlogevent=self._currentlogevent+1
             self._outfile.flush()

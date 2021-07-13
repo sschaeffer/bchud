@@ -278,7 +278,7 @@ def main(stdscr:curses.window, minecraftdir, servername, worldname):
 
     try:
         keyboardinput = 0
-        while keyboardinput != ord("q") and not bcmenubar.Exit(): 
+        while keyboardinput != ord("q") and not bcmenubar.exit(): 
             (height,width) = BCHudConstants.check_minimum_size(stdscr)
 
             if bcmenubar.is_open():
