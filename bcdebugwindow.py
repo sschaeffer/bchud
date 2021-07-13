@@ -1,114 +1,45 @@
 #!/usr/bin/env python3
-
 from bchudconstants import BCHudConstants
 from bcgameinstance import BCGameInstance
 
+from os import environ
 import curses
 from curses import panel
-from os import environ
-
-from math import floor
 from datetime import datetime, timedelta
-from time import time, strftime
+from time import time
 
-class BCStatusBar():
+
+
+class BCDebugWindow():
 
     def __init__(self, stdscr:curses.window, bcgi:BCGameInstance):
-
-        self._stdscr = stdscr 
-        self._bcgi = bcgi
-        
-        self._status_bar_window = curses.newwin(0,0)
-        self._status_bar_panel = panel.new_panel(self._status_bar_window)
-        self._status_bar_panel.hide()
-
-    def render_left_side(self,width):
-
-        day_number = str(floor(self._bcgi.estimated_day_time()/24000)+1)
-        self._status_bar_window.addstr(0, 0, f" {day_number} ", curses.color_pair(BCHudConstants.COLOR_STATUS_BAR_GAME_TIME))
-
-        minutes_until_rain = f"{self._bcgi.estimated_rain_time()/1200:.0f}"
-        if self._bcgi.estimated_is_raining():
-            self._status_bar_window.addstr(0, len(day_number)+2, f" {minutes_until_rain} ",curses.color_pair(BCHudConstants.COLOR_STATUS_BAR_UNTIL_RAIN))
-        else:
-            self._status_bar_window.addstr(0, len(day_number)+2, f" {minutes_until_rain} ",curses.color_pair(BCHudConstants.COLOR_STATUS_BAR))
-
-        minutes_until_thunder = f"{self._bcgi.estimated_thunder_time()/1200:.0f}"
-        if self._bcgi.estimated_is_thundering():
-            self._status_bar_window.addstr(0, len(day_number)+len(minutes_until_rain)+4, f" {minutes_until_thunder} ",curses.color_pair(BCHudConstants.COLOR_STATUS_BAR_UNTIL_THUNDER))
-        else:
-            self._status_bar_window.addstr(0, len(day_number)+len(minutes_until_rain)+4, f" {minutes_until_thunder} ",curses.color_pair(BCHudConstants.COLOR_STATUS_BAR))
+        self._stdscr:curses.stdscr = stdscr
+        self._bcgi:BCGameInstance = bcgi
 
 
-    def render_right_side(self,width):  #total game time and current time
-
-        current_time = strftime(" %H:%M:%S")
-        self._status_bar_window.addstr(0, width-(len(current_time)+1), current_time, curses.color_pair(BCHudConstants.COLOR_STATUS_BAR))
-
-        estimated_game_time = round(self._bcgi.estimated_game_time()/20)
-        game_time = f" {estimated_game_time//86400}:{(estimated_game_time%86400)//3600:02}:{(estimated_game_time%3600)//60:02}:{(estimated_game_time%60):02} "
-        self._status_bar_window.addstr(0, width-(len(current_time)+len(game_time)+1), game_time, curses.color_pair(BCHudConstants.COLOR_STATUS_BAR_GAME_TIME))
-
-
-    def render_center(self,width):
-
-        time_of_day = self._bcgi.estimated_time_of_day()
-        if time_of_day >= BCHudConstants.COLOR_SLEEP:
-            day_time = (BCHudConstants.DAY_FULLDAY-(self._bcgi.estimated_day_time()%BCHudConstants.DAY_FULLDAY))/20
-        else:
-            day_time = (BCHudConstants.DAY_SLEEP-(self._bcgi.estimated_day_time()%BCHudConstants.DAY_FULLDAY))/20
-        day_time_string = '{: 2}:{:02} '.format(floor(abs(day_time)/60),floor(abs(day_time)%60))
-        self._status_bar_window.addstr(0, (width//2)-(len(day_time_string)//2),day_time_string,curses.color_pair(time_of_day))
-
-        rain_and_thunder_icons = "     "
-        if self._bcgi.estimated_is_thundering():
-            rain_and_thunder_icons = "\U0001F329  \U0001F327 "
-        elif self._bcgi.estimated_is_raining():
-            rain_and_thunder_icons = "   \U0001F327  "
-        self._status_bar_window.addstr(0, ((width//2)-(len(day_time_string)//2))-6,rain_and_thunder_icons, curses.color_pair(BCHudConstants.COLOR_STATUS_BAR))
-
-        night_and_monster_icons = "     "
-        if self._bcgi.estimated_is_monsters():
-            night_and_monster_icons = "\U0001F319 \U0001F479"
-        elif self._bcgi.estimated_is_bed_usable():
-            night_and_monster_icons = "\U0001F319    "
-        self._status_bar_window.addstr(0, ((width//2)+(len(day_time_string)//2))+1,night_and_monster_icons, curses.color_pair(BCHudConstants.COLOR_STATUS_BAR))
-
+        self._debug_window = curses.newwin(0,0)
+        self._debug_panel = panel.new_panel(self._debug_window)
+        self._debug_panel.hide()
 
     def render(self,height,width):
 
         if(height<BCHudConstants.MINIMUM_HEIGHT or width<BCHudConstants.MINIMUM_WIDTH):
             return
-        self._status_bar_window.resize(1,width)
-        self._status_bar_window.clear()
-        self._status_bar_window.chgat(0, 0, -1, curses.color_pair(BCHudConstants.COLOR_STATUS_BAR))
+        self._max_lines = height-2
+        self._debug_window.resize(height-2,width)
+        self._debug_window.clear()
 
-        self.render_left_side(width)
-        self.render_right_side(width)
-        self.render_center(width)
-
-        self._status_bar_panel.move(height-1,0)
-        self._status_bar_panel.show()
-        panel.update_panels()
-        self._stdscr.noutrefresh()
-
-
-
-
-#    def RenderWindow(self,bcgi: BCGameInstance):
-#        (height,width) = self.statusbarwin.getmaxyx()
-#
-#        if bcgi.LevelFileLastUpdate() != 0:
-#            leveltimestr = f"{datetime.fromtimestamp(bcgi.LevelFileLastUpdate()).strftime('%H:%M')} level.dat "
-#            testlastupdatetime = round(bcgi.LevelFileLastUpdate()+300-time())
-#            if testlastupdatetime < 0: 
-#                nextupdatestr = f"(next update is LATE)          "
-#            else:
-#                nextupdatestr = f"(next update in {timedelta(seconds=round(bcgi.LevelFileLastUpdate()+300-time()))})"
-#        else:
-#            leveltimestr = "NO level.dat"
-#            nextupdatestr = ""
-#        self.statusbarwin.addstr(0, 0, leveltimestr+nextupdatestr)
+        if self._bcgi.level_file_last_update() != 0:
+            level_last_update = f"{datetime.fromtimestamp(self._bcgi.level_file_last_update()).strftime('%H:%M')} level.dat "
+            test_for_next_update = round(self._bcgi.level_file_last_update()+300-time())
+            if test_for_next_update < 0: 
+                next_update = f"(next update is LATE)          "
+            else:
+                next_update = f"(next update in {timedelta(seconds=round(self._bcgi.level_file_last_update()+300-time()))})"
+        else:
+            level_last_update = "NO level.dat"
+            next_update = ""
+        self._debug_window.addstr(0, 0, level_last_update+next_update)
 #
 #        gametimestr = f"Gametime {round(bcgi.EstimatedGameTime())} ({bcgi.GameTime()})"
 #        daytimestr = f"Daytime {bcgi.EstimatedDayTime()} % 24000 = {bcgi.EstimatedDayTime()%24000} ({bcgi.DayTime()})"
@@ -200,17 +131,38 @@ class BCStatusBar():
 ##        self.stdscr.addstr(height-1, (width//2)-(len(centerstatusbarstr)//2),centerstatusbarstr)
 ##        self.stdscr.attroff(curses.color_pair(1))
 
+
+
+
+
+        self._debug_panel.move(1,0)
+        self._debug_panel.show()
+
+    def hide(self):
+        self._debug_panel.hide()
+
+    def event_handler(self,input):
+        self._display_text = f"Input {input}"
+
 def main(stdscr:curses.window, minecraftdir, servername, worldname):
 
     bcgi = BCGameInstance(minecraftdir,servername,worldname)
-    BCHudConstants.curses_setup(stdscr)
-    bcstatusbar = BCStatusBar(stdscr,bcgi)
     bcgi.update_game_info()
+
+    BCHudConstants.curses_setup(stdscr)
+    bc_debug_window = BCDebugWindow(stdscr,bcgi)
+
     try:
+        pass
         keyboardinput = 0
         while keyboardinput != ord("q"): 
             (height,width) = BCHudConstants.check_minimum_size(stdscr)
-            bcstatusbar.render(height,width)
+
+            bc_debug_window.event_handler(keyboardinput)
+            bc_debug_window.render(height,width)
+ 
+            panel.update_panels()
+            stdscr.noutrefresh()
             curses.doupdate()
             keyboardinput = stdscr.getch()
 
@@ -219,8 +171,8 @@ def main(stdscr:curses.window, minecraftdir, servername, worldname):
     finally:
         curses.endwin()
 
+
 if __name__ == "__main__":
     (minecraftdir,servername,worldname) = BCHudConstants.init_server()
     environ.setdefault('ESCDELAY', '25')
-#    curses.wrapper(main, minecraftdir, servername, worldname)
-    curses.wrapper(main, minecraftdir, "snapshot", "snapshot")
+    curses.wrapper(main, minecraftdir, servername, worldname)

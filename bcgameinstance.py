@@ -10,29 +10,29 @@ from subprocess import call
 
 class BCGameInstance():
 
-    DAWN=BCLevelFile.DAWN           # LIGHT ORANGE (1min 40secs)
-    WORKDAY=BCLevelFile.WORKDAY        # LIGHT YELLOW (5mins 50secs)
-    HAPPYHOUR=BCLevelFile.HAPPYHOUR      # LIGHT MAROON (2mins 30secs)
-    TWILIGHT=BCLevelFile.TWILIGHT       # LIGHT PURPLE (27secs)
-    SLEEP=BCLevelFile.SLEEP          # DARK BLUE (21secs)
-    MONSTERS=BCLevelFile.MONSTERS       # DARKEST BLUE/BLACK (8mins 1secs)
-    NOMONSTERS=BCLevelFile.NOMONSTERS     # BLUE (11 secs)
-    NOSLEEP=BCLevelFile.NOSLEEP        # MAUVE (27secs)
-
-    DAY_DAWN=BCLevelFile.DAY_DAWN               #     0 DAWN Wakeup and Wander (0:00)
-    DAY_WORKDAY=BCLevelFile.DAY_WORKDAY        #  2000 WORKDAY (1:40)
-    DAY_HAPPYHOUR=BCLevelFile.DAY_HAPPYHOUR      #  9000 HAPPY-HOUR (7:30)
-    DAY_TWILIGHT=BCLevelFile.DAY_TWILIGHT     # 12000 TWILIGHT/villagers sleep (10:00)
-    RAIN_SLEEP=BCLevelFile.RAIN_SLEEP         # 12010 SLEEP on rainy days (10:00)
-    DAY_SLEEP=BCLevelFile.DAY_SLEEP       # 12542 SLEEP on normal days/mobs don't burn (10:27.1/0)
-    RAIN_MONSTERS=BCLevelFile.RAIN_MONSTERS      # 12969 Rainy day monsters (10:48.45/21)
-    DAY_MONSTERS=BCLevelFile.DAY_MONSTERS       # 13188 Monsters (10:59.4/32)
-    DAY_NOMONSTERS=BCLevelFile.DAY_NOMONSTERS     # 22812 No more monsters (19:00.6/8:33)
-    RAIN_NOMONSTERS=BCLevelFile.RAIN_NOMONSTERS    # 23031 No more rainy day monsters(19:11.55/8:44)
-    DAY_NOSLEEP=BCLevelFile.DAY_NOSLEEP        # 23460 No sleeping on normal days (19:33/9:06)
-    RAIN_NOSLEEP=BCLevelFile.RAIN_NOSLEEP        # 23992 No sleeping rainy days (19:59/9:33)
-    DAY_FULLDAY=BCLevelFile.DAY_FULLDAY        # 24000 Full-day
-
+#    DAWN=BCLevelFile.DAWN           # LIGHT ORANGE (1min 40secs)
+#    WORKDAY=BCLevelFile.WORKDAY        # LIGHT YELLOW (5mins 50secs)
+#    HAPPYHOUR=BCLevelFile.HAPPYHOUR      # LIGHT MAROON (2mins 30secs)
+#    TWILIGHT=BCLevelFile.TWILIGHT       # LIGHT PURPLE (27secs)
+#    SLEEP=BCLevelFile.SLEEP          # DARK BLUE (21secs)
+#    MONSTERS=BCLevelFile.MONSTERS       # DARKEST BLUE/BLACK (8mins 1secs)
+#    NOMONSTERS=BCLevelFile.NOMONSTERS     # BLUE (11 secs)
+#    NOSLEEP=BCLevelFile.NOSLEEP        # MAUVE (27secs)
+#
+#    DAY_DAWN=BCLevelFile.DAY_DAWN               #     0 DAWN Wakeup and Wander (0:00)
+#    DAY_WORKDAY=BCLevelFile.DAY_WORKDAY        #  2000 WORKDAY (1:40)
+#    DAY_HAPPYHOUR=BCLevelFile.DAY_HAPPYHOUR      #  9000 HAPPY-HOUR (7:30)
+#    DAY_TWILIGHT=BCLevelFile.DAY_TWILIGHT     # 12000 TWILIGHT/villagers sleep (10:00)
+#    RAIN_SLEEP=BCLevelFile.RAIN_SLEEP         # 12010 SLEEP on rainy days (10:00)
+#    DAY_SLEEP=BCLevelFile.DAY_SLEEP       # 12542 SLEEP on normal days/mobs don't burn (10:27.1/0)
+#    RAIN_MONSTERS=BCLevelFile.RAIN_MONSTERS      # 12969 Rainy day monsters (10:48.45/21)
+#    DAY_MONSTERS=BCLevelFile.DAY_MONSTERS       # 13188 Monsters (10:59.4/32)
+#    DAY_NOMONSTERS=BCLevelFile.DAY_NOMONSTERS     # 22812 No more monsters (19:00.6/8:33)
+#    RAIN_NOMONSTERS=BCLevelFile.RAIN_NOMONSTERS    # 23031 No more rainy day monsters(19:11.55/8:44)
+#    DAY_NOSLEEP=BCLevelFile.DAY_NOSLEEP        # 23460 No sleeping on normal days (19:33/9:06)
+#    RAIN_NOSLEEP=BCLevelFile.RAIN_NOSLEEP        # 23992 No sleeping rainy days (19:59/9:33)
+#    DAY_FULLDAY=BCLevelFile.DAY_FULLDAY        # 24000 Full-day
+#
     def __init__(self, minecraftdir="/media/local/Minecraft/server", servername="fury", worldname="fury", logresults=True):
 
         self._logresults=logresults

@@ -57,24 +57,14 @@ class BCHudConstants():
     COLOR_STATUS_BAR_UNTIL_RAIN=6
     COLOR_STATUS_BAR_UNTIL_THUNDER=7
 
-    DAWN=1           # LIGHT ORANGE (1min 40secs)
-    WORKDAY=2        # LIGHT YELLOW (5mins 50secs)
-    HAPPYHOUR=3      # LIGHT MAROON (2mins 30secs)
-    TWILIGHT=4       # LIGHT PURPLE (27secs)
-    SLEEP=5          # DARK BLUE (21secs)
-    MONSTERS=6       # DARKEST BLUE/BLACK (8mins 1secs)
-    NOMONSTERS=7     # BLUE (11 secs)
-    NOSLEEP=8        # MAUVE (27secs)
-
-    STATSBAR_COLOR=21
-    STATSBAR_REALTIMECOLOR=22
-    STATSBAR_UNTILRAINCOLOR=23
-    STATSBAR_UNTILTHUNDERCOLOR=24
-
-    ADVANCEMENT_COMPLETE =30
-    ADVANCEMENT_INCOMPLETE =31
-    CRITERIA_COMPLETE =32
-    CRITERIA_INCOMPLETE =33
+    COLOR_DAWN=101           # 1min 40secs
+    COLOR_WORKDAY=102        # 5mins 50secs
+    COLOR_HAPPYHOUR=103      # 2mins 30secs
+    COLOR_TWILIGHT=104       # 27secs
+    COLOR_SLEEP=105          # 21secs
+    COLOR_MONSTERS=106       # 8mins 1secs
+    COLOR_NO_MONSTERS=107    # 11 secs
+    COLOR_NO_SLEEP=108       # 27secs
 
     DAY_DAWN=0               #     0 DAWN Wakeup and Wander (0:00)
     DAY_WORKDAY=2000         #  2000 WORKDAY (1:40)
@@ -84,10 +74,10 @@ class BCHudConstants():
     DAY_SLEEP=12542          # 12542 SLEEP on normal days/mobs don't burn (10:27.1/0)
     RAIN_MONSTERS=12969      # 12969 Rainy day monsters (10:48.45/21)
     DAY_MONSTERS=13188       # 13188 Monsters (10:59.4/32)
-    DAY_NOMONSTERS=22812     # 22812 No more monsters (19:00.6/8:33)
-    RAIN_NOMONSTERS=23031    # 23031 No more rainy day monsters(19:11.55/8:44)
-    DAY_NOSLEEP=23460        # 23460 No sleeping on normal days (19:33/9:06)
-    RAIN_NOSLEEP=23992       # 23992 No sleeping rainy days (19:59/9:33)
+    DAY_NO_MONSTERS=22812     # 22812 No more monsters (19:00.6/8:33)
+    RAIN_NO_MONSTERS=23031    # 23031 No more rainy day monsters(19:11.55/8:44)
+    DAY_NO_SLEEP=23460        # 23460 No sleeping on normal days (19:33/9:06)
+    RAIN_NO_SLEEP=23992       # 23992 No sleeping rainy days (19:59/9:33)
     DAY_FULLDAY=24000        # 24000 Full-day 
 
 
@@ -102,13 +92,23 @@ class BCHudConstants():
         if curses.has_colors():
             curses.start_color()
 
-#        curses.init_pair(BCHudConstants.MENUBAR_COLOR, 0, curses.COLOR_BLACK)
+        curses.init_pair(BCHudConstants.COLOR_BCMENU_MENU, curses.COLOR_BLACK, curses.COLOR_WHITE)
         curses.init_pair(BCHudConstants.COLOR_BCMENU_SELECTED_MENU, curses.COLOR_WHITE, curses.COLOR_BLACK)
         curses.init_pair(BCHudConstants.COLOR_ADVANCEMENT_COMPLETE, 46, 0) #GREEN text and default bkgd
-        curses.init_pair(BCHudConstants.COLOR_STATUS_BAR, curses.COLOR_WHITE, 240) #WHITE text and Dark Grey
-        curses.init_pair(BCHudConstants.COLOR_STATUS_BAR_GAME_TIME, curses.COLOR_WHITE, 34) #WHITE text and BRIGHT GREEN bkgd 
+        curses.init_pair(BCHudConstants.COLOR_STATUS_BAR, curses.COLOR_WHITE, 240) #BLACK text and GREY bkgd 
+        curses.init_pair(BCHudConstants.COLOR_STATUS_BAR_GAME_TIME, curses.COLOR_BLACK, 34) #BLACK text and BRIGHT GREEN bkgd 
         curses.init_pair(BCHudConstants.COLOR_STATUS_BAR_UNTIL_RAIN, curses.COLOR_BLACK, 26) #BLACK text and  
         curses.init_pair(BCHudConstants.COLOR_STATUS_BAR_UNTIL_THUNDER, curses.COLOR_CYAN, 237) #BLACK text and  
+
+        curses.init_pair(BCHudConstants.COLOR_DAWN, curses.COLOR_BLACK, 216)         # BLACK text and BRIGHT YELLOW bkgd (1min 40secs)
+        curses.init_pair(BCHudConstants.COLOR_WORKDAY, curses.COLOR_BLACK, 192)      # BLACK text and YELLOW bkgd (5mins 50secs)
+        curses.init_pair(BCHudConstants.COLOR_HAPPYHOUR, curses.COLOR_BLACK, 181)    # BLACK text and LIGHT BLUE/PURPLE bkgd (2mins 30secs)
+        curses.init_pair(BCHudConstants.COLOR_TWILIGHT, curses.COLOR_BLACK, 147)     # BLACK text and PURPLE bkgd (27secs)
+        curses.init_pair(BCHudConstants.COLOR_SLEEP, curses.COLOR_WHITE, 63)         # WHITE text and DARK BLUE PURPLE bkgd (21secs)
+        curses.init_pair(BCHudConstants.COLOR_MONSTERS, curses.COLOR_WHITE, 17)      # WHITE text and DARKEST BLUE/BLACK bkgd (8mins 1secs)
+        curses.init_pair(BCHudConstants.COLOR_NO_MONSTERS, curses.COLOR_WHITE, 20)   # WHITE text and LIGHT BLUE bkgd (11 secs)
+        curses.init_pair(BCHudConstants.COLOR_NO_SLEEP, curses.COLOR_WHITE, 96)      # WHITE text and PINK bkgd (27secs)
+
 
     def init_server(argv=None):
 

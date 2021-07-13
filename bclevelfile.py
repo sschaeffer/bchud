@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+from bchudconstants import BCHudConstants
 from nbt import NBTFile
 
 from time import time
@@ -8,28 +8,28 @@ from datetime import datetime
 
 class BCLevelFile(NBTFile):
 
-    DAWN=1           # LIGHT ORANGE (1min 40secs)
-    WORKDAY=2        # LIGHT YELLOW (5mins 50secs)
-    HAPPYHOUR=3      # LIGHT MAROON (2mins 30secs)
-    TWILIGHT=4       # LIGHT PURPLE (27secs)
-    SLEEP=5          # DARK BLUE (21secs)
-    MONSTERS=6       # DARKEST BLUE/BLACK (8mins 1secs)
-    NOMONSTERS=7     # BLUE (11 secs)
-    NOSLEEP=8        # MAUVE (27secs)
+#    DAWN=1           # LIGHT ORANGE (1min 40secs)
+#    WORKDAY=2        # LIGHT YELLOW (5mins 50secs)
+#    HAPPYHOUR=3      # LIGHT MAROON (2mins 30secs)
+#    TWILIGHT=4       # LIGHT PURPLE (27secs)
+#    SLEEP=5          # DARK BLUE (21secs)
+#    MONSTERS=6       # DARKEST BLUE/BLACK (8mins 1secs)
+#    NOMONSTERS=7     # BLUE (11 secs)
+#    NOSLEEP=8        # MAUVE (27secs)
 
-    DAY_DAWN=0               #     0 DAWN Wakeup and Wander (0:00)
-    DAY_WORKDAY=2000         #  2000 WORKDAY (1:40)
-    DAY_HAPPYHOUR=9000       #  9000 HAPPY-HOUR (7:30)
-    DAY_TWILIGHT=12000       # 12000 TWILIGHT/villagers sleep (10:00)
-    RAIN_SLEEP=12010         # 12010 SLEEP on rainy days (10:00)
-    DAY_SLEEP=12542          # 12542 SLEEP on normal days/mobs don't burn (10:27.1/0)
-    RAIN_MONSTERS=12969      # 12969 Rainy day monsters (10:48.45/21)
-    DAY_MONSTERS=13188       # 13188 Monsters (10:59.4/32)
-    DAY_NOMONSTERS=22812     # 22812 No more monsters (19:00.6/8:33)
-    RAIN_NOMONSTERS=23031    # 23031 No more rainy day monsters(19:11.55/8:44)
-    DAY_NOSLEEP=23460        # 23460 No sleeping on normal days (19:33/9:06)
-    RAIN_NOSLEEP=23992        # 23992 No sleeping rainy days (19:59/9:33)
-    DAY_FULLDAY=24000        # 24000 Full-day 
+#    DAY_DAWN=0               #     0 DAWN Wakeup and Wander (0:00)
+#    DAY_WORKDAY=2000         #  2000 WORKDAY (1:40)
+#    DAY_HAPPYHOUR=9000       #  9000 HAPPY-HOUR (7:30)
+#    DAY_TWILIGHT=12000       # 12000 TWILIGHT/villagers sleep (10:00)
+#    RAIN_SLEEP=12010         # 12010 SLEEP on rainy days (10:00)
+#    DAY_SLEEP=12542          # 12542 SLEEP on normal days/mobs don't burn (10:27.1/0)
+#    RAIN_MONSTERS=12969      # 12969 Rainy day monsters (10:48.45/21)
+#    DAY_MONSTERS=13188       # 13188 Monsters (10:59.4/32)
+#    DAY_NOMONSTERS=22812     # 22812 No more monsters (19:00.6/8:33)
+#    RAIN_NOMONSTERS=23031    # 23031 No more rainy day monsters(19:11.55/8:44)
+#    DAY_NOSLEEP=23460        # 23460 No sleeping on normal days (19:33/9:06)
+#    RAIN_NOSLEEP=23992        # 23992 No sleeping rainy days (19:59/9:33)
+#    DAY_FULLDAY=24000        # 24000 Full-day 
 
     def __init__(self, minecraftdir="/media/local/Minecraft/server", servername="fury", worldname="fury", serveractive=False, serverstarttime=0):
 
@@ -225,37 +225,37 @@ class BCLevelFile(NBTFile):
         return(result)
 
     def estimated_is_monsters(self):
-        estdaytime = self.estimated_day_time()%self.DAY_FULLDAY
+        estdaytime = self.estimated_day_time()%BCHudConstants.DAY_FULLDAY
         result = False
-        if estdaytime >= self.DAY_MONSTERS and estdaytime <= self.DAY_NOMONSTERS:
+        if estdaytime >= BCHudConstants.DAY_MONSTERS and estdaytime <= BCHudConstants.DAY_NO_MONSTERS:
             result = True 
         return result 
 
     def estimated_is_bed_usable(self):
-        estdaytime = self.estimated_day_time()%self.DAY_FULLDAY
+        estdaytime = self.estimated_day_time()%BCHudConstants.DAY_FULLDAY
         result = False
-        if estdaytime >= self.DAY_SLEEP and estdaytime <= self.DAY_NOSLEEP:
+        if estdaytime >= BCHudConstants.DAY_SLEEP and estdaytime <= BCHudConstants.DAY_NO_SLEEP:
             result = True 
         return result
 
     def estimated_time_of_day(self):
-        estdaytime = self.estimated_day_time()%self.DAY_FULLDAY
-        if estdaytime > self.DAY_NOSLEEP:
-            result = self.NOSLEEP
-        elif estdaytime > self.DAY_NOMONSTERS:
-            result = self.NOMONSTERS     # LIGHT BLUE (11 secs)
-        elif estdaytime > self.DAY_MONSTERS:
-            result = self.MONSTERS       # DARKEST BLUE/BLACK (8mins 1secs)
-        elif estdaytime > self.DAY_SLEEP:
-            result = self.SLEEP          # DARK BLUE PURPLE (21secs)
-        elif estdaytime > self.DAY_TWILIGHT:
-            result = self.TWILIGHT       # PURPLE (27secs)
-        elif estdaytime > self.DAY_HAPPYHOUR:
-            result = self.HAPPYHOUR      # LIGHT BLUE/PURPLE (2mins 30secs)
-        elif estdaytime > self.DAY_WORKDAY:
-            result = self.WORKDAY        # YELLOW (5mins 50secs)
+        estdaytime = self.estimated_day_time()%BCHudConstants.DAY_FULLDAY
+        if estdaytime > BCHudConstants.DAY_NO_SLEEP:
+            result = BCHudConstants.COLOR_NO_SLEEP
+        elif estdaytime > BCHudConstants.DAY_NO_MONSTERS:
+            result = BCHudConstants.COLOR_NO_MONSTERS     # LIGHT BLUE (11 secs)
+        elif estdaytime > BCHudConstants.DAY_MONSTERS:
+            result = BCHudConstants.COLOR_MONSTERS       # DARKEST BLUE/BLACK (8mins 1secs)
+        elif estdaytime > BCHudConstants.DAY_SLEEP:
+            result = BCHudConstants.COLOR_SLEEP          # DARK BLUE PURPLE (21secs)
+        elif estdaytime > BCHudConstants.DAY_TWILIGHT:
+            result = BCHudConstants.COLOR_TWILIGHT       # PURPLE (27secs)
+        elif estdaytime > BCHudConstants.DAY_HAPPYHOUR:
+            result = BCHudConstants.COLOR_HAPPYHOUR      # LIGHT BLUE/PURPLE (2mins 30secs)
+        elif estdaytime > BCHudConstants.DAY_WORKDAY:
+            result = BCHudConstants.COLOR_WORKDAY        # YELLOW (5mins 50secs)
         else:
-            result = self.DAWN           # BRIGHT YELLOW (1min 40secs)
+            result = BCHudConstants.COLOR_DAWN           # BRIGHT YELLOW (1min 40secs)
         return(result)
 
 #        elif estdaytime > self.DAY_NORAINMONSTERS:
