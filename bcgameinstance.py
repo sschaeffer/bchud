@@ -10,41 +10,60 @@ from subprocess import call
 
 class BCGameInstance():
 
-#    DAWN=BCLevelFile.DAWN           # LIGHT ORANGE (1min 40secs)
-#    WORKDAY=BCLevelFile.WORKDAY        # LIGHT YELLOW (5mins 50secs)
-#    HAPPYHOUR=BCLevelFile.HAPPYHOUR      # LIGHT MAROON (2mins 30secs)
-#    TWILIGHT=BCLevelFile.TWILIGHT       # LIGHT PURPLE (27secs)
-#    SLEEP=BCLevelFile.SLEEP          # DARK BLUE (21secs)
-#    MONSTERS=BCLevelFile.MONSTERS       # DARKEST BLUE/BLACK (8mins 1secs)
-#    NOMONSTERS=BCLevelFile.NOMONSTERS     # BLUE (11 secs)
-#    NOSLEEP=BCLevelFile.NOSLEEP        # MAUVE (27secs)
-#
-#    DAY_DAWN=BCLevelFile.DAY_DAWN               #     0 DAWN Wakeup and Wander (0:00)
-#    DAY_WORKDAY=BCLevelFile.DAY_WORKDAY        #  2000 WORKDAY (1:40)
-#    DAY_HAPPYHOUR=BCLevelFile.DAY_HAPPYHOUR      #  9000 HAPPY-HOUR (7:30)
-#    DAY_TWILIGHT=BCLevelFile.DAY_TWILIGHT     # 12000 TWILIGHT/villagers sleep (10:00)
-#    RAIN_SLEEP=BCLevelFile.RAIN_SLEEP         # 12010 SLEEP on rainy days (10:00)
-#    DAY_SLEEP=BCLevelFile.DAY_SLEEP       # 12542 SLEEP on normal days/mobs don't burn (10:27.1/0)
-#    RAIN_MONSTERS=BCLevelFile.RAIN_MONSTERS      # 12969 Rainy day monsters (10:48.45/21)
-#    DAY_MONSTERS=BCLevelFile.DAY_MONSTERS       # 13188 Monsters (10:59.4/32)
-#    DAY_NOMONSTERS=BCLevelFile.DAY_NOMONSTERS     # 22812 No more monsters (19:00.6/8:33)
-#    RAIN_NOMONSTERS=BCLevelFile.RAIN_NOMONSTERS    # 23031 No more rainy day monsters(19:11.55/8:44)
-#    DAY_NOSLEEP=BCLevelFile.DAY_NOSLEEP        # 23460 No sleeping on normal days (19:33/9:06)
-#    RAIN_NOSLEEP=BCLevelFile.RAIN_NOSLEEP        # 23992 No sleeping rainy days (19:59/9:33)
-#    DAY_FULLDAY=BCLevelFile.DAY_FULLDAY        # 24000 Full-day
-#
-    def __init__(self, minecraftdir="/media/local/Minecraft/server", servername="fury", worldname="fury", logresults=True):
-
-        self._logresults=logresults
+    def __init__(self, minecraftdir="/media/local/Minecraft/server", servername="fury", worldname="fury", log_results=True, update_time=1.0):
+        """
+        Parameters
+        ----------
+        minecraftdir : str
+            The path to the minecraft directory
+        servername : str
+            The name of the current minecraft server
+        worldname : str
+            The name of the current minecraft world
+        log_results : boolean, optional
+            Write out a log into BClogs or not
+        update_time : float, optional
+            How many seconds to wait before updating
+        """
         self._minecraftdir=minecraftdir
         self._servername=servername
         self._worldname=worldname
 
+        self._log_results=log_results
+        self._update_time=update_time
+        self._last_update_time=0.0
+
+        self._bcalladvancements = BCAllAdvancements(minecraftdir, servername, worldname)
         self._bclevelfile = BCLevelFile(minecraftdir, servername, worldname)
         self._bclogfiles = BCLogFiles(minecraftdir, servername)
-        self._bcalladvancements = BCAllAdvancements(minecraftdir, servername, worldname)
-
         self._bclog = BCLog(minecraftdir,servername)
+
+    def update_game_info(self):
+        """Update Game Info - this function will check to see how much time has past and will update the following classes
+            - BCLevelFile - the main level.dat for the minecraft server
+            - BCAllAdvancements - the datapack advancements directory (bac_advancements) and then each users json file
+            - BCLogFiles - all the log files in the log directory
+        """
+        if time() > self._last_update_time + self._update_time:
+            self._bclevelfile.update_level_info(self.server_active(),self.server_start_time())
+            self._bcalladvancements.update_advancements(self._bcalladvancements.PRIMARY)
+            self._bclogfiles.update_log_info()
+
+            if(self._log_results):
+                self._bclog.log_results(self._bclevelfile,self._bclogfiles)
+            self._last_update_time = time()
+
+    def set_update_time(self, update_time):
+        """Set Update Time
+        Change the update time from the default to whatever is reasonable
+            4.0 = 4 seconds
+            0.5 = 1/2 second
+        """
+        self._update_time = update_time
+
+    """
+    The rest of all these functions are getter routines for the Game Instance - None of these routines should cost any cycles
+    """
 
     def log_filename(self):
         return(self._bclogfiles.log_filename())
@@ -136,6 +155,10 @@ class BCGameInstance():
     def get_advancement(self,name):
         return(self._bcalladvancements.get_advancement(name))
 
+    """
+    These functions return the list of advancements per section
+    """
+
     def bacap_advancements_list(self):
         return(self._bcalladvancements.BACAP_LIST)
 
@@ -145,22 +168,57 @@ class BCGameInstance():
     def building_advancements_list(self):
         return(self._bcalladvancements.BUILDING_LIST)
 
-    def update_game_info(self):
+    def farming_advancements_list(self):
+        return(self._bcalladvancements.FARMING_LIST)
 
-        self._bclogfiles.update_log_info()
-        self._bclevelfile.update_level_info(self.server_active(),self.server_start_time())
-        self._bcalladvancements.update_advancements(self._bcalladvancements.PRIMARY)
+    def animal_advancements_list(self):
+        return(self._bcalladvancements.ANIMAL_LIST)
 
-        if(self._logresults):
-            self._bclog.log_results(self._bclevelfile,self._bclogfiles)
+    def monsters_advancements_list(self):
+        return(self._bcalladvancements.MONSTERS_LIST)
+
+    def weaponry_advancements_list(self):
+        return(self._bcalladvancements.WEAPONRY_LIST)
+
+    def adventure_advancements_list(self):
+        return(self._bcalladvancements.ADVENTURE_LIST)
+
+    def redstone_advancements_list(self):
+        return(self._bcalladvancements.REDSTONE_LIST)
+
+    def enchanting_advancements_list(self):
+        return(self._bcalladvancements.ENCHANTING_LIST)
+
+    def statistics_advancements_list(self):
+        return(self._bcalladvancements.STATISTICS_LIST)
+
+    def nether_advancements_list(self):
+        return(self._bcalladvancements.NETHER_LIST)
+
+    def potions_advancements_list(self):
+        return(self._bcalladvancements.POTION_LIST)
+
+    def end_advancements_list(self):
+        return(self._bcalladvancements.END_LIST)
+
+    def super_challenges_list(self):
+        return(self._bcalladvancements.CHALLENGES_LIST)
+
+    """
+    These two functions are quick bash scripts for interacting with the servers (through screen) 
+    """
 
     def save_all_files(self):
-        call(["./save-it-all.bash"])
+        command_line = f"./save-it-all.bash {self._servername}"
+        call([command_line])
         sleep(0.5)
 
     def query_time(self):
-        call(["./query-time.bash"])
+        command_line = f"./query-time.bash {self._servername}"
+        call([command_line])
         sleep(0.5)
+
+
 
     def print_debug(self):
         print(f"Level File:          {self.level_filename()}")
@@ -185,6 +243,7 @@ class BCGameInstance():
         print(f"Wandering Trader Sp: {self.wandering_trader_spawn_chance()}")
         print(f"Wandering Trader Id: {self.wandering_trader_id()}")
         print(f"Estimated Time of D: {self.estimated_time_of_day()}")
+        print()
         self._bcalladvancements.print_all_advancements()
 
 def main():
@@ -194,14 +253,6 @@ def main():
 
     bcgame.update_game_info()
     bcgame.print_debug()
-
-#    while True:
-#        sleep(2)
-#        print()
-#        bcgame.update_game_info()
-#        bcgame.print_debug()
-
-
 
 if __name__ == '__main__':
     main()

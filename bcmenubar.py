@@ -12,7 +12,7 @@ class BCMenuBar():
                         ["Mining Advancments",BCHudConstants.BCMENU_MINING_ADVANCEMENTS],
                         ["Building Advancements",BCHudConstants.BCMENU_BUILDING_ADVANCEMENTS],
                         ["Farming Advancements",BCHudConstants.BCMENU_FARMING_ADVANCEMENTS],
-                        ["Animal Advancements",BCHudConstants.BCMENU_ANIMAL_ADVANCEMENTS],
+                        ["Animals Advancements",BCHudConstants.BCMENU_ANIMAL_ADVANCEMENTS],
                         ["Monsters Advancements",BCHudConstants.BCMENU_MONSTERS_ADVANCEMENTS],
                         ["Weaponry Advancements",BCHudConstants.BCMENU_WEAPONRY_ADVANCEMENTS],
                         ["Adventure Advancements",BCHudConstants.BCMENU_ADVENTURE_ADVANCEMENTS],
@@ -21,7 +21,7 @@ class BCMenuBar():
                         ["Statistics Advancements",BCHudConstants.BCMENU_STATISTICS_ADVANCEMENTS],
                         ["Nether Advancements",BCHudConstants.BCMENU_NETHER_ADVANCEMENTS],
                         ["Potions Advancements",BCHudConstants.BCMENU_POTIONS_ADVANCEMENTS],
-                        ["End Advancements",BCHudConstants.BCMENU_END_ADVANCEMENTS],
+                        ["The End Advancements",BCHudConstants.BCMENU_END_ADVANCEMENTS],
                         ["Super Challenges",BCHudConstants.BCMENU_SUPER_CHALLENGES]]
 
     USERS_MENU_ITEMS =[["stephenschaeffer",BCHudConstants.BCMENU_USER1],
@@ -210,9 +210,6 @@ class BCMenuBar():
             self._users_menu_panel.hide()
             self._bchud_menu_panel.hide()
 
-        panel.update_panels()
-        self._stdscr.noutrefresh()
-
     def event_handler(self,input):
 
         if input in [27,ord('\t')]:
@@ -267,6 +264,9 @@ class BCMenuBar():
     def is_open(self):
         return(self._selected_menu != self.MENUS_CLOSED)
 
+    def override_result(self,override):
+        self._bcmenu_result = override
+
     def exit(self):
         return(self._bcmenu_result == BCHudConstants.BCMENU_EXIT)
 
@@ -289,7 +289,11 @@ def main(stdscr:curses.window, minecraftdir, servername, worldname):
             stdscr.addstr(2,0,f"Last Menu Result: {bcmenubar.result():4} ",curses.A_NORMAL)
 
             bcmenubar.render(height,width)
+
+#            stdscr.noutrefresh()
+            panel.update_panels()
             curses.doupdate()
+
             if not bcmenubar.exit():
                 keyboardinput = stdscr.getch()
     except KeyboardInterrupt:

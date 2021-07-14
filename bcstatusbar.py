@@ -222,5 +222,5 @@ def main(stdscr:curses.window, minecraftdir, servername, worldname):
 if __name__ == "__main__":
     (minecraftdir,servername,worldname) = BCHudConstants.init_server()
     environ.setdefault('ESCDELAY', '25')
-#    curses.wrapper(main, minecraftdir, servername, worldname)
-    curses.wrapper(main, minecraftdir, "snapshot", "snapshot")
+    curses.wrapper(main, minecraftdir, servername, worldname)
+#    curses.wrapper(main, minecraftdir, "snapshot", "snapshot")

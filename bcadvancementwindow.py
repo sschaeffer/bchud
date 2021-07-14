@@ -22,7 +22,7 @@ class BCAdvancementWindow():
     def __init__(self, stdscr:curses.window, bcgi:BCGameInstance):
         self._stdscr:curses.stdscr = stdscr
         self._bcgi:BCGameInstance = bcgi
-        self._advancement_category = BCHudConstants.BCMENU_MINING_ADVANCEMENTS
+        self._advancement_category = BCHudConstants.BCMENU_BACAP_ADVANCEMENTS
 
         self._max_lines = 0
         self._current_advancement = 0
@@ -37,6 +37,7 @@ class BCAdvancementWindow():
         self._advancement_window = curses.newwin(0,0)
         self._advancement_panel = panel.new_panel(self._advancement_window)
         self._advancement_panel.hide()
+        self._window_open = False
 
     def advancement_title(self,advancement_name):
         return self._bcgi.get_advancement(advancement_name)._title
@@ -44,19 +45,49 @@ class BCAdvancementWindow():
     def advancement_completed(self,advancement_name):
         return self._bcgi.get_advancement(advancement_name)._completed
 
-    def selected_advancement_list(self):
+    def selected_advancement_list(self,advancement_category):
 
+        self._advancement_category = advancement_category
         self._advancements_list.clear()
+
+        self._current_advancement = 0
+        self._top_advancement=0
+        self._advancement_sort = self.ADVANCEMENT_WINDOW_ORIGINAL_ORDER
+
         if(self._advancement_category == BCHudConstants.BCMENU_BACAP_ADVANCEMENTS):
             self._advancements_list = self._bcgi.bacap_advancements_list().copy()
         elif(self._advancement_category == BCHudConstants.BCMENU_MINING_ADVANCEMENTS):
             self._advancements_list = self._bcgi.mining_advancements_list().copy()
         elif(self._advancement_category == BCHudConstants.BCMENU_BUILDING_ADVANCEMENTS):
             self._advancements_list = self._bcgi.building_advancements_list().copy()
+        elif(self._advancement_category == BCHudConstants.BCMENU_FARMING_ADVANCEMENTS):
+            self._advancements_list = self._bcgi.farming_advancements_list().copy()
+        elif(self._advancement_category == BCHudConstants.BCMENU_ANIMAL_ADVANCEMENTS):
+            self._advancements_list = self._bcgi.animal_advancements_list().copy()
+        elif(self._advancement_category == BCHudConstants.BCMENU_MONSTERS_ADVANCEMENTS):
+            self._advancements_list = self._bcgi.monsters_advancements_list().copy()
+        elif(self._advancement_category == BCHudConstants.BCMENU_WEAPONRY_ADVANCEMENTS):
+            self._advancements_list = self._bcgi.weaponry_advancements_list().copy()
+        elif(self._advancement_category == BCHudConstants.BCMENU_ADVENTURE_ADVANCEMENTS):
+            self._advancements_list = self._bcgi.adventure_advancements_list().copy()
+        elif(self._advancement_category == BCHudConstants.BCMENU_REDSTONE_ADVANCEMENTS):
+            self._advancements_list = self._bcgi.redstone_advancements_list().copy()
+        elif(self._advancement_category == BCHudConstants.BCMENU_ENCHANTING_ADVANCEMENTS):
+            self._advancements_list = self._bcgi.enchanting_advancements_list().copy()
+        elif(self._advancement_category == BCHudConstants.BCMENU_STATISTICS_ADVANCEMENTS):
+            self._advancements_list = self._bcgi.statistics_advancements_list().copy()
+        elif(self._advancement_category == BCHudConstants.BCMENU_NETHER_ADVANCEMENTS):
+            self._advancements_list = self._bcgi.nether_advancements_list().copy()
+        elif(self._advancement_category == BCHudConstants.BCMENU_POTIONS_ADVANCEMENTS):
+            self._advancements_list = self._bcgi.potions_advancements_list().copy()
+        elif(self._advancement_category == BCHudConstants.BCMENU_END_ADVANCEMENTS):
+            self._advancements_list = self._bcgi.end_advancements_list().copy()
+        elif(self._advancement_category == BCHudConstants.BCMENU_SUPER_CHALLENGES):
+            self._advancements_list = self._bcgi.super_challenges_list().copy()
 
     def change_sort_order(self):
         if(self._advancement_sort == self.ADVANCEMENT_WINDOW_ORIGINAL_ORDER):
-            self.selected_advancement_list()
+            self.selected_advancement_list(self._advancement_category)
         elif(self._advancement_sort == self.ADVANCEMENT_WINDOW_REVERSE_ORIGINAL_ORDER):
             self._advancements_list = list(reversed(self._advancements_list))
         elif(self._advancement_sort == self.ADVANCEMENT_WINDOW_SORTED_ORDER):
@@ -72,6 +103,9 @@ class BCAdvancementWindow():
 
         if(height<BCHudConstants.MINIMUM_HEIGHT or width<BCHudConstants.MINIMUM_WIDTH):
             return
+
+        self._window_open = True
+
         self._max_lines = height-2
         self._advancement_window.resize(height-2,width)
         self._advancement_window.clear()
@@ -152,6 +186,13 @@ class BCAdvancementWindow():
                 (self._top_advancement + next_line < self._bottom_advancement)):
             self._current_advancement = next_line
 
+    def close(self):
+        self._window_open = False
+        self._advancement_panel.hide()
+
+    def is_open(self):
+        return(self._window_open)
+
 def main(stdscr:curses.window, minecraftdir, servername, worldname):
 
     bcgi = BCGameInstance(minecraftdir,servername,worldname)
@@ -159,7 +200,7 @@ def main(stdscr:curses.window, minecraftdir, servername, worldname):
 
     BCHudConstants.curses_setup(stdscr)
     bc_advancement_window = BCAdvancementWindow(stdscr,bcgi)
-    bc_advancement_window.selected_advancement_list()
+    bc_advancement_window.selected_advancement_list(BCHudConstants.BCMENU_BACAP_ADVANCEMENTS)
 
     try:
         pass

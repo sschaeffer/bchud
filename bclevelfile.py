@@ -210,17 +210,17 @@ class BCLevelFile(NBTFile):
 
     def estimated_is_raining(self):
         result = False 
-        if self.raining and self.estimated_rain_time() > 0:
+        if self.raining() and self.estimated_rain_time() > 0:
             result = True
-        elif not self.raining and self.estimated_rain_time() < 0:
+        elif not self.raining() and self.estimated_rain_time() < 0:
             result = True
         return(result)
 
     def estimated_is_thundering(self):
         result = False 
-        if self.estimated_is_raining() and self.thundering and self.estimated_thunder_time() > 0:
+        if self.estimated_is_raining() and self.thundering() and self.estimated_thunder_time() > 0:
             result = True
-        elif self.estimated_is_raining() and not self.thundering and self.estimated_thunder_time() < 0:
+        elif self.estimated_is_raining() and not self.thundering() and self.estimated_thunder_time() < 0:
             result = True
         return(result)
 
