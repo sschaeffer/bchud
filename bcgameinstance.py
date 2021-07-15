@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
 
+from enum import auto
+from io import UnsupportedOperation
+import subprocess
 from bclevelfile import BCLevelFile
 from bclogfiles import BCLogFiles
 from bclog import BCLog
 from bcalladvancements import BCAllAdvancements
 
 from time import sleep, time
-from subprocess import call
+from subprocess import run 
 
 class BCGameInstance():
 
-    def __init__(self, minecraftdir="/media/local/Minecraft/server", servername="fury", worldname="fury", log_results=True, update_time=1.0):
+    def __init__(self, minecraftdir="/media/local/Minecraft", worldname="fury", servername="fury"):
         """
         Parameters
         ----------
@@ -26,17 +29,23 @@ class BCGameInstance():
             How many seconds to wait before updating
         """
         self._minecraftdir=minecraftdir
-        self._servername=servername
         self._worldname=worldname
+        self._servername=servername
 
-        self._log_results=log_results
-        self._update_time=update_time
-        self._last_update_time=0.0
+        self._log_results=False
 
-        self._bcalladvancements = BCAllAdvancements(minecraftdir, servername, worldname)
-        self._bclevelfile = BCLevelFile(minecraftdir, servername, worldname)
-        self._bclogfiles = BCLogFiles(minecraftdir, servername)
-        self._bclog = BCLog(minecraftdir,servername)
+        self._auto_update=True
+        self._auto_update_delay=1.0
+        self._last_auto_update=0.0
+
+        self._auto_backup=False
+        self._auto_backup_delay=60.0
+        self._last_auto_backup=0.0
+
+        self._bcalladvancements = BCAllAdvancements(minecraftdir, worldname)
+        self._bclevelfile = BCLevelFile(minecraftdir, worldname)
+#        self._bclogfiles = BCLogFiles(minecraftdir, servername)
+#        self._bclog = BCLog(minecraftdir,servername)
 
     def update_game_info(self):
         """Update Game Info - this function will check to see how much time has past and will update the following classes
@@ -44,30 +53,48 @@ class BCGameInstance():
             - BCAllAdvancements - the datapack advancements directory (bac_advancements) and then each users json file
             - BCLogFiles - all the log files in the log directory
         """
-        if time() > self._last_update_time + self._update_time:
-            self._bclevelfile.update_level_info(self.server_active(),self.server_start_time())
-            self._bcalladvancements.update_advancements(self._bcalladvancements.PRIMARY)
-            self._bclogfiles.update_log_info()
+        if self._auto_update:
+            if time() > self._last_auto_update + self._auto_update_delay:
+                self._bclevelfile.update_level_info()
+                self._bcalladvancements.update_advancements(self._bcalladvancements.PRIMARY)
 
-            if(self._log_results):
-                self._bclog.log_results(self._bclevelfile,self._bclogfiles)
-            self._last_update_time = time()
+#                self._bclogfiles.update_log_info()
+#                if(self._log_results):
+#                    self._bclog.log_results(self._bclevelfile,self._bclogfiles)
+                self._last_auto_update = time()
 
-    def set_update_time(self, update_time):
+        if self._auto_backup:
+            if time() > self._last_auto_backup + self._auto_backup_delay:
+                self.backup_server()
+                self._last_auto_backup = time()
+
+    def set_auto_update(self, auto_update):
+        self._auto_update = auto_update
+        self._last_auto_update = time()
+
+    def set_auto_update_delay(self, auto_update_delay):
         """Set Update Time
         Change the update time from the default to whatever is reasonable
             4.0 = 4 seconds
             0.5 = 1/2 second
         """
-        self._update_time = update_time
+        self._auto_update_delay = auto_update_delay
+
+    def set_auto_backup(self, auto_backup):
+        self._auto_backup = auto_backup
+        self._last_auto_backup = time()
+    
+    def set_auto_backup_delay(self, auto_backup_delay):
+        self._auto_backup_delay = auto_backup_delay
+
 
     """
     The rest of all these functions are getter routines for the Game Instance - None of these routines should cost any cycles
     """
 
-    def log_filename(self):
-        return(self._bclogfiles.log_filename())
-
+#    def log_filename(self):
+#        return(self._bclogfiles.log_filename())
+#
     def level_filename(self):
         return(self._bclevelfile.level_filename())
 
@@ -143,12 +170,6 @@ class BCGameInstance():
     def estimated_is_bed_usable(self):
         return(self._bclevelfile.estimated_is_bed_usable())
 
-    def server_active(self):
-        return(self._bclogfiles.server_active())
-
-    def server_start_time(self):
-        return(self._bclogfiles.server_start_time())
-
     def all_advancements_count(self):
         return(self._bcalladvancements.get_milestone("blazeandcave:bacap/advancement_legend"))
 
@@ -205,24 +226,27 @@ class BCGameInstance():
         return(self._bcalladvancements.CHALLENGES_LIST)
 
     """
-    These two functions are quick bash scripts for interacting with the servers (through screen) 
+    These functions are quick bash scripts for interacting with the servers (through screen) 
     """
 
-    def save_all_files(self):
-        command_line = f"./save-it-all.bash {self._servername}"
-        call([command_line])
+    def save_all(self):
+        command_line = f"./scripts/save-all.bash {self._servername}"
+        run([command_line])
         sleep(0.5)
 
     def query_time(self):
-        command_line = f"./query-time.bash {self._servername}"
-        call([command_line])
+        command_line = f"./scripts/query-time.bash {self._servername}"
+        run([command_line])
         sleep(0.5)
 
+    def backup_server(self):
+        command_line = ["./scripts/backup-server.bash",f"{self._minecraftdir}",f"{self._worldname}"]
+        run(command_line,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,start_new_session=True)
+        sleep(0.5)
 
 
     def print_debug(self):
         print(f"Level File:          {self.level_filename()}")
-        print(f"Log File:            {self.log_filename()}")
         print(f"Advancement Dir:     {self.advancement_dir()}")
         print(f"Last Update Time:    {self.level_file_last_update()}")
         print(f"Seed:                {self.seed()}")
@@ -249,6 +273,7 @@ class BCGameInstance():
 def main():
 
     print("BCGameInstance: Unit Testing")
+#    bcgame = BCGameInstance("/home/integ/.minecraft","Battlefield Hardcore")
     bcgame = BCGameInstance()
 
     bcgame.update_game_info()

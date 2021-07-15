@@ -1201,10 +1201,9 @@ class BCAllAdvancements():
 
 
 
-    def __init__(self, minecraftdir="/media/local/Minecraft/server", servername="fury", worldname="fury"):
+    def __init__(self, minecraftdir="/media/local/Minecraft", worldname="fury"):
 
         self._minecraftdir=minecraftdir
-        self._servername=servername
         self._worldname=worldname
 
         self._bacadvancement_dirname=""
@@ -1258,10 +1257,10 @@ class BCAllAdvancements():
         self.build_advancements("minecraft",name,self._standardadvancement_dirname)
 
     def build_all_advancements(self):
-        self._bac_dirname = self._minecraftdir+"/"+self._servername+"/"+self._worldname+"/datapacks/bac_advancements"
+        self._bac_dirname = self._minecraftdir+"/saves/"+self._worldname+"/datapacks/bac_advancements"
         self._bacadvancement_dirname = self._bac_dirname + "/data/blazeandcave/advancements"
         self._standardadvancement_dirname = self._bac_dirname + "/data/minecraft/advancements"
-        self._useradvancements_dirname = self._minecraftdir+"/"+self._servername+"/"+self._worldname+"/advancements"
+        self._useradvancements_dirname = self._minecraftdir+"/saves/"+self._worldname+"/advancements"
 
         self.build_bacadvancements("adventure")
         self.build_bacadvancements("animal")
@@ -1461,7 +1460,7 @@ class BCAllAdvancements():
         self.print_milestone("Total Nether Advancements:     ",
                              "blazeandcave:bacap/nether_milestone",len(self._nether_advancements))
 
-        self.print_milestone("Total Potion Advancements:    ",
+        self.print_milestone("Total Potion Advancements:     ",
                              "blazeandcave:bacap/potion_milestone",len(self._potion_advancements))
         self.print_milestone("Total End Advancements:        ",
                              "blazeandcave:bacap/end_milestone",len(self._end_advancements))

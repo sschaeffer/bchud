@@ -159,7 +159,7 @@ class BCLogEvent():
 
 class BCLogFiles():
 
-    def __init__(self, minecraftdir="/media/local/Minecraft/server", servername="fury"):
+    def __init__(self, minecraftdir="/media/local/Minecraft", servername="fury"):
 
         self._minecraftdir=minecraftdir
         self._servername=servername
@@ -175,7 +175,7 @@ class BCLogFiles():
         self._filebyteposition = 0
 
     def log_filename(self):
-        return(self._minecraftdir+"/"+self._servername+"/logs/latest.log")
+        return(self._minecraftdir+"/saves/"+self._servername+"/logs/latest.log")
 
     def grep_for_death_message(self,line):
         for regex in REGEX_DEATH_MESSAGES:
@@ -270,7 +270,7 @@ class BCLogFiles():
                                                         f"{username} death - {typeofdeath} {user.print_death_time()}"))
 
     def read_previous_log_files(self):
-        for logname in sorted(listdir(self._minecraftdir+"/"+self._servername+"/logs")):
+        for logname in sorted(listdir(self._minecraftdir+"/saves/"+self._servername+"/logs")):
             if not re.match("\d{4}-\d{2}-\d{2}-\d+\.log\.gz", logname):
                 continue
             d = strptime("-".join(logname.split("-")[:3]), "%Y-%m-%d")

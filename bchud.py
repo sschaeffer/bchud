@@ -10,9 +10,9 @@ from os import environ
 import curses
 from curses import panel
 
-def main(stdscr:curses.window, minecraftdir, servername, worldname):
+def main(stdscr:curses.window, minecraftdir, worldname, servername):
 
-    bcgi = BCGameInstance(minecraftdir,servername,worldname)
+    bcgi = BCGameInstance(minecraftdir, worldname, servername)
     bcmenubar = BCMenuBar(stdscr,bcgi)
     bcstatusbar = BCStatusBar(stdscr,bcgi)
     bcdebugwindow = BCDebugWindow(stdscr,bcgi)
@@ -22,6 +22,9 @@ def main(stdscr:curses.window, minecraftdir, servername, worldname):
     bcmenubar.override_result(BCHudConstants.BCMENU_LEVEL_INFO)
 
     BCHudConstants.curses_setup(stdscr)
+
+    bcgi.set_auto_backup(True)
+    bcgi.set_auto_backup_delay(1200.0)
 
     try:
         keyboardinput = 0 
@@ -66,6 +69,7 @@ def main(stdscr:curses.window, minecraftdir, servername, worldname):
 
 
 if __name__ == "__main__":
-    (minecraftdir,servername,worldname) = BCHudConstants.init_server()
+    (minecraftdir,worldname,servername) = BCHudConstants.init_server()
     environ.setdefault('ESCDELAY', '25')
-    curses.wrapper(main, minecraftdir, servername, worldname)
+#    curses.wrapper(main, minecraftdir, worldname, servername)
+    curses.wrapper(main, "/home/integ/.minecraft", "Battlefield Hardcore","")
