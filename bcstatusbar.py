@@ -24,7 +24,7 @@ class BCStatusBar():
 
     def render_left_side(self,width):
 
-        day_number = str(floor(self._bcgi.estimated_day_time()/24000)+1)
+        day_number = str(floor(self._bcgi.estimated_day_time()/24000))
         self._status_bar_window.addstr(0, 0, f" {day_number} ", curses.color_pair(BCHudConstants.COLOR_STATUS_BAR_GAME_TIME))
 
         minutes_until_rain = f"{self._bcgi.estimated_rain_time()/1200:.0f}"

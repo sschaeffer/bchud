@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import curses
 from argparse import ArgumentParser
-
+from pathlib import Path
 class BCHudConstants():
 
     MINIMUM_HEIGHT=20
@@ -113,12 +113,10 @@ class BCHudConstants():
     def init_server(argv=None):
 
         parser = ArgumentParser(prog='bchud')
-        parser.add_argument('--minecraftdir', default="/media/local/Minecraft", help="minecraft server directory")
-        parser.add_argument('--worldname', default="fury", help="worldname is the name of the world")
+        parser.add_argument('--minecraftdir', default=f"{Path.home()}/.minecraft", help="minecraft server directory")
+        parser.add_argument('--worldname', default="New World", help="worldname is the name of the world")
         parser.add_argument('--servername',  help="servername is the name of the server (if blank it is either singleplayer or same as the worldname")
         args = parser.parse_args(argv)
-        if(args.servername == None):
-            args.servername = args.worldname
         return(args.minecraftdir,args.worldname,args.servername)
 
     def check_minimum_size(stdscr:curses.window):

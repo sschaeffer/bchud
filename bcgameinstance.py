@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from bchudconstants import BCHudConstants
 from enum import auto
 from io import UnsupportedOperation
 import subprocess
@@ -13,7 +14,7 @@ from subprocess import run
 
 class BCGameInstance():
 
-    def __init__(self, minecraftdir="/media/local/Minecraft", worldname="fury", servername="fury"):
+    def __init__(self, minecraftdir, worldname, servername):
         """
         Parameters
         ----------
@@ -270,14 +271,14 @@ class BCGameInstance():
         print()
         self._bcalladvancements.print_all_advancements()
 
-def main():
+def main(minecraft, worldname, servername):
 
     print("BCGameInstance: Unit Testing")
-#    bcgame = BCGameInstance("/home/integ/.minecraft","Battlefield Hardcore")
-    bcgame = BCGameInstance()
+    bcgame = BCGameInstance(minecraft, worldname, servername)
 
     bcgame.update_game_info()
     bcgame.print_debug()
 
 if __name__ == '__main__':
-    main()
+    (minecraftdir, worldname, servername) = BCHudConstants.init_server()
+    main(minecraftdir, worldname, servername)

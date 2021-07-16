@@ -69,7 +69,7 @@ def main(stdscr:curses.window, minecraftdir, worldname, servername):
 
 
 if __name__ == "__main__":
-    (minecraftdir,worldname,servername) = BCHudConstants.init_server()
+    (minecraftdir, worldname, servername) = BCHudConstants.init_server()
     environ.setdefault('ESCDELAY', '25')
 #    curses.wrapper(main, minecraftdir, worldname, servername)
-    curses.wrapper(main, "/home/integ/.minecraft", "Battlefield Hardcore","")
+    curses.wrapper(main, minecraftdir, worldname, servername)
