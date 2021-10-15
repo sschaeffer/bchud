@@ -1,20 +1,24 @@
 #!/usr/bin/env python3
+import sys
+sys.path.append("/home/integ/Code/bchud")
 
-from bchudconstants import BCHudConstants
-from enum import auto
-from io import UnsupportedOperation
+from bc.common.constants import Constants
+#from enum import auto
+#from io import UnsupportedOperation
 import subprocess
-from bclevelfile import BCLevelFile
-from bclogfiles import BCLogFiles
-from bclog import BCLog
-from bcalladvancements import BCAllAdvancements
+
+from bc.game.bclevelfile import BCLevelFile
+from bc.game.bcalladvancements import BCAllAdvancements
+from bc.game.gamequery import GameQuery
+#from bc.game.bclogfiles import BCLogFiles
+#from bc.game.bclog import BCLog
 
 from time import sleep, time
 from subprocess import run 
 
 class BCGameInstance():
 
-    def __init__(self, minecraftdir, worldname, servername):
+    def __init__(self, minecraftdir, worldname, singleplayer):
         """
         Parameters
         ----------
@@ -31,7 +35,7 @@ class BCGameInstance():
         """
         self._minecraftdir=minecraftdir
         self._worldname=worldname
-        self._servername=servername
+        self._singleplayer=singleplayer
 
         self._log_results=False
 
@@ -43,10 +47,14 @@ class BCGameInstance():
         self._auto_backup_delay=60.0
         self._last_auto_backup=0.0
 
-        self._bcalladvancements = BCAllAdvancements(minecraftdir, worldname)
         self._bclevelfile = BCLevelFile(minecraftdir, worldname)
+        self._bcalladvancements = BCAllAdvancements(minecraftdir, worldname)
 #        self._bclogfiles = BCLogFiles(minecraftdir, servername)
 #        self._bclog = BCLog(minecraftdir,servername)
+
+
+
+
 
     def update_game_info(self):
         """Update Game Info - this function will check to see how much time has past and will update the following classes
@@ -231,12 +239,12 @@ class BCGameInstance():
     """
 
     def save_all(self):
-        command_line = f"./scripts/save-all.bash {self._servername}"
+        command_line = f"./scripts/save-all.bash {self._worldname}"
         run([command_line])
         sleep(0.5)
 
     def query_time(self):
-        command_line = f"./scripts/query-time.bash {self._servername}"
+        command_line = f"./scripts/query-time.bash {self._worldname}"
         run([command_line])
         sleep(0.5)
 
@@ -269,16 +277,17 @@ class BCGameInstance():
         print(f"Wandering Trader Id: {self.wandering_trader_id()}")
         print(f"Estimated Time of D: {self.estimated_time_of_day()}")
         print()
-        self._bcalladvancements.print_all_advancements()
+#        self._bcalladvancements.print_all_advancements()
 
-def main(minecraft, worldname, servername):
+def main(minecraft, worldname, singleplayer):
 
     print("BCGameInstance: Unit Testing")
-    bcgame = BCGameInstance(minecraft, worldname, servername)
+    bcgame = BCGameInstance(minecraft, worldname, singleplayer)
+    bcgame.
 
     bcgame.update_game_info()
     bcgame.print_debug()
 
 if __name__ == '__main__':
-    (minecraftdir, worldname, servername) = BCHudConstants.init_server()
-    main(minecraftdir, worldname, servername)
+    (minecraftdir, worldname, singleplayer) = Constants.init_server("/home/integ/Code/bchud/config.json")
+    main(minecraftdir, worldname, singleplayer)

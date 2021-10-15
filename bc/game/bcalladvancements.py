@@ -1201,7 +1201,7 @@ class BCAllAdvancements():
 
 
 
-    def __init__(self, minecraftdir="/home/integ/.minecraft", worldname="Battlefield Hardcore"):
+    def __init__(self, minecraftdir="/home/integ/.minecraft", worldname="New World"):
 
         self._minecraftdir=minecraftdir
         self._worldname=worldname

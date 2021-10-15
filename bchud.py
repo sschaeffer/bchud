@@ -1,6 +1,6 @@
 #!/usr/bin/python3
-from bchudconstants import BCHudConstants
-from bcgameinstance import BCGameInstance
+from bchud.bchudconstants import BCHudConstants
+from bchud.gameinstance.bcgameinstance import BCGameInstance
 from bcmenubar import BCMenuBar
 from bcstatusbar import BCStatusBar
 from bcdebugwindow import BCDebugWindow
@@ -56,7 +56,6 @@ def main(stdscr:curses.window, minecraftdir, worldname, servername):
             bcstatusbar.render(height,width)
             bcmenubar.render(height,width)
 
-#            stdscr.noutrefresh()
             panel.update_panels()
             curses.doupdate()
             if not bcmenubar.exit():
@@ -71,5 +70,4 @@ def main(stdscr:curses.window, minecraftdir, worldname, servername):
 if __name__ == "__main__":
     (minecraftdir, worldname, servername) = BCHudConstants.init_server()
     environ.setdefault('ESCDELAY', '25')
-#    curses.wrapper(main, minecraftdir, worldname, servername)
     curses.wrapper(main, minecraftdir, worldname, servername)

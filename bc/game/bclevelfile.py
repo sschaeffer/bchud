@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-from bchudconstants import BCHudConstants
+import sys
+sys.path.append("/home/integ/Code/bchud")
+
+from bc.common.constants import Constants
 from nbt import NBTFile
 
 from time import time
@@ -8,7 +11,7 @@ from datetime import datetime
 
 class BCLevelFile(NBTFile):
 
-    def __init__(self, minecraftdir="/media/local/Minecraft", worldname="fury"):
+    def __init__(self, minecraftdir="/home/integ/.minecraft", worldname="New World"):
 
         self._minecraftdir=minecraftdir
         self._worldname=worldname
@@ -177,36 +180,36 @@ class BCLevelFile(NBTFile):
         return(result)
 
     def estimated_is_monsters(self):
-        estdaytime = self.estimated_day_time()%BCHudConstants.DAY_FULLDAY
+        estdaytime = self.estimated_day_time()%Constants.DAY_FULLDAY
         result = False
-        if estdaytime >= BCHudConstants.DAY_MONSTERS and estdaytime <= BCHudConstants.DAY_NO_MONSTERS:
+        if estdaytime >= Constants.DAY_MONSTERS and estdaytime <= Constants.DAY_NO_MONSTERS:
             result = True 
         return result 
 
     def estimated_is_bed_usable(self):
-        estdaytime = self.estimated_day_time()%BCHudConstants.DAY_FULLDAY
+        estdaytime = self.estimated_day_time()%Constants.DAY_FULLDAY
         result = False
-        if estdaytime >= BCHudConstants.DAY_SLEEP and estdaytime <= BCHudConstants.DAY_NO_SLEEP:
+        if estdaytime >= Constants.DAY_SLEEP and estdaytime <= Constants.DAY_NO_SLEEP:
             result = True 
         return result
 
     def estimated_time_of_day(self):
-        estdaytime = self.estimated_day_time()%BCHudConstants.DAY_FULLDAY
-        if estdaytime > BCHudConstants.DAY_NO_SLEEP:
-            result = BCHudConstants.COLOR_NO_SLEEP
-        elif estdaytime > BCHudConstants.DAY_NO_MONSTERS:
-            result = BCHudConstants.COLOR_NO_MONSTERS     # LIGHT BLUE (11 secs)
-        elif estdaytime > BCHudConstants.DAY_MONSTERS:
-            result = BCHudConstants.COLOR_MONSTERS       # DARKEST BLUE/BLACK (8mins 1secs)
-        elif estdaytime > BCHudConstants.DAY_SLEEP:
-            result = BCHudConstants.COLOR_SLEEP          # DARK BLUE PURPLE (21secs)
-        elif estdaytime > BCHudConstants.DAY_TWILIGHT:
-            result = BCHudConstants.COLOR_TWILIGHT       # PURPLE (27secs)
-        elif estdaytime > BCHudConstants.DAY_HAPPYHOUR:
-            result = BCHudConstants.COLOR_HAPPYHOUR      # LIGHT BLUE/PURPLE (2mins 30secs) elif estdaytime > BCHudConstants.DAY_WORKDAY:
-            result = BCHudConstants.COLOR_WORKDAY        # YELLOW (5mins 50secs)
+        estdaytime = self.estimated_day_time()%Constants.DAY_FULLDAY
+        if estdaytime > Constants.DAY_NO_SLEEP:
+            result = Constants.COLOR_NO_SLEEP
+        elif estdaytime > Constants.DAY_NO_MONSTERS:
+            result = Constants.COLOR_NO_MONSTERS     # LIGHT BLUE (11 secs)
+        elif estdaytime > Constants.DAY_MONSTERS:
+            result = Constants.COLOR_MONSTERS       # DARKEST BLUE/BLACK (8mins 1secs)
+        elif estdaytime > Constants.DAY_SLEEP:
+            result = Constants.COLOR_SLEEP          # DARK BLUE PURPLE (21secs)
+        elif estdaytime > Constants.DAY_TWILIGHT:
+            result = Constants.COLOR_TWILIGHT       # PURPLE (27secs)
+        elif estdaytime > Constants.DAY_HAPPYHOUR:
+            result = Constants.COLOR_HAPPYHOUR      # LIGHT BLUE/PURPLE (2mins 30secs) elif estdaytime > Constants.DAY_WORKDAY:
+            result = Constants.COLOR_WORKDAY        # YELLOW (5mins 50secs)
         else:
-            result = BCHudConstants.COLOR_DAWN           # BRIGHT YELLOW (1min 40secs)
+            result = Constants.COLOR_DAWN           # BRIGHT YELLOW (1min 40secs)
         return(result)
 
 #        elif estdaytime > self.DAY_NORAINMONSTERS:
@@ -227,7 +230,7 @@ def main(minecraftdir,worldname):
 #        print(bclevelfile.pretty_tree())
     else:
         print(f"Level Filename:      {bclevelfile.level_filename()}")
-        print(f"Last Update Time:    {datetime.fromtimestamp(bclevelfile.level_file_last_update())}")
+        print(f"Last Update Time:    {datetime.fromtimestamp(bclevelfile.level_file_last_update())} (Current Time: {datetime.now()}")
         print()
         print(f"Seed:                {bclevelfile.seed()}")
         print(f"Game Time:           {bclevelfile.game_time()}")
@@ -251,28 +254,27 @@ def main(minecraftdir,worldname):
         print(f"Estimated Wandering: {bclevelfile.estimated_wandering_trader_spawn_delay()}")
         print(f"Estimated Is Bed Us: {bclevelfile.estimated_is_bed_usable()}")
         print(f"Estimated Is Monste: {bclevelfile.estimated_is_monsters()}")
-        estdaytime = bclevelfile.estimated_day_time()%BCHudConstants.DAY_FULLDAY
-        if estdaytime > BCHudConstants.DAY_NO_SLEEP:
+        estdaytime = bclevelfile.estimated_day_time()%Constants.DAY_FULLDAY
+        if estdaytime > Constants.DAY_NO_SLEEP:
             estdaytimestring = "COLOR_NO_SLEEP"
-        elif estdaytime > BCHudConstants.DAY_NO_MONSTERS:
+        elif estdaytime > Constants.DAY_NO_MONSTERS:
             estdaytimestring = "COLOR_NO_MONSTERS"
-        elif estdaytime > BCHudConstants.DAY_MONSTERS:
+        elif estdaytime > Constants.DAY_MONSTERS:
             estdaytimestring = "COLOR_MONSTERS"
-        elif estdaytime > BCHudConstants.DAY_SLEEP:
+        elif estdaytime > Constants.DAY_SLEEP:
             estdaytimestring = "COLOR_SLEEP"
-        elif estdaytime > BCHudConstants.DAY_TWILIGHT:
+        elif estdaytime > Constants.DAY_TWILIGHT:
             estdaytimestring = "COLOR_TWILIGHT"
-        elif estdaytime > BCHudConstants.DAY_HAPPYHOUR:
+        elif estdaytime > Constants.DAY_HAPPYHOUR:
             estdaytimestring = "COLOR_HAPPYHOUR"
-        elif estdaytime > BCHudConstants.DAY_WORKDAY:
+        elif estdaytime > Constants.DAY_WORKDAY:
             estdaytimestring = "COLOR_WORKDAY"
         else:
             estdaytimestring = "COLOR_DAWN"
         print(f"Estimated Time of D: {bclevelfile.estimated_time_of_day()}={estdaytimestring}")
 
 
-
-
 if __name__ == '__main__':
-    (minecraftdir,servername,worldname) = BCHudConstants.init_server()
+    (minecraftdir,worldname,singleplayer) = Constants.init_server("/home/integ/Code/bchud/config.json")
     main(minecraftdir,worldname)
+    

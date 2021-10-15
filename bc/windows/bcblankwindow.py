@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from bchudconstants import BCHudConstants
+from bc.common.constants import Constants
 from bcgameinstance import BCGameInstance
 from os import environ
 import curses

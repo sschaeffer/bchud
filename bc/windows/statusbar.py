@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from bchudconstants import BCHudConstants
-from bcgameinstance import BCGameInstance
+from gameinstance.bcgameinstance import BCGameInstance
 
 import curses
 from curses import panel
