@@ -1,4 +1,4 @@
-# bchud
+# bchud - blaze and caves heads-up display
 
 
 Game Instance 
