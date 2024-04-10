@@ -13,6 +13,18 @@
                 "Test1"
             ]
             "console": "integratedTerminal"
+        },
+        {
+            "name": "BCHud Single Player",
+            "type": "python",
+            "request": "launch",
+            "program": "bchud.py",
+            "args": [
+                "--minecraftdir","/home/integ/.minecraft",
+                "--servername","saves",
+                "--worldname","Battlefield Hardcore"
+            ],
+            "console": "integratedTerminal"
         }
     ]
 }
